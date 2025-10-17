@@ -8,6 +8,7 @@ class Event {
   final bool isFeatured;
   final double? price;
   final int availableTickets;
+  final String? imageUrl;
 
   Event({
     required this.id,
@@ -19,6 +20,7 @@ class Event {
     this.isFeatured = false,
     this.price,
     this.availableTickets = 0,
+    this.imageUrl,
   });
 
   // Factory method to create an Event from JSON
@@ -33,6 +35,7 @@ class Event {
       isFeatured: json['isFeatured'] as bool? ?? false,
       price: json['price']?.toDouble(),
       availableTickets: json['availableTickets'] as int? ?? 0,
+      imageUrl: json['imageUrl'] as String?,
     );
   }
 
@@ -48,6 +51,7 @@ class Event {
       'isFeatured': isFeatured,
       'price': price,
       'availableTickets': availableTickets,
+      'imageUrl': imageUrl,
     };
   }
 

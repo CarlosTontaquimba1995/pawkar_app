@@ -208,53 +208,49 @@ class _MatchesScreenState extends State<MatchesScreen> {
   }
 
   void _applyFilters() {
+    if (!mounted) return;
+    
     setState(() {
       _filteredMatches = _allMatches.where((match) {
         // Filtrar por búsqueda
-        if (_searchQuery.isNotEmpty &&
-            !match.title.toLowerCase().contains(_searchQuery.toLowerCase()) &&
-            !match.location.toLowerCase().contains(
-              _searchQuery.toLowerCase(),
-            )) {
-          return false;
-        }
+        final searchLower = _searchQuery.toLowerCase();
+        final matchesSearch = match.title.toLowerCase().contains(searchLower) ||
+            match.description.toLowerCase().contains(searchLower) ||
+            match.location.toLowerCase().contains(searchLower);
 
         // Filtrar por fecha
-        if (_selectedDate != null) {
-          final matchDate = DateTime(
-            match.dateTime.year,
-            match.dateTime.month,
-            match.dateTime.day,
-          );
-          final selectedDate = DateTime(
-            _selectedDate!.year,
-            _selectedDate!.month,
-            _selectedDate!.day,
-          );
-
-          if (matchDate != selectedDate) {
-            return false;
-          }
-        }
+        final matchesDate = _selectedDate == null ||
+            (match.dateTime.year == _selectedDate!.year &&
+                match.dateTime.month == _selectedDate!.month &&
+                match.dateTime.day == _selectedDate!.day);
 
         // Filtrar por estadio
-        if (_selectedStadium != null && match.location != _selectedStadium) {
-          return false;
-        }
+        final matchesStadium = _selectedStadium == null ||
+            match.location == _selectedStadium;
 
         // Filtrar por equipo
-        if (_selectedTeam != null && !match.title.contains(_selectedTeam!)) {
-          return false;
-        }
+        final matchesTeam = _selectedTeam == null ||
+            match.title.contains(_selectedTeam!) ||
+            match.description.contains(_selectedTeam!);
 
         // Filtrar por categoría
-        if (_selectedCategory != null && match.category != _selectedCategory) {
-          return false;
-        }
+        final matchesCategory = _selectedCategory == null ||
+            match.category == _selectedCategory;
 
-        return true;
+        return matchesSearch &&
+            matchesDate &&
+            matchesStadium &&
+            matchesTeam &&
+            matchesCategory;
       }).toList();
     });
+  }
+
+  // Helper method to safely update state
+  void _safeSetState(VoidCallback callback) {
+    if (mounted) {
+      setState(callback);
+    }
   }
 
   void _resetFilters() {

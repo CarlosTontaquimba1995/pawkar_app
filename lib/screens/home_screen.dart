@@ -427,7 +427,65 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ],
           onEventTap: (event) {
-            // Navigate to event details
+            // Find the category by name
+            Category? findCategoryByName(
+              String name,
+              List<Category> categories,
+            ) {
+              for (var category in categories) {
+                if (category.name.toLowerCase() == name.toLowerCase()) {
+                  return category;
+                }
+                if (category.subcategories.isNotEmpty) {
+                  final found = findCategoryByName(
+                    name,
+                    category.subcategories,
+                  );
+                  if (found != null) return found;
+                }
+              }
+              return null;
+            }
+
+            final category = findCategoryByName(event.category, _categories);
+
+            if (category != null && context.mounted) {
+              if (category.subcategories.isNotEmpty) {
+                // If category has subcategories, show them
+                _showSubcategories(context, category);
+              } else {
+                // If it's a subcategory, navigate to matches screen
+                // Get sample matches for this category
+                final sampleMatches = [
+                  Event(
+                    id: 'm1',
+                    title: '${category.name} Match 1',
+                    description: 'Sample match in ${category.name} category',
+                    dateTime: DateTime.now().add(const Duration(days: 1)),
+                    location: 'Stadium',
+                    category: category.name,
+                    isFeatured: true,
+                  ),
+                  Event(
+                    id: 'm2',
+                    title: '${category.name} Match 2',
+                    description: 'Another match in ${category.name} category',
+                    dateTime: DateTime.now().add(const Duration(days: 2)),
+                    location: 'Arena',
+                    category: category.name,
+                    isFeatured: true,
+                  ),
+                ];
+
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        MatchesScreen(initialMatches: sampleMatches),
+                  ),
+                );
+              }
+            }
           },
           onViewAll: () {
             // Navigate to all featured events

@@ -137,31 +137,60 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
 
         // Featured Events Section
-        HorizontalScrollSection(
-          title: 'Eventos Destacados',
-          actionText: 'Ver más',
-          itemHeight: 200,
-          children: featuredEvents
-              .map(
-                (event) => ScrollItemCard(
-                  width: 200,
-                  height: 180,
-                  title: event.title,
-                  subtitle: '${event.location} • ${event.formattedDate}',
-                  onTap: () {
-                    // Navigate to event details
-                  },
-                  borderRadius: BorderRadius.circular(12),
-                  shadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
-                      blurRadius: 10,
-                      offset: const Offset(0, 4),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16.0,
+                vertical: 8.0,
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Eventos Destacados',
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
                     ),
-                  ],
-                ),
-              )
-              .toList(),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      // Navegar a ver más eventos
+                    },
+                    style: TextButton.styleFrom(
+                      padding: EdgeInsets.zero,
+                      minimumSize: const Size(50, 30),
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    ),
+                    child: Text(
+                      'Ver más',
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: theme.colorScheme.primary,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(
+              height: 240,
+              child: ListView.separated(
+                padding: const EdgeInsets.fromLTRB(
+                  16.0,
+                  0,
+                  16.0,
+                  8.0,
+                ), // Added bottom padding
+                scrollDirection: Axis.horizontal,
+                itemCount: featuredEvents.length,
+                separatorBuilder: (context, index) => const SizedBox(width: 16),
+                itemBuilder: (context, index) =>
+                    _buildFeaturedEventCard(featuredEvents[index], theme),
+              ),
+            ),
+          ],
         ),
 
         // Upcoming Events Section
@@ -204,6 +233,140 @@ class _HomeScreenState extends State<HomeScreen> {
       default:
         return Icons.event;
     }
+  }
+
+  Widget _buildFeaturedEventCard(Event event, ThemeData theme) {
+    return Container(
+      width: 180, // Reduced width to prevent overflow
+      margin: const EdgeInsets.symmetric(
+        horizontal: 8,
+      ), // Add horizontal margin
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: InkWell(
+        onTap: () {
+          // Navegar a detalles del evento
+        },
+        borderRadius: BorderRadius.circular(16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min, // Prevent column from expanding
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Imagen del evento
+            Container(
+              height: 100, // Reduced height
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: theme.colorScheme.primary.withOpacity(0.1),
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(16),
+                  topRight: Radius.circular(16),
+                ),
+              ),
+              child: Center(
+                child: Icon(
+                  _getCategoryIcon(event.category),
+                  size: 40, // Reduced icon size
+                  color: theme.colorScheme.primary,
+                ),
+              ),
+            ),
+            // Contenido
+            Padding(
+              padding: const EdgeInsets.all(10.0), // Reduced padding
+              child: Column(
+                mainAxisSize: MainAxisSize.min, // Prevent column from expanding
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    event.title,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 4),
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.location_on_outlined,
+                        size: 12, // Reduced icon size
+                        color: theme.colorScheme.onSurface.withOpacity(0.6),
+                      ),
+                      const SizedBox(width: 2), // Reduced spacing
+                      Expanded(
+                        child: Text(
+                          event.location,
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: theme.colorScheme.onSurface.withOpacity(0.6),
+                            fontSize: 11, // Reduced font size
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 2), // Reduced spacing
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.calendar_month_outlined,
+                        size: 12, // Reduced icon size
+                        color: theme.colorScheme.onSurface.withOpacity(0.6),
+                      ),
+                      const SizedBox(width: 2), // Reduced spacing
+                      Expanded(
+                        child: Text(
+                          event.formattedDate,
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: theme.colorScheme.onSurface.withOpacity(0.6),
+                            fontSize: 11, // Reduced font size
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
+                  if (event.price != null) ...[
+                    const SizedBox(height: 6), // Reduced spacing
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 6,
+                        vertical: 2,
+                      ),
+                      decoration: BoxDecoration(
+                        color: theme.colorScheme.primary.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        'S/.${event.price?.toStringAsFixed(2)}',
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: theme.colorScheme.primary,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 11, // Reduced font size
+                        ),
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   Widget _buildEventCard(Event event, ThemeData theme) {

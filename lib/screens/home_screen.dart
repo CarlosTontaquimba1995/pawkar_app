@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../widgets/collapsible_app_bar.dart';
-import '../widgets/horizontal_scroll_section.dart';
-import '../models/event.dart';
+import 'package:pawkar_app/widgets/collapsible_app_bar.dart';
 import '../models/category.dart';
+import '../models/event.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -117,23 +116,58 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
 
         // Categories Section
-        HorizontalScrollSection(
-          title: 'Categorías',
-          actionText: 'Ver todas',
-          children: categories
-              .map(
-                (category) => ScrollItemCard(
-                  title: category.name,
-                  icon: Text(
-                    category.icon,
-                    style: const TextStyle(fontSize: 24),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16.0,
+                vertical: 8.0,
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Categorías',
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
                     ),
-                  onTap: () {
-                    // Navigate to category
-                  },
-                ),
-              )
-              .toList(),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      // Navegar a ver todas las categorías
+                    },
+                    style: TextButton.styleFrom(
+                      padding: EdgeInsets.zero,
+                      minimumSize: const Size(50, 30),
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    ),
+                    child: Text(
+                      'Ver todas',
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: theme.colorScheme.primary,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(
+              height: 140, // Altura ligeramente mayor para mejor visualización
+              child: ListView.separated(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                scrollDirection: Axis.horizontal,
+                itemCount: categories.length,
+                separatorBuilder: (context, index) => const SizedBox(width: 16),
+                itemBuilder: (context, index) =>
+                    _buildCategoryCard(categories[index], theme),
+              ),
+            ),
+            const SizedBox(
+              height: 16,
+            ), // Espacio adicional después de la sección
+          ],
         ),
 
         // Featured Events Section
@@ -233,6 +267,46 @@ class _HomeScreenState extends State<HomeScreen> {
       default:
         return Icons.event;
     }
+  }
+
+  Widget _buildCategoryCard(Category category, ThemeData theme) {
+    return SizedBox(
+      width: 100,
+      child: InkWell(
+        onTap: () {
+          // Navegar a la categoría
+        },
+        borderRadius: BorderRadius.circular(12),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 80,
+              height: 80,
+              decoration: BoxDecoration(
+                color: theme.colorScheme.primary.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Icon(
+                _getCategoryIcon(category.name.toLowerCase()),
+                size: 36,
+                color: theme.colorScheme.primary,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              category.name,
+              textAlign: TextAlign.center,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.w500,
+              ),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   Widget _buildFeaturedEventCard(Event event, ThemeData theme) {

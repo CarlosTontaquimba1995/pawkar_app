@@ -9,6 +9,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_native_splash: ^2.3.10
+  lottie: ^3.0.1
+  google_fonts: ^6.1.0
 
 dev_dependencies:
   flutter_test:
@@ -17,3 +20,22 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/animations/
+    - assets/images/
+
+flutter_native_splash:
+  # Background color of the splash screen
+  color: "#FFFFFF"  # Fondo blanco
+  
+  # The image asset for the splash screen
+  image: assets/images/splash_logo.png
+  
+  # Platform specific settings
+  android: true
+  ios: true
+
+  # Make the image cover the entire screen
+  android_gravity: fill
+  ios_content_mode: scaleAspectFill
+  fullscreen: true

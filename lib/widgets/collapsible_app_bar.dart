@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
 import '../theme/app_colors.dart';
 
 class CollapsibleAppBar extends StatefulWidget {
@@ -69,30 +70,30 @@ class _CollapsibleAppBarState extends State<CollapsibleAppBar>
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final size = MediaQuery.of(context).size;
+    final primaryColor = theme.colorScheme.primary;
+    final secondaryColor = theme.colorScheme.secondary;
 
     return SliverAppBar.large(
-      expandedHeight: widget.expandedHeight,
+      expandedHeight: size.height * 0.3,
       floating: false,
       pinned: true,
-      backgroundColor: theme.colorScheme.primary,
+      backgroundColor: primaryColor,
       elevation: 0,
-      systemOverlayStyle: Theme.of(context).appBarTheme.systemOverlayStyle,
-      title: AnimatedOpacity(
-        opacity: _showAppBarTitle ? 1.0 : 0.0,
-        duration: const Duration(milliseconds: 200),
-        child: Text(
-          widget.title,
-          style: theme.textTheme.titleLarge?.copyWith(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-            letterSpacing: 1.2,
-          ),
+      systemOverlayStyle: SystemUiOverlayStyle.light,
+      title: Text(
+        'PAWKAR APP',
+        style: theme.textTheme.titleLarge?.copyWith(
+          color: Colors.white,
+          fontWeight: FontWeight.bold,
+          letterSpacing: 1.2,
         ),
       ),
+      centerTitle: true,
       flexibleSpace: LayoutBuilder(
         builder: (context, constraints) {
           final double expandedHeight = constraints.biggest.height;
-          final double visibleMainHeight = widget.expandedHeight;
+          final double visibleMainHeight = size.height * 0.3;
           final double scrolledPercentage =
               1.0 -
               ((expandedHeight - kToolbarHeight) /
@@ -103,7 +104,7 @@ class _CollapsibleAppBarState extends State<CollapsibleAppBar>
             background: Container(
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [AppColors.primary, AppColors.secondary],
+                  colors: [primaryColor, secondaryColor],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
@@ -131,7 +132,7 @@ class _CollapsibleAppBarState extends State<CollapsibleAppBar>
                           ),
                         ),
                         child: Text(
-                          widget.greeting,
+                          'Bienvenido a',
                           style: theme.textTheme.titleLarge?.copyWith(
                             color: Colors.white.withOpacity(0.9),
                             fontWeight: FontWeight.w500,
@@ -151,7 +152,7 @@ class _CollapsibleAppBarState extends State<CollapsibleAppBar>
                           ),
                         ),
                         child: Text(
-                          widget.title,
+                          'PAWKAR 2025',
                           style: theme.textTheme.displaySmall?.copyWith(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
@@ -173,16 +174,14 @@ class _CollapsibleAppBarState extends State<CollapsibleAppBar>
                           ),
                         ),
                         child: Text(
-                          widget.subtitle,
+                          'Festival Cultural y Deportivo',
                           style: theme.textTheme.titleMedium?.copyWith(
                             color: Colors.white.withOpacity(0.9),
+                            fontWeight: FontWeight.w400,
                           ),
                         ),
                       ),
-                      if (widget.bottom != null) ...[
-                        const SizedBox(height: 16),
-                        widget.bottom!,
-                      ],
+                      const SizedBox(height: 32),
                     ],
                   ),
                 ),

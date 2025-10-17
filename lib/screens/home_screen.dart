@@ -64,23 +64,23 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
-    return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: SystemUiOverlayStyle.light.copyWith(
-        statusBarColor: Colors.transparent,
-        statusBarIconBrightness: Brightness.light,
-      ),
-      child: Scaffold(
-        extendBodyBehindAppBar: true,
-        body: CustomScrollView(
-          physics: const BouncingScrollPhysics(),
+
+    return Scaffold(
+      body: AnnotatedRegion<SystemUiOverlayStyle>(
+        value: SystemUiOverlayStyle.light.copyWith(
+          statusBarColor: Colors.transparent,
+          statusBarIconBrightness: Brightness.light,
+        ),
+        child: CustomScrollView(
           slivers: [
-            CollapsibleAppBar(
-              title: 'PAWKAR 2025',
+            const CollapsibleAppBar(
+              title: 'PAWKAR',
               subtitle: 'Festival Cultural y Deportivo',
               greeting: 'Bienvenido a',
             ),
-            SliverToBoxAdapter(child: _buildBody(theme),
+            const SearchBarWidget(),
+            SliverToBoxAdapter(
+              child: _buildBody(theme),
             ),
           ],
         ),
@@ -92,11 +92,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Search Bar
-        const Padding(
-          padding: EdgeInsets.fromLTRB(16, 8, 16, 16),
-          child: SearchBarWidget(),
-        ),
+        const SizedBox(height: 8), // Add some space below the sticky search bar
 
         // Categories Section
         CategoriesSection(
@@ -172,16 +168,64 @@ class _HomeScreenState extends State<HomeScreen> {
               category: 'Conciertos',
               isFeatured: true,
               price: 25.00,
+              imageUrl: 'assets/images/concierto.jpg',
             ),
             Event(
               id: '2',
-              title: 'Torneo de Fútbol',
-              description: 'Gran torneo de fútbol intercomunal',
-              dateTime: DateTime.now().add(const Duration(days: 5)),
-              location: 'Estadio Olímpico',
-              category: 'Deportes',
+              title: 'Festival de Jazz',
+              description:
+                  'Los mejores artistas de jazz nacional e internacional',
+              dateTime: DateTime.now().add(const Duration(days: 7)),
+              location: 'Casa de la Música',
+              category: 'Conciertos',
               isFeatured: true,
-              price: 10.00,
+              price: 30.00,
+              imageUrl: 'assets/images/jazz.jpg',
+            ),
+            Event(
+              id: '3',
+              title: 'Noche de Ópera',
+              description: 'Obras clásicas de la ópera internacional',
+              dateTime: DateTime.now().add(const Duration(days: 5)),
+              location: 'Teatro Sucre',
+              category: 'Conciertos',
+              isFeatured: true,
+              price: 35.00,
+              imageUrl: 'assets/images/opera.jpg',
+            ),
+            Event(
+              id: '4',
+              title: 'Rock en la Plaza',
+              description: 'Las mejores bandas de rock nacional',
+              dateTime: DateTime.now().add(const Duration(days: 10)),
+              location: 'Plaza Grande',
+              category: 'Conciertos',
+              isFeatured: true,
+              price: 20.00,
+              imageUrl: 'assets/images/rock.jpg',
+            ),
+            Event(
+              id: '5',
+              title: 'Festival de Música Electrónica',
+              description: 'DJs internacionales en un evento imperdible',
+              dateTime: DateTime.now().add(const Duration(days: 12)),
+              location: 'Centro de Convenciones',
+              category: 'Conciertos',
+              isFeatured: true,
+              price: 40.00,
+              imageUrl: 'assets/images/electronica.jpg',
+            ),
+            Event(
+              id: '6',
+              title: 'Concierto Sinfónico',
+              description:
+                  'La orquesta sinfónica nacional en un repertorio clásico',
+              dateTime: DateTime.now().add(const Duration(days: 8)),
+              location: 'Teatro Bolívar',
+              category: 'Conciertos',
+              isFeatured: true,
+              price: 30.00,
+              imageUrl: 'assets/images/sinfonico.jpg',
             ),
           ],
           onEventTap: (event) {

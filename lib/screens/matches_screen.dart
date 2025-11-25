@@ -311,7 +311,7 @@ class _MatchesScreenState extends State<MatchesScreen> {
                   borderSide: BorderSide.none,
                 ),
                 filled: true,
-                fillColor: theme.colorScheme.surfaceVariant,
+                fillColor: theme.colorScheme.surfaceContainerHighest,
                 contentPadding: const EdgeInsets.symmetric(
                   vertical: 0,
                   horizontal: 16,
@@ -633,7 +633,7 @@ class _MatchesScreenState extends State<MatchesScreen> {
 
               // Filtro por categoría
               DropdownButtonFormField<String>(
-                value: selectedCategory,
+                initialValue: selectedCategory,
                 decoration: InputDecoration(
                   labelText: 'Categoría',
                   border: OutlineInputBorder(
@@ -657,7 +657,7 @@ class _MatchesScreenState extends State<MatchesScreen> {
 
               // Filtro por equipo (solo se habilita cuando hay una categoría seleccionada)
               DropdownButtonFormField<String>(
-                value: _selectedTeam,
+                initialValue: _selectedTeam,
                 decoration: InputDecoration(
                   labelText: 'Equipo',
                   hintText: selectedCategory == null
@@ -692,7 +692,7 @@ class _MatchesScreenState extends State<MatchesScreen> {
 
               // Filtro por estadio
               DropdownButtonFormField<String>(
-                value: _selectedStadium,
+                initialValue: _selectedStadium,
                 decoration: InputDecoration(
                   labelText: 'Estadio',
                   border: OutlineInputBorder(

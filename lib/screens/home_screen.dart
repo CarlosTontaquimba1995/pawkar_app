@@ -131,7 +131,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 category.name,
                 style: theme.textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.bold,
-                  color: theme.colorScheme.onBackground,
+                  color: theme.colorScheme.onSurface,
                 ),
               ),
             ),

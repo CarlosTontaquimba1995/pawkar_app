@@ -81,9 +81,6 @@ class _MatchesScreenState extends State<MatchesScreen> {
     ],
   };
 
-  // Equipos filtrados por categoría seleccionada
-  late List<String> _filteredTeams = [];
-
   // Paginación
   int _currentPage = 0;
   bool _isLoading = false;
@@ -209,33 +206,36 @@ class _MatchesScreenState extends State<MatchesScreen> {
 
   void _applyFilters() {
     if (!mounted) return;
-    
+
     setState(() {
       _filteredMatches = _allMatches.where((match) {
         // Filtrar por búsqueda
         final searchLower = _searchQuery.toLowerCase();
-        final matchesSearch = match.title.toLowerCase().contains(searchLower) ||
+        final matchesSearch =
+            match.title.toLowerCase().contains(searchLower) ||
             match.description.toLowerCase().contains(searchLower) ||
             match.location.toLowerCase().contains(searchLower);
 
         // Filtrar por fecha
-        final matchesDate = _selectedDate == null ||
+        final matchesDate =
+            _selectedDate == null ||
             (match.dateTime.year == _selectedDate!.year &&
                 match.dateTime.month == _selectedDate!.month &&
                 match.dateTime.day == _selectedDate!.day);
 
         // Filtrar por estadio
-        final matchesStadium = _selectedStadium == null ||
-            match.location == _selectedStadium;
+        final matchesStadium =
+            _selectedStadium == null || match.location == _selectedStadium;
 
         // Filtrar por equipo
-        final matchesTeam = _selectedTeam == null ||
+        final matchesTeam =
+            _selectedTeam == null ||
             match.title.contains(_selectedTeam!) ||
             match.description.contains(_selectedTeam!);
 
         // Filtrar por categoría
-        final matchesCategory = _selectedCategory == null ||
-            match.category == _selectedCategory;
+        final matchesCategory =
+            _selectedCategory == null || match.category == _selectedCategory;
 
         return matchesSearch &&
             matchesDate &&
@@ -247,11 +247,7 @@ class _MatchesScreenState extends State<MatchesScreen> {
   }
 
   // Helper method to safely update state
-  void _safeSetState(VoidCallback callback) {
-    if (mounted) {
-      setState(callback);
-    }
-  }
+  // (removed) _safeSetState helper was unused and has been deleted.
 
   void _resetFilters() {
     _searchController.clear();
@@ -259,18 +255,11 @@ class _MatchesScreenState extends State<MatchesScreen> {
     _selectedStadium = null;
     _selectedTeam = null;
     _selectedCategory = null;
-    _filteredTeams = [];
     _searchQuery = '';
     _applyFilters();
   }
 
   // Actualizar la lista de equipos cuando se selecciona una categoría
-  void _updateTeamsByCategory(String? category) {
-    setState(() {
-      _selectedCategory = category;
-      _selectedTeam = null; // Reset team when category changes
-    });
-  }
 
   @override
   Widget build(BuildContext context) {

@@ -25,7 +25,6 @@ class CollapsibleAppBar extends StatefulWidget {
 class _CollapsibleAppBarState extends State<CollapsibleAppBar>
     with SingleTickerProviderStateMixin {
   late final AnimationController _appBarController;
-  late final Animation<double> _appBarAnimation;
   late final ScrollController _scrollController;
   bool _showAppBarTitle = false;
 
@@ -36,9 +35,6 @@ class _CollapsibleAppBarState extends State<CollapsibleAppBar>
     _appBarController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 300),
-    );
-    _appBarAnimation = Tween<double>(begin: 0, end: 1).animate(
-      CurvedAnimation(parent: _appBarController, curve: Curves.easeInOut),
     );
     _scrollController.addListener(_onScroll);
   }
@@ -91,12 +87,8 @@ class _CollapsibleAppBarState extends State<CollapsibleAppBar>
       centerTitle: true,
       flexibleSpace: LayoutBuilder(
         builder: (context, constraints) {
-          final double expandedHeight = constraints.biggest.height;
-          final double visibleMainHeight = size.height * 0.3;
-          final double scrolledPercentage =
-              1.0 -
-              ((expandedHeight - kToolbarHeight) /
-                  (visibleMainHeight - kToolbarHeight));
+          // expandedHeight/visibleMainHeight calculation removed
+          // (previously used to compute scrolledPercentage) — not needed.
 
           return FlexibleSpaceBar(
             collapseMode: CollapseMode.parallax,

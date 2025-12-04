@@ -34,8 +34,8 @@ class CategoriesSection extends StatelessWidget {
             separatorBuilder: (_, __) => const SizedBox(width: 16),
             itemBuilder: (context, index) => CategoryCard(
               category: categories[index],
-              onTap: onCategoryTap != null 
-                  ? () => onCategoryTap!(categories[index]) 
+              onTap: onCategoryTap != null
+                  ? () => onCategoryTap!(categories[index])
                   : null,
             ),
           ),

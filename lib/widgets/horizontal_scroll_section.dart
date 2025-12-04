@@ -23,12 +23,14 @@ class HorizontalScrollSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: padding ?? const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+          padding:
+              padding ??
+              const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -101,7 +103,7 @@ class ScrollItemCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -110,13 +112,15 @@ class ScrollItemCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: color ?? theme.colorScheme.surface,
           borderRadius: borderRadius ?? BorderRadius.circular(12),
-          boxShadow: shadow ?? [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
-            ),
-          ],
+          boxShadow:
+              shadow ??
+              [
+                BoxShadow(
+                  color: Colors.black.withAlpha(13),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
           border: border,
         ),
         child: Padding(
@@ -141,7 +145,7 @@ class ScrollItemCard extends StatelessWidget {
                 Text(
                   subtitle!,
                   style: theme.textTheme.bodySmall?.copyWith(
-                    color: theme.colorScheme.onSurface.withOpacity(0.7),
+                    color: theme.colorScheme.onSurface.withAlpha(179),
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,

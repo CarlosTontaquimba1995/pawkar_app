@@ -5,22 +5,16 @@ class MatchCard extends StatelessWidget {
   final Event match;
   final VoidCallback? onTap;
 
-  const MatchCard({
-    super.key,
-    required this.match,
-    this.onTap,
-  });
+  const MatchCard({super.key, required this.match, this.onTap});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
       elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(12),
@@ -37,7 +31,7 @@ class MatchCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 8),
-              
+
               // Equipos y marcador
               Row(
                 children: [
@@ -51,11 +45,14 @@ class MatchCard extends StatelessWidget {
                       textAlign: TextAlign.end,
                     ),
                   ),
-                  
+
                   // Marcador
                   Container(
                     margin: const EdgeInsets.symmetric(horizontal: 12),
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: theme.colorScheme.primaryContainer,
                       borderRadius: BorderRadius.circular(16),
@@ -68,7 +65,7 @@ class MatchCard extends StatelessWidget {
                       ),
                     ),
                   ),
-                  
+
                   // Equipo visitante
                   Expanded(
                     child: Text(
@@ -80,7 +77,7 @@ class MatchCard extends StatelessWidget {
                   ),
                 ],
               ),
-              
+
               // Lugar
               if (match.location.isNotEmpty) ...[
                 const SizedBox(height: 12),
@@ -107,15 +104,15 @@ class MatchCard extends StatelessWidget {
       ),
     );
   }
-  
+
   String _formatDate(DateTime date) {
     return '${date.day}/${date.month}/${date.year}';
   }
-  
+
   String _formatTime(DateTime date) {
     return '${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}';
   }
-  
+
   String _getTeamName(String title, {required bool isHome}) {
     // Suponemos que el título del evento está en formato "Equipo Local vs Equipo Visitante"
     final parts = title.split(' vs ');
@@ -124,7 +121,7 @@ class MatchCard extends StatelessWidget {
     }
     return title; // Si no está en el formato esperado, devolvemos el título completo
   }
-  
+
   String _getScore(Event match) {
     // Aquí podrías extraer el marcador del evento si lo tienes disponible
     // Por ahora, devolvemos un marcador ficticio

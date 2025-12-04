@@ -41,7 +41,8 @@ class _CollapsibleAppBarState extends State<CollapsibleAppBar>
 
   void _onScroll() {
     if (_scrollController.hasClients &&
-        _scrollController.position.userScrollDirection == AxisDirection.down &&
+        _scrollController.position.userScrollDirection ==
+            ScrollDirection.reverse &&
         !_showAppBarTitle) {
       setState(() => _showAppBarTitle = true);
       _appBarController.forward();
@@ -67,10 +68,10 @@ class _CollapsibleAppBarState extends State<CollapsibleAppBar>
     final theme = Theme.of(context);
     final size = MediaQuery.of(context).size;
     final primaryColor = theme.colorScheme.primary;
-    final secondaryColor = theme.colorScheme.secondary;
+    final primaryLight = theme.colorScheme.primary.withAlpha(200);
 
     return SliverAppBar.large(
-      expandedHeight: size.height * 0.3,
+      expandedHeight: size.height * 0.20,
       floating: false,
       pinned: true,
       backgroundColor: primaryColor,
@@ -95,7 +96,7 @@ class _CollapsibleAppBarState extends State<CollapsibleAppBar>
             background: Container(
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [primaryColor, secondaryColor],
+                  colors: [primaryColor, primaryLight],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
@@ -105,11 +106,11 @@ class _CollapsibleAppBarState extends State<CollapsibleAppBar>
                 child: Padding(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 24.0,
-                    vertical: 16.0,
+                    vertical: 4.0,
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.end,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       FadeTransition(
                         opacity: Tween<double>(begin: 1.0, end: 0.0).animate(
@@ -125,12 +126,12 @@ class _CollapsibleAppBarState extends State<CollapsibleAppBar>
                         child: Text(
                           'Bienvenido a',
                           style: theme.textTheme.titleLarge?.copyWith(
-                            color: Colors.white.withOpacity(0.9),
+                            color: Colors.white.withAlpha(230),
                             fontWeight: FontWeight.w500,
                           ),
                         ),
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 2),
                       FadeTransition(
                         opacity: Tween<double>(begin: 1.0, end: 0.0).animate(
                           CurvedAnimation(
@@ -152,7 +153,7 @@ class _CollapsibleAppBarState extends State<CollapsibleAppBar>
                           ),
                         ),
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 0),
                       FadeTransition(
                         opacity: Tween<double>(begin: 1.0, end: 0.0).animate(
                           CurvedAnimation(
@@ -167,12 +168,12 @@ class _CollapsibleAppBarState extends State<CollapsibleAppBar>
                         child: Text(
                           'Festival Cultural y Deportivo',
                           style: theme.textTheme.titleMedium?.copyWith(
-                            color: Colors.white.withOpacity(0.9),
+                            color: Colors.white.withAlpha(230),
                             fontWeight: FontWeight.w400,
                           ),
                         ),
                       ),
-                      const SizedBox(height: 32),
+                      const SizedBox(height: 0),
                     ],
                   ),
                 ),

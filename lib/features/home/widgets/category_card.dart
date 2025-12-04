@@ -5,16 +5,12 @@ class CategoryCard extends StatelessWidget {
   final Category category;
   final VoidCallback? onTap;
 
-  const CategoryCard({
-    super.key,
-    required this.category,
-    this.onTap,
-  });
+  const CategoryCard({super.key, required this.category, this.onTap});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return SizedBox(
       width: 100,
       child: InkWell(

@@ -17,7 +17,7 @@ class MatchesSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -50,14 +50,12 @@ class MatchesSection extends StatelessWidget {
             ],
           ),
         ),
-        
+
         // Lista de partidos
         if (matches.isEmpty)
           const Padding(
             padding: EdgeInsets.symmetric(vertical: 16.0),
-            child: Center(
-              child: Text('No hay partidos programados'),
-            ),
+            child: Center(child: Text('No hay partidos programados')),
           )
         else
           ListView.builder(

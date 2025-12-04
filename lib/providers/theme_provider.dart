@@ -2,13 +2,55 @@
 import 'package:flutter/material.dart';
 import '../models/configuracion_model.dart';
 import '../theme/app_colors.dart';
+import '../theme/app_theme.dart';
 
 class ThemeProvider with ChangeNotifier {
-  ThemeData _themeData = ThemeData.light();
+  // Light & dark theme support
+  ThemeData _lightTheme = AppTheme.light();
+  ThemeData _darkTheme = AppTheme.dark();
+
+  // Manual theme override (null = follow system)
+  ThemeMode _themeMode = ThemeMode.system;
+  bool _isDarkMode = false;
+
   Configuracion? _configuracion;
 
-  ThemeData get themeData => _themeData;
+  ThemeData get themeData => _isDarkMode ? _darkTheme : _lightTheme;
+  ThemeMode get themeMode => _themeMode;
+  bool get isDarkMode => _isDarkMode;
+  ThemeData get lightTheme => _lightTheme;
+  ThemeData get darkTheme => _darkTheme;
   Configuracion? get configuracion => _configuracion;
+
+  /// Set theme mode: system, light, or dark
+  void setThemeMode(ThemeMode mode) {
+    _themeMode = mode;
+    // Update isDarkMode based on the mode selected
+    if (mode == ThemeMode.light) {
+      _isDarkMode = false;
+    } else if (mode == ThemeMode.dark) {
+      _isDarkMode = true;
+    } else {
+      // System mode: detect from device settings
+      // This will be updated in didChangeDependencies
+    }
+    notifyListeners();
+  }
+
+  /// Toggle between light and dark theme (manual override)
+  void toggleTheme() {
+    _themeMode = ThemeMode.light;
+    _isDarkMode = !_isDarkMode;
+    notifyListeners();
+  }
+
+  /// Update from system brightness (called when MediaQuery.platformBrightnessOf changes)
+  void updateFromSystemBrightness(Brightness brightness) {
+    if (_themeMode == ThemeMode.system) {
+      _isDarkMode = brightness == Brightness.dark;
+      notifyListeners();
+    }
+  }
 
   void updateTheme(Configuracion config) {
     _configuracion = config;
@@ -21,65 +63,11 @@ class ThemeProvider with ChangeNotifier {
       accent2: _hexToColor(config.acento2),
     );
 
-    _themeData = _buildThemeData();
+    // For now, use AppTheme's built-in light/dark themes
+    // (Optional: could create custom themes from config here)
+    _lightTheme = AppTheme.light();
+    _darkTheme = AppTheme.dark();
     notifyListeners();
-  }
-
-  ThemeData _buildThemeData() {
-    return ThemeData(
-      useMaterial3: true,
-      colorScheme: ColorScheme.light(
-        primary: _hexToColor(_configuracion!.primario),
-        secondary: _hexToColor(_configuracion!.secundario),
-        primaryContainer: _hexToColor(_configuracion!.acento1),
-        secondaryContainer: _hexToColor(_configuracion!.acento2),
-        onPrimary: Colors.white,
-        onSecondary: Colors.white,
-        onPrimaryContainer: Colors.black87,
-        onSecondaryContainer: Colors.black87,
-        surface: Colors.white,
-        error: Colors.red,
-        onError: Colors.white,
-      ),
-      appBarTheme: AppBarTheme(
-        backgroundColor: _hexToColor(_configuracion!.primario),
-        foregroundColor: Colors.white,
-        elevation: 0,
-      ),
-      floatingActionButtonTheme: FloatingActionButtonThemeData(
-        backgroundColor: _hexToColor(_configuracion!.secundario),
-        foregroundColor: Colors.white,
-      ),
-      elevatedButtonTheme: ElevatedButtonThemeData(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: _hexToColor(_configuracion!.primario),
-          foregroundColor: Colors.white,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        ),
-      ),
-      inputDecorationTheme: InputDecorationTheme(
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(
-            color: _hexToColor(_configuracion!.primario).withOpacity(0.5),
-          ),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(
-            color: _hexToColor(_configuracion!.primario).withOpacity(0.3),
-          ),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(
-            color: _hexToColor(_configuracion!.primario),
-            width: 2,
-          ),
-        ),
-      ),
-    );
   }
 
   Color _hexToColor(String hexString) {

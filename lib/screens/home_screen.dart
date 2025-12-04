@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 import 'package:pawkar_app/features/home/widgets/categories_section.dart';
 import 'package:pawkar_app/features/home/widgets/featured_events_section.dart';
 import 'package:pawkar_app/features/home/widgets/upcoming_events_section.dart';
@@ -8,8 +9,10 @@ import 'package:pawkar_app/models/category.dart';
 import 'package:pawkar_app/screens/matches_screen.dart';
 import 'package:pawkar_app/models/event.dart';
 import 'package:pawkar_app/widgets/collapsible_app_bar.dart';
+import 'package:pawkar_app/widgets/custom_card.dart';
 import 'package:pawkar_app/services/event_service.dart';
 import 'package:pawkar_app/providers/network_state_provider.dart';
+import 'package:pawkar_app/providers/theme_provider.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -70,12 +73,125 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  @override
-  void dispose() {
-    _featuredEventsProvider.dispose();
-    _matchesProvider.dispose();
-    _upcomingEventsProvider.dispose();
-    super.dispose();
+  void _showThemeSelector(BuildContext context) {
+    final themeProvider = context.read<ThemeProvider>();
+    final currentMode = themeProvider.themeMode;
+
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Theme', style: Theme.of(context).textTheme.titleLarge),
+            const SizedBox(height: 16),
+            _buildThemeOption(
+              context: context,
+              title: 'Light',
+              icon: Icons.light_mode,
+              mode: ThemeMode.light,
+              isSelected: currentMode == ThemeMode.light,
+              onTap: () {
+                themeProvider.setThemeMode(ThemeMode.light);
+                Navigator.pop(context);
+              },
+            ),
+            const SizedBox(height: 12),
+            _buildThemeOption(
+              context: context,
+              title: 'Dark',
+              icon: Icons.dark_mode,
+              mode: ThemeMode.dark,
+              isSelected: currentMode == ThemeMode.dark,
+              onTap: () {
+                themeProvider.setThemeMode(ThemeMode.dark);
+                Navigator.pop(context);
+              },
+            ),
+            const SizedBox(height: 12),
+            _buildThemeOption(
+              context: context,
+              title: 'System',
+              icon: Icons.settings_brightness,
+              mode: ThemeMode.system,
+              isSelected: currentMode == ThemeMode.system,
+              onTap: () {
+                themeProvider.setThemeMode(ThemeMode.system);
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildThemeOption({
+    required BuildContext context,
+    required String title,
+    required IconData icon,
+    required ThemeMode mode,
+    required bool isSelected,
+    required VoidCallback onTap,
+  }) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: isSelected
+                  ? colorScheme.secondary
+                  : colorScheme.onSurface.withAlpha(31),
+              width: isSelected ? 2 : 1,
+            ),
+            color: isSelected
+                ? colorScheme.secondary.withAlpha(31)
+                : Colors.transparent,
+          ),
+          child: Row(
+            children: [
+              Icon(
+                icon,
+                color: isSelected
+                    ? colorScheme.secondary
+                    : colorScheme.onSurface,
+                size: 24,
+              ),
+              const SizedBox(width: 16),
+              Text(
+                title,
+                style: theme.textTheme.bodyLarge?.copyWith(
+                  color: isSelected
+                      ? colorScheme.secondary
+                      : colorScheme.onSurface,
+                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+                ),
+              ),
+              const Spacer(),
+              if (isSelected)
+                Icon(
+                  Icons.check_circle,
+                  color: colorScheme.secondary,
+                  size: 20,
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   // Sample data with subcategories
@@ -161,7 +277,7 @@ class _HomeScreenState extends State<HomeScreen> {
           borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.2),
+              color: Colors.black.withAlpha(51),
               blurRadius: 10,
               offset: const Offset(0, -2),
             ),
@@ -178,7 +294,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 height: 4,
                 margin: const EdgeInsets.symmetric(vertical: 12),
                 decoration: BoxDecoration(
-                  color: theme.dividerColor.withOpacity(0.5),
+                  color: theme.dividerColor.withAlpha(128),
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -200,7 +316,7 @@ class _HomeScreenState extends State<HomeScreen> {
             Divider(
               height: 1,
               thickness: 1,
-              color: theme.dividerColor.withOpacity(0.5),
+              color: theme.dividerColor.withAlpha(128),
               indent: 24,
               endIndent: 24,
             ),
@@ -218,30 +334,31 @@ class _HomeScreenState extends State<HomeScreen> {
                   final subcategory = category.subcategories[index];
                   final hasSubcategories = subcategory.subcategories.isNotEmpty;
 
-                  return Card(
-                    margin: const EdgeInsets.symmetric(
-                      vertical: 4,
+                  return CustomCard(
+                    glass: false,
+                    onTap: () {
+                      if (hasSubcategories) {
+                        _showSubcategories(context, subcategory);
+                      } else {
+                        Navigator.pop(context);
+                        _handleSubcategorySelection(subcategory);
+                      }
+                    },
+                    padding: const EdgeInsets.symmetric(
                       horizontal: 8,
-                    ),
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      side: BorderSide(
-                        color: theme.dividerColor.withOpacity(0.5),
-                        width: 1,
-                      ),
+                      vertical: 6,
                     ),
                     child: ListTile(
                       contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 8,
+                        horizontal: 8,
+                        vertical: 4,
                       ),
                       leading: Container(
-                        width: 40,
-                        height: 40,
+                        width: 44,
+                        height: 44,
                         decoration: BoxDecoration(
-                          color: theme.colorScheme.primary.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(12),
+                          color: theme.colorScheme.primary.withAlpha(31),
+                          borderRadius: BorderRadius.circular(10),
                         ),
                         child: Icon(
                           _getCategoryIcon(subcategory.icon),
@@ -251,25 +368,15 @@ class _HomeScreenState extends State<HomeScreen> {
                       title: Text(
                         subcategory.name,
                         style: theme.textTheme.bodyLarge?.copyWith(
-                          fontWeight: FontWeight.w500,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                       trailing: hasSubcategories
                           ? Icon(
                               Icons.chevron_right,
-                              color: theme.colorScheme.onSurface.withOpacity(
-                                0.6,
-                              ),
+                              color: theme.colorScheme.onSurface.withAlpha(153),
                             )
                           : null,
-                      onTap: () {
-                        if (hasSubcategories) {
-                          _showSubcategories(context, subcategory);
-                        } else {
-                          Navigator.pop(context);
-                          _handleSubcategorySelection(subcategory);
-                        }
-                      },
                     ),
                   );
                 },
@@ -379,6 +486,20 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             SliverToBoxAdapter(child: _buildBody(theme)),
           ],
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        mini: true,
+        backgroundColor: theme.colorScheme.secondary,
+        foregroundColor: theme.colorScheme.onSecondary,
+        onPressed: () => _showThemeSelector(context),
+        tooltip: 'Change theme',
+        child: Consumer<ThemeProvider>(
+          builder: (context, provider, _) {
+            return Icon(
+              provider.isDarkMode ? Icons.light_mode : Icons.dark_mode,
+            );
+          },
         ),
       ),
     );

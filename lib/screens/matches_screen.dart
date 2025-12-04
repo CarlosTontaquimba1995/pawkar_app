@@ -362,8 +362,8 @@ class _MatchesScreenState extends State<MatchesScreen> {
                         Icon(
                           Icons.sports_soccer_outlined,
                           size: 64,
-                          color: theme.colorScheme.onSurfaceVariant.withOpacity(
-                            0.5,
+                          color: theme.colorScheme.onSurfaceVariant.withAlpha(
+                            128,
                           ),
                         ),
                         const SizedBox(height: 16),
@@ -377,8 +377,9 @@ class _MatchesScreenState extends State<MatchesScreen> {
                         Text(
                           'Intenta con otros filtros de búsqueda',
                           style: theme.textTheme.bodyMedium?.copyWith(
-                            color: theme.colorScheme.onSurfaceVariant
-                                .withOpacity(0.7),
+                            color: theme.colorScheme.onSurfaceVariant.withAlpha(
+                              179,
+                            ),
                           ),
                         ),
                       ],

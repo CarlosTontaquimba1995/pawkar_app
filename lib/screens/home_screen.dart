@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:provider/provider.dart';
 import 'package:pawkar_app/features/home/widgets/categories_section.dart';
 import 'package:pawkar_app/features/home/widgets/featured_events_section.dart';
 import 'package:pawkar_app/features/home/widgets/upcoming_events_section.dart';
 import 'package:pawkar_app/features/home/widgets/matches_section.dart';
 import 'package:pawkar_app/models/category.dart';
 import 'package:pawkar_app/screens/matches_screen.dart';
+import 'package:pawkar_app/screens/settings_screen.dart';
 import 'package:pawkar_app/models/event.dart';
 import 'package:pawkar_app/widgets/collapsible_app_bar.dart';
 import 'package:pawkar_app/widgets/custom_card.dart';
 import 'package:pawkar_app/services/event_service.dart';
 import 'package:pawkar_app/providers/network_state_provider.dart';
-import 'package:pawkar_app/providers/theme_provider.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -74,123 +73,9 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _showThemeSelector(BuildContext context) {
-    final themeProvider = context.read<ThemeProvider>();
-    final currentMode = themeProvider.themeMode;
-
-    showModalBottomSheet(
-      context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (context) => Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('Theme', style: Theme.of(context).textTheme.titleLarge),
-            const SizedBox(height: 16),
-            _buildThemeOption(
-              context: context,
-              title: 'Light',
-              icon: Icons.light_mode,
-              mode: ThemeMode.light,
-              isSelected: currentMode == ThemeMode.light,
-              onTap: () {
-                themeProvider.setThemeMode(ThemeMode.light);
-                Navigator.pop(context);
-              },
-            ),
-            const SizedBox(height: 12),
-            _buildThemeOption(
-              context: context,
-              title: 'Dark',
-              icon: Icons.dark_mode,
-              mode: ThemeMode.dark,
-              isSelected: currentMode == ThemeMode.dark,
-              onTap: () {
-                themeProvider.setThemeMode(ThemeMode.dark);
-                Navigator.pop(context);
-              },
-            ),
-            const SizedBox(height: 12),
-            _buildThemeOption(
-              context: context,
-              title: 'System',
-              icon: Icons.settings_brightness,
-              mode: ThemeMode.system,
-              isSelected: currentMode == ThemeMode.system,
-              onTap: () {
-                themeProvider.setThemeMode(ThemeMode.system);
-                Navigator.pop(context);
-              },
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildThemeOption({
-    required BuildContext context,
-    required String title,
-    required IconData icon,
-    required ThemeMode mode,
-    required bool isSelected,
-    required VoidCallback onTap,
-  }) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: isSelected
-                  ? colorScheme.secondary
-                  : colorScheme.onSurface.withAlpha(31),
-              width: isSelected ? 2 : 1,
-            ),
-            color: isSelected
-                ? colorScheme.secondary.withAlpha(31)
-                : Colors.transparent,
-          ),
-          child: Row(
-            children: [
-              Icon(
-                icon,
-                color: isSelected
-                    ? colorScheme.secondary
-                    : colorScheme.onSurface,
-                size: 24,
-              ),
-              const SizedBox(width: 16),
-              Text(
-                title,
-                style: theme.textTheme.bodyLarge?.copyWith(
-                  color: isSelected
-                      ? colorScheme.secondary
-                      : colorScheme.onSurface,
-                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-                ),
-              ),
-              const Spacer(),
-              if (isSelected)
-                Icon(
-                  Icons.check_circle,
-                  color: colorScheme.secondary,
-                  size: 20,
-                ),
-            ],
-          ),
-        ),
-      ),
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const SettingsScreen()),
     );
   }
 
@@ -479,27 +364,23 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         child: CustomScrollView(
           slivers: [
-            const CollapsibleAppBar(
+            CollapsibleAppBar(
               title: 'PAWKAR',
               subtitle: 'Festival Cultural y Deportivo',
               greeting: 'Bienvenido a',
+              actions: [
+                Padding(
+                  padding: const EdgeInsets.only(right: 16),
+                  child: IconButton(
+                    icon: Icon(Icons.settings, color: Colors.white, size: 24),
+                    onPressed: () => _showThemeSelector(context),
+                    tooltip: 'Settings',
+                  ),
+                ),
+              ],
             ),
             SliverToBoxAdapter(child: _buildBody(theme)),
           ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        mini: true,
-        backgroundColor: theme.colorScheme.secondary,
-        foregroundColor: theme.colorScheme.onSecondary,
-        onPressed: () => _showThemeSelector(context),
-        tooltip: 'Change theme',
-        child: Consumer<ThemeProvider>(
-          builder: (context, provider, _) {
-            return Icon(
-              provider.isDarkMode ? Icons.light_mode : Icons.dark_mode,
-            );
-          },
         ),
       ),
     );

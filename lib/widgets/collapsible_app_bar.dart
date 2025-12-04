@@ -8,6 +8,7 @@ class CollapsibleAppBar extends StatefulWidget {
   final String greeting;
   final double expandedHeight;
   final Widget? bottom;
+  final List<Widget>? actions;
 
   const CollapsibleAppBar({
     super.key,
@@ -16,6 +17,7 @@ class CollapsibleAppBar extends StatefulWidget {
     required this.greeting,
     this.expandedHeight = 200,
     this.bottom,
+    this.actions,
   });
 
   @override
@@ -86,6 +88,7 @@ class _CollapsibleAppBarState extends State<CollapsibleAppBar>
         ),
       ),
       centerTitle: true,
+      actions: widget.actions,
       flexibleSpace: LayoutBuilder(
         builder: (context, constraints) {
           // expandedHeight/visibleMainHeight calculation removed

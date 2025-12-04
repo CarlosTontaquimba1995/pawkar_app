@@ -26,21 +26,22 @@ class CategoriesSection extends StatelessWidget {
           onAction: onViewAll,
         ),
         SizedBox(
-          height: 140,
+          height: 160,
           child: ListView.separated(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             scrollDirection: Axis.horizontal,
             itemCount: categories.length,
-            separatorBuilder: (_, __) => const SizedBox(width: 16),
+            separatorBuilder: (_, __) => const SizedBox(width: 12),
             itemBuilder: (context, index) => CategoryCard(
               category: categories[index],
               onTap: onCategoryTap != null
                   ? () => onCategoryTap!(categories[index])
                   : null,
+              index: index,
             ),
           ),
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: 24),
       ],
     );
   }

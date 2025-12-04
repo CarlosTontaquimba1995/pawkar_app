@@ -9,7 +9,6 @@ import 'package:pawkar_app/screens/matches_screen.dart';
 import 'package:pawkar_app/screens/settings_screen.dart';
 import 'package:pawkar_app/models/event.dart';
 import 'package:pawkar_app/widgets/collapsible_app_bar.dart';
-import 'package:pawkar_app/widgets/custom_card.dart';
 import 'package:pawkar_app/services/event_service.dart';
 import 'package:pawkar_app/providers/network_state_provider.dart';
 
@@ -151,126 +150,134 @@ class _HomeScreenState extends State<HomeScreen> {
   // Show subcategories in a bottom sheet
   void _showSubcategories(BuildContext context, Category category) {
     final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    // Calculate initial size based on number of items
+    // Each item is approximately 72px height
+    final itemCount = category.subcategories.length;
+    final headerHeight = 120.0; // Header with drag handle and title
+    final itemHeight = 72.0; // Height per item
+    final paddingHeight = 32.0; // Top and bottom padding
+    final totalHeight = headerHeight + (itemCount * itemHeight) + paddingHeight;
+
+    final screenHeight = MediaQuery.of(context).size.height;
+
+    // If content fits in 90% of screen, use exact size; otherwise use 90% and make scrollable
+    final initialSize = itemCount <= 3
+        ? (totalHeight / screenHeight).clamp(0.4, 0.9)
+        : 0.9;
 
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => Container(
-        decoration: BoxDecoration(
-          color: theme.scaffoldBackgroundColor,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withAlpha(51),
-              blurRadius: 10,
-              offset: const Offset(0, -2),
-            ),
-          ],
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Header with drag handle
-            Center(
-              child: Container(
-                width: 40,
-                height: 4,
-                margin: const EdgeInsets.symmetric(vertical: 12),
-                decoration: BoxDecoration(
-                  color: theme.dividerColor.withAlpha(128),
-                  borderRadius: BorderRadius.circular(2),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
+      ),
+      builder: (context) => DraggableScrollableSheet(
+        initialChildSize: initialSize,
+        minChildSize: 0.35,
+        maxChildSize: 0.95,
+        builder: (context, scrollController) => Container(
+          decoration: BoxDecoration(
+            color: theme.scaffoldBackgroundColor,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withAlpha(77),
+                blurRadius: 20,
+                offset: const Offset(0, -4),
+              ),
+            ],
+          ),
+          child: CustomScrollView(
+            controller: scrollController,
+            slivers: [
+              // Header with drag handle
+              SliverAppBar(
+                pinned: true,
+                floating: true,
+                elevation: 0,
+                backgroundColor: theme.scaffoldBackgroundColor,
+                shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
+                ),
+                title: Text(
+                  category.name,
+                  style: theme.textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.w700,
+                    color: colorScheme.onSurface,
+                  ),
+                ),
+                centerTitle: false,
+                automaticallyImplyLeading: false,
+                flexibleSpace: FlexibleSpaceBar(
+                  background: Column(
+                    children: [
+                      Center(
+                        child: Container(
+                          width: 48,
+                          height: 5,
+                          margin: const EdgeInsets.symmetric(vertical: 12),
+                          decoration: BoxDecoration(
+                            color: colorScheme.onSurface.withAlpha(102),
+                            borderRadius: BorderRadius.circular(3),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                bottom: PreferredSize(
+                  preferredSize: const Size.fromHeight(16),
+                  child: Divider(
+                    height: 1,
+                    thickness: 1,
+                    color: colorScheme.onSurface.withAlpha(31),
+                    indent: 0,
+                    endIndent: 0,
+                  ),
                 ),
               ),
-            ),
 
-            // Title
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-              child: Text(
-                category.name,
-                style: theme.textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: theme.colorScheme.onSurface,
-                ),
-              ),
-            ),
-
-            // Divider
-            Divider(
-              height: 1,
-              thickness: 1,
-              color: theme.dividerColor.withAlpha(128),
-              indent: 24,
-              endIndent: 24,
-            ),
-
-            // Subcategories list
-            Flexible(
-              child: ListView.builder(
-                shrinkWrap: true,
+              // Subcategories list
+              SliverPadding(
                 padding: const EdgeInsets.symmetric(
-                  vertical: 8,
                   horizontal: 16,
+                  vertical: 12,
                 ),
-                itemCount: category.subcategories.length,
-                itemBuilder: (context, index) {
-                  final subcategory = category.subcategories[index];
-                  final hasSubcategories = subcategory.subcategories.isNotEmpty;
+                sliver: SliverList.builder(
+                  itemCount: category.subcategories.length,
+                  itemBuilder: (context, index) {
+                    final subcategory = category.subcategories[index];
+                    final hasSubcategories =
+                        subcategory.subcategories.isNotEmpty;
 
-                  return CustomCard(
-                    glass: false,
-                    onTap: () {
-                      if (hasSubcategories) {
-                        _showSubcategories(context, subcategory);
-                      } else {
-                        Navigator.pop(context);
-                        _handleSubcategorySelection(subcategory);
-                      }
-                    },
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 6,
-                    ),
-                    child: ListTile(
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 4,
-                      ),
-                      leading: Container(
-                        width: 44,
-                        height: 44,
-                        decoration: BoxDecoration(
-                          color: theme.colorScheme.primary.withAlpha(31),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Icon(
-                          _getCategoryIcon(subcategory.icon),
-                          color: theme.colorScheme.primary,
-                        ),
-                      ),
-                      title: Text(
-                        subcategory.name,
-                        style: theme.textTheme.bodyLarge?.copyWith(
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      trailing: hasSubcategories
-                          ? Icon(
-                              Icons.chevron_right,
-                              color: theme.colorScheme.onSurface.withAlpha(153),
-                            )
-                          : null,
-                    ),
-                  );
-                },
+                    return _SubcategoryListItem(
+                      subcategory: subcategory,
+                      index: index,
+                      hasSubcategories: hasSubcategories,
+                      onTap: () {
+                        if (hasSubcategories) {
+                          Navigator.pop(context);
+                          _showSubcategories(context, subcategory);
+                        } else {
+                          Navigator.pop(context);
+                          _handleSubcategorySelection(subcategory);
+                        }
+                      },
+                    );
+                  },
+                ),
               ),
-            ),
 
-            // Bottom padding for better scrolling on some devices
-            SizedBox(height: MediaQuery.of(context).viewInsets.bottom + 16),
-          ],
+              // Bottom spacing
+              SliverPadding(
+                padding: const EdgeInsets.only(bottom: 24),
+                sliver: SliverToBoxAdapter(child: Container()),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -332,23 +339,6 @@ class _HomeScreenState extends State<HomeScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Seleccionado: ${subcategory.name}')),
       );
-    }
-  }
-
-  IconData _getCategoryIcon(String iconName) {
-    switch (iconName) {
-      case 'sports_soccer':
-        return Icons.sports_soccer;
-      case 'music_note':
-        return Icons.music_note;
-      case 'palette':
-        return Icons.palette;
-      case 'restaurant':
-        return Icons.restaurant;
-      case 'theater_comedy':
-        return Icons.theater_comedy;
-      default:
-        return Icons.category;
     }
   }
 
@@ -686,5 +676,182 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ],
     );
+  }
+}
+
+class _SubcategoryListItem extends StatefulWidget {
+  final Category subcategory;
+  final int index;
+  final bool hasSubcategories;
+  final VoidCallback onTap;
+
+  const _SubcategoryListItem({
+    required this.subcategory,
+    required this.index,
+    required this.hasSubcategories,
+    required this.onTap,
+  });
+
+  @override
+  State<_SubcategoryListItem> createState() => _SubcategoryListItemState();
+}
+
+class _SubcategoryListItemState extends State<_SubcategoryListItem>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _animationController;
+  late Animation<double> _scaleAnimation;
+  late Animation<double> _opacityAnimation;
+  bool _isHovered = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      duration: Duration(milliseconds: 500 + (widget.index * 50)),
+      vsync: this,
+    );
+
+    _scaleAnimation = Tween<double>(begin: 0.9, end: 1.0).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeOutBack),
+    );
+
+    _opacityAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeIn),
+    );
+
+    _animationController.forward();
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    return AnimatedBuilder(
+      animation: _scaleAnimation,
+      builder: (context, child) => Opacity(
+        opacity: _opacityAnimation.value,
+        child: Transform.scale(scale: _scaleAnimation.value, child: child),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 6),
+        child: MouseRegion(
+          onEnter: (_) => setState(() => _isHovered = true),
+          onExit: (_) => setState(() => _isHovered = false),
+          child: GestureDetector(
+            onTap: widget.onTap,
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeInOut,
+              decoration: BoxDecoration(
+                color: _isHovered
+                    ? colorScheme.primary.withAlpha(26)
+                    : colorScheme.surfaceTint.withAlpha(20),
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(
+                  color: _isHovered
+                      ? colorScheme.primary.withAlpha(77)
+                      : colorScheme.onSurface.withAlpha(31),
+                  width: _isHovered ? 1.5 : 1,
+                ),
+                boxShadow: _isHovered
+                    ? [
+                        BoxShadow(
+                          color: colorScheme.primary.withAlpha(26),
+                          blurRadius: 12,
+                          offset: const Offset(0, 4),
+                        ),
+                      ]
+                    : [],
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              child: Row(
+                children: [
+                  AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    curve: Curves.easeInOut,
+                    width: 50,
+                    height: 50,
+                    decoration: BoxDecoration(
+                      color: _isHovered
+                          ? colorScheme.primary.withAlpha(77)
+                          : colorScheme.primary.withAlpha(31),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: AnimatedScale(
+                      scale: _isHovered ? 1.1 : 1.0,
+                      duration: const Duration(milliseconds: 200),
+                      curve: Curves.easeInOut,
+                      child: Icon(
+                        _getCategoryIcon(widget.subcategory.icon),
+                        color: _isHovered
+                            ? colorScheme.onPrimary
+                            : colorScheme.primary,
+                        size: 24,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          widget.subcategory.name,
+                          style: theme.textTheme.bodyLarge?.copyWith(
+                            fontWeight: _isHovered
+                                ? FontWeight.w700
+                                : FontWeight.w600,
+                            color: _isHovered
+                                ? colorScheme.primary
+                                : colorScheme.onSurface,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  if (widget.hasSubcategories) ...[
+                    const SizedBox(width: 8),
+                    AnimatedRotation(
+                      turns: _isHovered ? 0.25 : 0,
+                      duration: const Duration(milliseconds: 200),
+                      child: Icon(
+                        Icons.chevron_right,
+                        color: colorScheme.onSurface.withAlpha(153),
+                        size: 24,
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  IconData _getCategoryIcon(String iconName) {
+    switch (iconName) {
+      case 'sports_soccer':
+        return Icons.sports_soccer;
+      case 'music_note':
+        return Icons.music_note;
+      case 'palette':
+        return Icons.palette;
+      case 'restaurant':
+        return Icons.restaurant;
+      case 'theater_comedy':
+        return Icons.theater_comedy;
+      default:
+        return Icons.category;
+    }
   }
 }

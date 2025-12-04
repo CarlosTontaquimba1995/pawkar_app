@@ -37,7 +37,6 @@ class ThemeProvider with ChangeNotifier {
         onSecondary: Colors.white,
         onPrimaryContainer: Colors.black87,
         onSecondaryContainer: Colors.black87,
-        background: Colors.white,
         surface: Colors.white,
         error: Colors.red,
         onError: Colors.white,

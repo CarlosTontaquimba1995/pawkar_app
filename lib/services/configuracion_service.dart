@@ -54,7 +54,7 @@ class ConfiguracionService {
   Future<ConfiguracionResponse> getConfiguracion() async {
     try {
       final response = await _client
-          .get(Uri.parse('$_baseUrl'), headers: await _getHeaders())
+          .get(Uri.parse(_baseUrl), headers: await _getHeaders())
           .timeout(const Duration(seconds: 10));
 
       if (response.statusCode == 200) {

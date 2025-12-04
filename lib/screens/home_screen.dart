@@ -2,13 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:pawkar_app/features/home/widgets/categories_section.dart';
 import 'package:pawkar_app/features/home/widgets/featured_events_section.dart';
-import 'package:pawkar_app/features/home/widgets/search_bar.dart';
 import 'package:pawkar_app/features/home/widgets/upcoming_events_section.dart';
 import 'package:pawkar_app/features/home/widgets/matches_section.dart';
 import 'package:pawkar_app/models/category.dart';
 import 'package:pawkar_app/screens/matches_screen.dart';
 import 'package:pawkar_app/models/event.dart';
 import 'package:pawkar_app/widgets/collapsible_app_bar.dart';
+import 'package:pawkar_app/services/event_service.dart';
+import 'package:pawkar_app/providers/network_state_provider.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -18,6 +19,65 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  late final EventService _eventService;
+  late final NetworkListStateProvider<Event> _featuredEventsProvider;
+  late final NetworkListStateProvider<Event> _matchesProvider;
+  late final NetworkListStateProvider<Event> _upcomingEventsProvider;
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeServices();
+    _loadData();
+  }
+
+  void _initializeServices() {
+    _eventService = EventService();
+    _featuredEventsProvider = NetworkListStateProvider<Event>();
+    _matchesProvider = NetworkListStateProvider<Event>();
+    _upcomingEventsProvider = NetworkListStateProvider<Event>();
+  }
+
+  Future<void> _loadData() async {
+    // Load featured events
+    _featuredEventsProvider.executeAsync(
+      () => _eventService.getFeaturedEvents(),
+      onError: (error) {
+        if (mounted) {
+          debugPrint('Error loading featured events: $error');
+        }
+      },
+    );
+
+    // Load upcoming events
+    _upcomingEventsProvider.executeAsync(
+      () => _eventService.getUpcomingEvents(),
+      onError: (error) {
+        if (mounted) {
+          debugPrint('Error loading upcoming events: $error');
+        }
+      },
+    );
+
+    // Load matches
+    _matchesProvider.executeAsync(
+      () => _eventService.getEventsByCategory('Fútbol'),
+      onError: (error) {
+        if (mounted) {
+          debugPrint('Error loading matches: $error');
+        }
+      },
+    );
+  }
+
+  @override
+  void dispose() {
+    _featuredEventsProvider.dispose();
+    _matchesProvider.dispose();
+    _upcomingEventsProvider.dispose();
+    super.dispose();
+  }
+
   // Sample data with subcategories
   final List<Category> _categories = [
     Category(
@@ -300,42 +360,6 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  final List<Event> _featuredEvents = [
-    Event(
-      id: '1',
-      title: 'Torneo de Fútbol',
-      description: 'Encuentros de fútbol profesional',
-      location: 'Estadio Olímpico',
-      dateTime: DateTime.now().add(const Duration(days: 2)),
-      category: 'Fútbol',
-      isFeatured: true,
-      price: 12.00,
-      imageUrl: 'assets/images/futbol.jpg',
-    ),
-    Event(
-      id: '2',
-      title: 'Liga de Baloncesto',
-      description: 'Partidos de la liga nacional de baloncesto',
-      location: 'Coliseo General Rumiñahui',
-      dateTime: DateTime.now().add(const Duration(days: 4)),
-      category: 'Baloncesto',
-      isFeatured: true,
-      price: 10.00,
-      imageUrl: 'assets/images/basketball.jpg',
-    ),
-    Event(
-      id: '3',
-      title: 'Campeonato de Ecuavóley',
-      description: 'Torneo nacional de ecuavóley',
-      location: 'Parque La Carolina',
-      dateTime: DateTime.now().add(const Duration(days: 3)),
-      category: 'Ecuavóley',
-      isFeatured: true,
-      price: 8.00,
-      imageUrl: 'assets/images/volleyball.jpg',
-    ),
-  ];
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -353,10 +377,7 @@ class _HomeScreenState extends State<HomeScreen> {
               subtitle: 'Festival Cultural y Deportivo',
               greeting: 'Bienvenido a',
             ),
-            const SearchBarWidget(),
-            SliverToBoxAdapter(
-              child: _buildBody(theme),
-            ),
+            SliverToBoxAdapter(child: _buildBody(theme)),
           ],
         ),
       ),
@@ -368,7 +389,6 @@ class _HomeScreenState extends State<HomeScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const SizedBox(height: 8), // Add some space below the sticky search bar
-
         // Categories Section
         CategoriesSection(
           categories: _categories,

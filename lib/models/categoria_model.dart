@@ -2,21 +2,36 @@ class Categoria {
   final int categoriaId;
   final String nombre;
   final String? nemonico;
-  final bool? estado;
+  final bool estado;
 
   Categoria({
     required this.categoriaId,
     required this.nombre,
     this.nemonico,
     this.estado = true,
-  });
+  }) : assert(nombre.isNotEmpty, 'Nombre cannot be empty'),
+       assert(categoriaId > 0, 'CategoriaId must be positive');
 
   factory Categoria.fromJson(Map<String, dynamic> json) {
+    final nombre = json['nombre'] as String?;
+    final categoriaId = json['categoriaId'] as int?;
+
+    if (nombre == null || nombre.isEmpty) {
+      throw ArgumentError('Invalid categoria: nombre cannot be null or empty');
+    }
+    if (categoriaId == null || categoriaId <= 0) {
+      throw ArgumentError(
+        'Invalid categoria: categoriaId must be a positive integer',
+      );
+    }
+
     return Categoria(
-      categoriaId: json['categoriaId'],
-      nombre: json['nombre'],
-      nemonico: json['nemonico'],
-      estado: json['estado'] ?? true,
+      categoriaId: categoriaId,
+      nombre: nombre,
+      nemonico: (json['nemonico'] as String?)?.isNotEmpty == true
+          ? json['nemonico'] as String
+          : null,
+      estado: (json['estado'] as bool?) ?? true,
     );
   }
 
@@ -28,6 +43,21 @@ class Categoria {
       'estado': estado,
     };
   }
+
+  @override
+  String toString() =>
+      'Categoria(id: $categoriaId, nombre: $nombre, estado: $estado)';
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Categoria &&
+          runtimeType == other.runtimeType &&
+          categoriaId == other.categoriaId &&
+          nombre == other.nombre;
+
+  @override
+  int get hashCode => categoriaId.hashCode ^ nombre.hashCode;
 }
 
 class CategoriaListResponse {
@@ -44,14 +74,24 @@ class CategoriaListResponse {
   });
 
   factory CategoriaListResponse.fromJson(Map<String, dynamic> json) {
-    return CategoriaListResponse(
-      success: json['success'],
-      message: json['message'],
-      data: (json['data'] as List)
-          .map((item) => Categoria.fromJson(item))
-          .toList(),
-      timestamp: json['timestamp'],
-    );
+    try {
+      final data = json['data'] as List?;
+      return CategoriaListResponse(
+        success: (json['success'] as bool?) ?? false,
+        message: (json['message'] as String?) ?? 'No message',
+        data: data != null
+            ? data
+                  .map(
+                    (item) => Categoria.fromJson(item as Map<String, dynamic>),
+                  )
+                  .toList()
+            : [],
+        timestamp:
+            (json['timestamp'] as String?) ?? DateTime.now().toIso8601String(),
+      );
+    } catch (e) {
+      throw ArgumentError('Invalid CategoriaListResponse JSON: $e');
+    }
   }
 }
 
@@ -69,12 +109,19 @@ class CategoriaResponse {
   });
 
   factory CategoriaResponse.fromJson(Map<String, dynamic> json) {
-    return CategoriaResponse(
-      success: json['success'],
-      message: json['message'],
-      data: json['data'] != null ? Categoria.fromJson(json['data']) : null,
-      timestamp: json['timestamp'],
-    );
+    try {
+      return CategoriaResponse(
+        success: (json['success'] as bool?) ?? false,
+        message: (json['message'] as String?) ?? 'No message',
+        data: json['data'] != null
+            ? Categoria.fromJson(json['data'] as Map<String, dynamic>)
+            : null,
+        timestamp:
+            (json['timestamp'] as String?) ?? DateTime.now().toIso8601String(),
+      );
+    } catch (e) {
+      throw ArgumentError('Invalid CategoriaResponse JSON: $e');
+    }
   }
 }
 
@@ -83,9 +130,7 @@ class CreateCategoriaRequest {
 
   CreateCategoriaRequest({required this.nombre});
 
-  Map<String, dynamic> toJson() => {
-        'nombre': nombre,
-      };
+  Map<String, dynamic> toJson() => {'nombre': nombre};
 }
 
 class CreateMultipleCategoriasRequest {
@@ -94,8 +139,8 @@ class CreateMultipleCategoriasRequest {
   CreateMultipleCategoriasRequest({required this.categorias});
 
   Map<String, dynamic> toJson() => {
-        'categorias': categorias.map((e) => e.toJson()).toList(),
-      };
+    'categorias': categorias.map((e) => e.toJson()).toList(),
+  };
 }
 
 class UpdateCategoriaRequest {
@@ -103,9 +148,7 @@ class UpdateCategoriaRequest {
 
   UpdateCategoriaRequest({required this.nombre});
 
-  Map<String, dynamic> toJson() => {
-        'nombre': nombre,
-      };
+  Map<String, dynamic> toJson() => {'nombre': nombre};
 }
 
 class DeleteCategoriaResponse {
@@ -122,11 +165,16 @@ class DeleteCategoriaResponse {
   });
 
   factory DeleteCategoriaResponse.fromJson(Map<String, dynamic> json) {
-    return DeleteCategoriaResponse(
-      success: json['success'],
-      message: json['message'],
-      data: json['data'],
-      timestamp: json['timestamp'],
-    );
+    try {
+      return DeleteCategoriaResponse(
+        success: (json['success'] as bool?) ?? false,
+        message: (json['message'] as String?) ?? 'No message',
+        data: json['data'],
+        timestamp:
+            (json['timestamp'] as String?) ?? DateTime.now().toIso8601String(),
+      );
+    } catch (e) {
+      throw ArgumentError('Invalid DeleteCategoriaResponse JSON: $e');
+    }
   }
 }

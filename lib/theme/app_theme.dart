@@ -1,19 +1,31 @@
 import 'package:flutter/material.dart';
 
-/// AppTheme - modern minimal theme optimized for 2025 UI trends.
-/// Uses a strict ColorScheme and typographic scale. All components
-/// should reference `Theme.of(context).colorScheme` for colors.
+/// AppTheme - modern minimal theme with dynamic theming support
 class AppTheme {
-  // Core palette (can be adjusted to fit brand)
-  static const Color _primary = Color(0xFF3552FF); // deep modern blue
-  static const Color _primaryContainer = Color(0xFFEEF2FF);
-  static const Color _secondary = Color(0xFF00C2A8); // teal accent
-  static const Color _secondaryContainer = Color(0xFFE8FFFA);
+  // Default colors (will be overridden by config)
+  static Color _primary = const Color(0xFF473587);
+  static Color _primaryContainer = const Color(0xFFEEF2FF);
+  static Color _secondary = const Color(0xFFA81B7C);
+  static Color _secondaryContainer = const Color(0xFFFFE8F5);
   static const Color _surfaceLight = Color(0xFFFFFFFF);
   static const Color _surfaceDark = Color(0xFF121417);
-
-  // Typographic scale (modular) — use system/inter-like font family.
   static const String _fontFamily = 'Inter';
+  
+  // Update theme colors from configuration
+  static void updateColors(Map<String, dynamic> config) {
+    _primary = _hexToColor(config['primario'] ?? '#473587');
+    _primaryContainer = _primary.withAlpha(26); // ~10% opacity
+    _secondary = _hexToColor(config['secundario'] ?? '#A81B7C');
+    _secondaryContainer = _secondary.withAlpha(26); // ~10% opacity
+  }
+
+  // Helper method to convert hex string to Color
+  static Color _hexToColor(String hexString) {
+    final buffer = StringBuffer();
+    if (hexString.length == 6 || hexString.length == 7) buffer.write('ff');
+    buffer.write(hexString.replaceFirst('#', ''));
+    return Color(int.parse(buffer.toString(), radix: 16));
+  }
 
   static final TextTheme _textTheme = TextTheme(
     displayLarge: TextStyle(

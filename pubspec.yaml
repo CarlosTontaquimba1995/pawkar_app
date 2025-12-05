@@ -24,7 +24,6 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
-    - assets/animations/
     - assets/images/
 
 flutter_native_splash:

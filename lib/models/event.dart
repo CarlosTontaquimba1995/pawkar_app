@@ -39,18 +39,24 @@ class Event {
       final location = json['location'] as String?;
       final category = json['category'] as String?;
 
-      if (id == null || id.isEmpty)
+      if (id == null || id.isEmpty) {
         throw ArgumentError('Event id cannot be null or empty');
-      if (title == null || title.isEmpty)
+      }
+      if (title == null || title.isEmpty) {
         throw ArgumentError('Event title cannot be null or empty');
-      if (description == null || description.isEmpty)
+      }
+      if (description == null || description.isEmpty) {
         throw ArgumentError('Event description cannot be null or empty');
-      if (dateTimeStr == null)
+      }
+      if (dateTimeStr == null) {
         throw ArgumentError('Event dateTime cannot be null');
-      if (location == null || location.isEmpty)
+      }
+      if (location == null || location.isEmpty) {
         throw ArgumentError('Event location cannot be null or empty');
-      if (category == null || category.isEmpty)
+      }
+      if (category == null || category.isEmpty) {
         throw ArgumentError('Event category cannot be null or empty');
+      }
 
       return Event(
         id: id,

@@ -90,8 +90,9 @@ class CategoriaService {
 
       final data = _handleResponse(response);
       final responseObj = CategoriaResponse.fromJson(data);
-      if (responseObj.data == null)
+      if (responseObj.data == null) {
         throw Exception('Error al crear la categoría');
+      }
       return responseObj.data!;
     } catch (e) {
       throw Exception('Error al crear la categoría: $e');
@@ -131,8 +132,9 @@ class CategoriaService {
 
       final data = _handleResponse(response);
       final responseObj = CategoriaResponse.fromJson(data);
-      if (responseObj.data == null)
+      if (responseObj.data == null) {
         throw Exception('Error al actualizar la categoría');
+      }
       return responseObj.data!;
     } catch (e) {
       throw Exception('Error al actualizar la categoría: $e');

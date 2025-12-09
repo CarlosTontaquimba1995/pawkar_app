@@ -10,7 +10,7 @@ class EventService {
 
   EventService({http.Client? client}) : _client = client ?? http.Client();
 
-  /// Get headers with auth token
+  /// Headers for authenticated requests (POST, PUT, DELETE)
   Future<Map<String, String>> _getHeaders() async {
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('token');
@@ -19,6 +19,11 @@ class EventService {
       'Content-Type': 'application/json',
       'Authorization': token != null ? 'Bearer $token' : '',
     };
+  }
+
+  /// Headers for public requests (GET methods)
+  Map<String, String> _getPublicHeaders() {
+    return {'Content-Type': 'application/json'};
   }
 
   /// Handle API response errors
@@ -58,7 +63,7 @@ class EventService {
   Future<List<Event>> getEvents() async {
     try {
       final response = await _client
-          .get(Uri.parse(_baseUrl), headers: await _getHeaders())
+          .get(Uri.parse(_baseUrl), headers: _getPublicHeaders())
           .timeout(const Duration(seconds: 15));
 
       final data = _handleResponse(response);
@@ -84,7 +89,7 @@ class EventService {
   Future<List<Event>> getFeaturedEvents() async {
     try {
       final response = await _client
-          .get(Uri.parse('$_baseUrl/featured'), headers: await _getHeaders())
+          .get(Uri.parse('$_baseUrl/featured'), headers: _getPublicHeaders())
           .timeout(const Duration(seconds: 15));
 
       final data = _handleResponse(response);
@@ -114,7 +119,7 @@ class EventService {
         '$_baseUrl/upcoming',
       ).replace(queryParameters: {'limit': limit.toString()});
       final response = await _client
-          .get(uri, headers: await _getHeaders())
+          .get(uri, headers: _getPublicHeaders())
           .timeout(const Duration(seconds: 15));
 
       final data = _handleResponse(response);
@@ -146,7 +151,7 @@ class EventService {
     try {
       final uri = Uri.parse('$_baseUrl/category/$category');
       final response = await _client
-          .get(uri, headers: await _getHeaders())
+          .get(uri, headers: _getPublicHeaders())
           .timeout(const Duration(seconds: 15));
 
       final data = _handleResponse(response);
@@ -177,7 +182,7 @@ class EventService {
 
     try {
       final response = await _client
-          .get(Uri.parse('$_baseUrl/$id'), headers: await _getHeaders())
+          .get(Uri.parse('$_baseUrl/$id'), headers: _getPublicHeaders())
           .timeout(const Duration(seconds: 15));
 
       final data = _handleResponse(response);
@@ -197,13 +202,15 @@ class EventService {
     if (query.isEmpty) {
       throw ArgumentError('Search query cannot be empty');
     }
-
+    
     try {
-      final uri = Uri.parse(
-        '$_baseUrl/search',
-      ).replace(queryParameters: {'q': query});
       final response = await _client
-          .get(uri, headers: await _getHeaders())
+          .get(
+            Uri.parse(
+              '$_baseUrl/search',
+            ).replace(queryParameters: {'q': query}),
+            headers: _getPublicHeaders(),
+          )
           .timeout(const Duration(seconds: 15));
 
       final data = _handleResponse(response);

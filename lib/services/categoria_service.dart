@@ -21,6 +21,11 @@ class CategoriaService {
     };
   }
 
+  // Get public headers (no auth required)
+  Map<String, String> _getPublicHeaders() {
+    return {'Content-Type': 'application/json'};
+  }
+
   // Handle API errors
   dynamic _handleResponse(http.Response response) {
     switch (response.statusCode) {
@@ -51,7 +56,7 @@ class CategoriaService {
     try {
       final response = await _client.get(
         Uri.parse(_baseUrl),
-        headers: await _getHeaders(),
+        headers: _getPublicHeaders(),
       );
 
       final data = _handleResponse(response);
@@ -67,7 +72,7 @@ class CategoriaService {
     try {
       final response = await _client.get(
         Uri.parse('$_baseUrl/$id'),
-        headers: await _getHeaders(),
+        headers: _getPublicHeaders(),
       );
 
       final data = _handleResponse(response);

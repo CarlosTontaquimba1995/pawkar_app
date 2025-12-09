@@ -13,7 +13,7 @@ class ConfiguracionService {
   ConfiguracionService({http.Client? client})
     : _client = client ?? http.Client();
 
-  // Interceptor para agregar el token de autenticación
+  // Headers for authenticated requests
   Future<Map<String, String>> _getHeaders() async {
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('token');
@@ -22,6 +22,11 @@ class ConfiguracionService {
       'Content-Type': 'application/json',
       'Authorization': token != null ? 'Bearer $token' : '',
     };
+  }
+
+  // Headers for public requests (no auth required)
+  Map<String, String> _getPublicHeaders() {
+    return {'Content-Type': 'application/json'};
   }
 
   // Manejo de errores
@@ -54,7 +59,7 @@ class ConfiguracionService {
   Future<ConfiguracionResponse> getConfiguracion() async {
     try {
       final response = await _client
-          .get(Uri.parse(_baseUrl), headers: await _getHeaders())
+          .get(Uri.parse(_baseUrl), headers: _getPublicHeaders())
           .timeout(const Duration(seconds: 10));
 
       if (response.statusCode == 200) {

@@ -7,7 +7,7 @@ import '../models/configuracion_model.dart';
 import '../config/environment.dart';
 
 class ConfiguracionService {
-  final String _baseUrl = '${Environment.baseUrl}/api/configuraciones';
+  final String _baseUrl = '${Environment.baseUrl}/api/configuracion';
   final http.Client _client;
 
   ConfiguracionService({http.Client? client})
@@ -58,36 +58,34 @@ class ConfiguracionService {
   // Obtener configuración activa
   Future<ConfiguracionResponse> getConfiguracion() async {
     try {
+      final url = _baseUrl; // Store the URL for logging
       final response = await _client
-          .get(Uri.parse(_baseUrl), headers: _getPublicHeaders())
+          .get(Uri.parse(url), headers: _getPublicHeaders())
           .timeout(const Duration(seconds: 10));
 
       if (response.statusCode == 200) {
-        final jsonResponse = json.decode(response.body);
+        final jsonResponse = _handleResponse(response);
         return ConfiguracionResponse.fromJson(jsonResponse);
       } else {
         throw HttpException('Error del servidor: ${response.statusCode}');
       }
-    } on SocketException catch (e) {
-      print('Error de red: $e');
+    } on SocketException catch (_) {
       throw Exception(
         'No se pudo conectar al servidor. Verifica tu conexión a internet.',
       );
     } on TimeoutException catch (_) {
       throw Exception(
-        'La conexión está tardando demasiado. Intenta nuevamente.',
+        'La conexión está tardando demasiado. Verifica que el servidor esté en ejecución.',
       );
-    } on FormatException catch (e) {
-      print('Error de formato: $e');
+    } on FormatException catch (_) {
       throw Exception('Error en el formato de la respuesta del servidor.');
-    } on HttpException catch (e) {
-      print('Error HTTP: ${e.message}');
+    } on HttpException catch (_) {
       rethrow;
-    } catch (e) {
-      print('Error inesperado: $e');
-      throw Exception('Error al obtener la configuración: ${e.toString()}');
+    } catch (_) {
+      throw Exception('Error al obtener la configuración');
     }
   }
+
 
   // Actualizar configuración
   Future<ConfiguracionResponse> updateConfiguracion(

@@ -41,9 +41,12 @@ class _MatchesScreenState extends State<MatchesScreen> {
   List<Equipo> _teams = [];
   bool _isLoadingTeams = false;
   String? _teamSearchQuery;
-  Timer? _searchDebounce;
   bool _showTeamDropdown = false;
-  FocusNode _teamSearchFocusNode = FocusNode();
+  final FocusNode _teamSearchFocusNode = FocusNode();
+  final TextEditingController _teamSearchController = TextEditingController();
+  final Map<String, List<Equipo>> _teamsCache = {}; // Cache for search results
+  bool _hasSearchError = false;
+  Timer? _searchDebounce; // For debouncing search operations
 
   // Filter variables
   String _searchQuery = '';
@@ -60,6 +63,14 @@ class _MatchesScreenState extends State<MatchesScreen> {
     _encuentroService = widget.encuentroService ?? EncuentroService();
     _scrollController.addListener(_onScroll);
     _loadEncuentros(initialLoad: true);
+    
+    // Initialize search controller with any existing query
+    if (_teamSearchQuery != null) {
+      _teamSearchController.text = _teamSearchQuery!;
+    }
+
+    // Preload teams without showing dropdown
+    _searchTeams(initialLoad: true);
   }
 
   void _onScroll() {
@@ -77,8 +88,10 @@ class _MatchesScreenState extends State<MatchesScreen> {
     _searchController.dispose();
     _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
-    _searchDebounce?.cancel();
     _teamSearchFocusNode.dispose();
+    _teamSearchController.dispose();
+    _searchDebounce?.cancel(); // Cancel any pending debounce timers
+    _teamsCache.clear(); // Clear cache on dispose
     super.dispose();
   }
 
@@ -149,37 +162,76 @@ class _MatchesScreenState extends State<MatchesScreen> {
     }
   }
 
-  // Update the _searchTeams method in _MatchesScreenState
-  Future<void> _searchTeams() async {
-    if (_teamSearchQuery == null || _teamSearchQuery!.isEmpty) {
-      setState(() {
-        _teams = [];
-        _showTeamDropdown = false;
-      });
+  Future<void> _searchTeams({bool initialLoad = false}) async {
+    final query = initialLoad ? '' : _teamSearchQuery?.trim() ?? '';
+
+    // Update controller text if it's out of sync
+    if (_teamSearchController.text != query) {
+      _teamSearchController.text = query;
+      _teamSearchController.selection = TextSelection.fromPosition(
+        TextPosition(offset: query.length),
+      );
+    }
+
+    // For initial load, use empty query to get initial teams
+    if (initialLoad) {
+      // Only proceed if we don't have any teams loaded yet
+      if (_teams.isNotEmpty) return;
+    }
+
+    // Check cache first
+    if (_teamsCache.containsKey(query)) {
+      if (mounted) {
+        setState(() {
+          _teams = _teamsCache[query]!;
+          _showTeamDropdown = _teams.isNotEmpty;
+          _hasSearchError = false;
+        });
+      }
       return;
     }
 
-    setState(() {
-      _isLoadingTeams = true;
-    });
+    // Cancel any pending search
+    _searchDebounce?.cancel();
+
+    // Only show loading for non-initial loads and when we don't have cached results
+    if (!initialLoad) {
+      setState(() {
+        _isLoadingTeams = true;
+        _hasSearchError = false;
+      });
+    }
 
     try {
       final response = await _equipoService.getEquipos(
-        search: _teamSearchQuery,
+        search: query.isEmpty ? null : query,
         size: 10,
       );
 
       if (mounted) {
+        // Update cache
+        _teamsCache[query] = response.data.content;
+
         setState(() {
           _teams = response.data.content;
           _showTeamDropdown = _teams.isNotEmpty;
+          _hasSearchError = false;
         });
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Error al buscar equipos: $e')));
+        setState(() {
+          _hasSearchError = true;
+          _teams = [];
+          _showTeamDropdown = false;
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Error al buscar equipos. Intente nuevamente.'),
+            duration: Duration(seconds: 2),
+          ),
+        );
       }
     } finally {
       if (mounted) {
@@ -189,6 +241,7 @@ class _MatchesScreenState extends State<MatchesScreen> {
       }
     }
   }
+
   void _applyFilters() {
     // Reset pagination and reload data with new filters
     setState(() {
@@ -202,6 +255,13 @@ class _MatchesScreenState extends State<MatchesScreen> {
   }
 
   void _showFilterDialog() {
+    // Ensure dropdown is closed when opening the dialog
+    if (_showTeamDropdown) {
+      setState(() {
+        _showTeamDropdown = false;
+      });
+    }
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -273,7 +333,7 @@ class _MatchesScreenState extends State<MatchesScreen> {
                               }
                             },
                           ),
-                          
+
                           // Team selection
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -283,40 +343,42 @@ class _MatchesScreenState extends State<MatchesScreen> {
                                 style: TextStyle(fontWeight: FontWeight.w500),
                               ),
                               const SizedBox(height: 8),
-                              GestureDetector(
+                              ListTile(
+                                title: Text(
+                                  _selectedTeamId != null
+                                      ? _teams
+                                                .where(
+                                                  (t) =>
+                                                      t.equipoId.toString() ==
+                                                      _selectedTeamId,
+                                                )
+                                                .firstOrNull
+                                                ?.nombre ??
+                                            'Equipo seleccionado'
+                                      : 'Seleccionar equipo',
+                                ),
+                                trailing: Icon(
+                                  _showTeamDropdown
+                                      ? Icons.arrow_drop_up
+                                      : Icons.arrow_drop_down,
+                                ),
                                 onTap: () {
                                   setState(() {
                                     _showTeamDropdown = !_showTeamDropdown;
-                                    if (_showTeamDropdown) {
-                                      _teamSearchFocusNode.requestFocus();
+                                    // If no teams loaded yet, try to load them
+                                    if (_teams.isEmpty) {
+                                      _searchTeams(initialLoad: true);
                                     }
                                   });
                                 },
-                                child: InputDecorator(
-                                  decoration: InputDecoration(
-                                    hintText: _selectedTeamId != null
-                                        ? 'Equipo seleccionado'
-                                        : 'Seleccionar equipo',
-                                    border: const OutlineInputBorder(),
-                                    suffixIcon: Icon(
-                                      _showTeamDropdown
-                                          ? Icons.arrow_drop_up
-                                          : Icons.arrow_drop_down,
-                                    ),
-                                  ),
-                                  child: _selectedTeamId != null
-                                      ? Text(
-                                          _teams
-                                                  .where(
-                                                    (t) =>
-                                                        t.equipoId.toString() ==
-                                                        _selectedTeamId,
-                                                  )
-                                                  .firstOrNull
-                                                  ?.nombre ??
-                                              'Equipo seleccionado',
-                                        )
-                                      : null,
+                                tileColor: Colors.grey[100],
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(4),
+                                  side: BorderSide(color: Colors.grey.shade300),
+                                ),
+                                contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 4,
                                 ),
                               ),
                               if (_showTeamDropdown)
@@ -337,18 +399,22 @@ class _MatchesScreenState extends State<MatchesScreen> {
                                       ),
                                     ],
                                   ),
-                                  constraints: const BoxConstraints(
-                                    maxHeight: 300,
+                                  constraints: BoxConstraints(
+                                    maxHeight:
+                                        MediaQuery.of(context).size.height *
+                                        0.4, // 40% of screen height
+                                    minHeight:
+                                        60.0, // Minimum height for search field
                                   ),
-                                  child: Column(
-                                    children: [
+                                  child: SingleChildScrollView(
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
                                       // Search field inside dropdown
                                       Padding(
                                         padding: const EdgeInsets.all(8.0),
                                         child: TextField(
-                                          controller: TextEditingController(
-                                            text: _teamSearchQuery ?? '',
-                                          ),
+                                            controller: _teamSearchController,
                                           focusNode: _teamSearchFocusNode,
                                           decoration: InputDecoration(
                                             hintText: 'Buscar equipo...',
@@ -379,48 +445,117 @@ class _MatchesScreenState extends State<MatchesScreen> {
                                           ),
                                           onChanged: (value) {
                                             _teamSearchQuery = value;
-                                            _searchDebounce?.cancel();
-                                            _searchDebounce = Timer(
-                                              const Duration(milliseconds: 500),
-                                              () {
-                                                if (value.isNotEmpty) {
-                                                  _searchTeams();
-                                                } else {
-                                                  setState(() {
-                                                    _teams = [];
-                                                  });
-                                                }
-                                              },
-                                            );
-                                          },
+                                              if (value.isEmpty) {
+                                                setState(() {
+                                                  _teams =
+                                                      []; // Clear the teams list but keep the dropdown open
+                                                });
+                                              } else {
+                                                _searchTeams();
+                                              }
+                                            },
                                         ),
                                       ),
                                       // Team list
-                                      if (_teams.isNotEmpty)
-                                        Expanded(
-                                          child: ListView.builder(
+                                        if (_hasSearchError)
+                                          const Padding(
+                                            padding: EdgeInsets.all(16.0),
+                                            child: Text(
+                                              'Error al cargar equipos',
+                                              style: TextStyle(
+                                                color: Colors.red,
+                                              ),
+                                              textAlign: TextAlign.center,
+                                            ),
+                                          )
+                                        else if (_isLoadingTeams)
+                                          const Padding(
+                                            padding: EdgeInsets.all(16.0),
+                                            child: SizedBox(
+                                              height: 40,
+                                              width: 40,
+                                              child: Center(
+                                                child: SizedBox(
+                                                  width: 20,
+                                                  height: 20,
+                                                  child:
+                                                      CircularProgressIndicator(
+                                                        strokeWidth: 2,
+                                                      ),
+                                                ),
+                                              ),
+                                            ),
+                                          )
+                                        else if (_teamSearchQuery?.isEmpty ??
+                                            true)
+                                          const Padding(
+                                            padding: EdgeInsets.all(16.0),
+                                            child: Text(
+                                              'Escribe para buscar equipos...',
+                                              style: TextStyle(
+                                                color: Colors.grey,
+                                              ),
+                                              textAlign: TextAlign.center,
+                                            ),
+                                          )
+                                        else if (_teams.isEmpty)
+                                          const Padding(
+                                            padding: EdgeInsets.all(16.0),
+                                            child: Text(
+                                              'No se encontraron equipos',
+                                              style: TextStyle(
+                                                color: Colors.grey,
+                                              ),
+                                              textAlign: TextAlign.center,
+                                            ),
+                                          )
+                                        else
+                                          ListView.builder(
                                             shrinkWrap: true,
+                                            physics:
+                                                const NeverScrollableScrollPhysics(),
+                                            padding: EdgeInsets.zero,
                                             itemCount: _teams.length,
                                             itemBuilder: (context, index) {
                                               final team = _teams[index];
-                                              return ListTile(
-                                                dense: true,
-                                                title: Text(team.nombre),
+                                              return Material(
+                                                color: Colors.transparent,
+                                                child: InkWell(
                                                 onTap: () {
                                                   setState(() {
-                                                    _selectedTeamId = team
-                                                        .equipoId
-                                                        .toString();
-                                                    _showTeamDropdown = false;
-                                                    _teamSearchQuery = null;
+                                                      _selectedTeamId = team
+                                                          .equipoId
+                                                          .toString();
+                                                      _showTeamDropdown =
+                                                          false; // Close dropdown after selection
+                                                      _teamSearchQuery =
+                                                          ''; // Clear search query
+                                                      _teamSearchController
+                                                          .clear(); // Clear the search field
                                                   });
+                                                    _teamSearchFocusNode
+                                                        .unfocus();
                                                 },
+                                                  child: Padding(
+                                                    padding:
+                                                        const EdgeInsets.symmetric(
+                                                          vertical: 8.0,
+                                                          horizontal: 16.0,
+                                                        ),
+                                                    child: Text(
+                                                      team.nombre,
+                                                      style: const TextStyle(
+                                                        fontSize: 14,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
                                               );
                                             },
-                                          ),
                                         ),
                                     ],
                                   ),
+                                ),
                                 ),
                               if (_selectedTeamId != null)
                                 Padding(

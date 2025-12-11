@@ -54,7 +54,8 @@ class EquipoService {
       );
       
       final response = await _client.get(
-        uri, headers: await _getHeaders(),
+        uri,
+        headers: await _getPublicHeaders(),
       );
 
       final data = _handleResponse(response);
@@ -69,7 +70,7 @@ class EquipoService {
     try {
       final response = await _client.get(
         Uri.parse('$_baseUrl/serie/$serieId'),
-        headers: await _getHeaders(),
+        headers: await _getPublicHeaders(),
       );
       final data = _handleResponse(response);
       return EquipoListResponse.fromJson(data);
@@ -101,7 +102,8 @@ class EquipoService {
       );
       
       final response = await _client.get(
-        uri, headers: await _getHeaders(),
+        uri,
+        headers: await _getPublicHeaders(),
       );
       final data = _handleResponse(response);
       return EquipoListResponse.fromJson(data);
@@ -115,7 +117,7 @@ class EquipoService {
     try {
       final response = await _client.get(
         Uri.parse('$_baseUrl/$id'),
-        headers: await _getHeaders(),
+        headers: await _getPublicHeaders(),
       );
       final data = _handleResponse(response);
       return Equipo.fromJson(data);
@@ -189,7 +191,7 @@ class EquipoService {
     try {
       final response = await _client.get(
         Uri.parse('$_baseUrl/existen'),
-        headers: await _getHeaders(),
+        headers: await _getPublicHeaders(),
       );
       return _handleResponse(response) as bool;
     } catch (e) {
@@ -202,7 +204,7 @@ class EquipoService {
     try {
       final response = await _client.get(
         Uri.parse('$_baseUrl/count'),
-        headers: await _getHeaders(),
+        headers: await _getPublicHeaders(),
       );
       final data = _handleResponse(response);
       return EquipoCountResponse.fromJson(data);

@@ -16,10 +16,16 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   bool _isLoading = true;
+  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
+      GlobalKey<RefreshIndicatorState>();
 
   @override
   void initState() {
     super.initState();
+    // Delay the refresh indicator to show after the first frame is rendered
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _refreshIndicatorKey.currentState?.show();
+    });
     _initializeApp();
   }
 
@@ -44,8 +50,14 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _loadData() async {
-    // Load your data here
-    // Make sure all data loading is async
+    // This is where you would typically load your data
+    // For example:
+    // await someService.loadCategories();
+    // await someOtherService.loadEvents();
+    // The actual data loading should be handled by individual widgets
+
+    // Simulate network delay
+    await Future.delayed(const Duration(seconds: 1));
   }
 
   void _showThemeSelector(BuildContext context) {
@@ -55,8 +67,34 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  Future<void> _handleRefresh() async {
+    try {
+      setState(() {
+        _isLoading = true;
+      });
+
+      await Future.wait([_initializeServices(), _loadData()]);
+    } catch (e) {
+      debugPrint('Error during refresh: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Error al actualizar los datos'),
+            duration: Duration(seconds: 2),
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
   @override
-Widget build(BuildContext context) {
+  Widget build(BuildContext context) {
     if (_isLoading) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
@@ -68,9 +106,18 @@ Widget build(BuildContext context) {
           statusBarColor: Colors.transparent,
           statusBarIconBrightness: Brightness.light,
         ),
-        child: CustomScrollView(
-          physics: const BouncingScrollPhysics(),
-          slivers: [
+        child: RefreshIndicator(
+          key: _refreshIndicatorKey,
+          onRefresh: _handleRefresh,
+          color: Theme.of(context).primaryColor,
+          backgroundColor: Colors.white,
+          strokeWidth: 2.5,
+          triggerMode: RefreshIndicatorTriggerMode.onEdge,
+          child: CustomScrollView(
+            physics: const AlwaysScrollableScrollPhysics(
+              parent: BouncingScrollPhysics(),
+            ),
+            slivers: [
             CollapsibleAppBar(
               title: 'PAWKAR',
               subtitle: 'Festival Cultural y Deportivo',
@@ -90,8 +137,9 @@ Widget build(BuildContext context) {
                 ),
               ],
             ),
-            SliverToBoxAdapter(child: _buildBody(theme)),
-          ],
+              SliverToBoxAdapter(child: _buildBody(theme)),
+            ],
+          ),
         ),
       ),
     );

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:pawkar_app/screens/matches_screen.dart';
 import 'package:pawkar_app/widgets/categorias_section.dart';
 import 'package:pawkar_app/widgets/eventos_destacados_section.dart';
 import 'package:pawkar_app/widgets/proximos_eventos_section.dart';
@@ -186,7 +187,13 @@ class _HomeScreenState extends State<HomeScreen>
                           title: 'Tus Próximos Encuentros',
                           showAction: true,
                           onAction: () {
-                            // Navigate to matches screen
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    const MatchesScreen(initialMatches: []),
+                              ),
+                            );
                           },
                           child: const ProximosEncuentrosSection(),
                         )

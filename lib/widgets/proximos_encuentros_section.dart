@@ -60,18 +60,6 @@ class _ProximosEncuentrosSectionState extends State<ProximosEncuentrosSection> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Align(
-          alignment: Alignment.centerRight,
-          child: TextButton(
-            onPressed: _loadProximosEncuentros,
-            style: TextButton.styleFrom(
-              foregroundColor: colorScheme.primary,
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-            ),
-            child: const Text('Ver más'),
-          ),
-        ),
         _buildContent(theme, colorScheme),
       ],
     );

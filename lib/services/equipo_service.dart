@@ -5,49 +5,56 @@ import '../models/equipo_model.dart';
 import '../config/environment.dart';
 
 class EquipoService {
-  final String _baseUrl = '${Environment.baseUrl}/equipos';
+  final String _baseUrl = '${Environment.baseUrl}/api/equipos';
   final http.Client _client = http.Client();
 
+  // Private method to get headers with auth token
   Future<Map<String, String>> _getHeaders() async {
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('token');
     return {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer $token',
+      if (token != null) 'Authorization': 'Bearer $token',
     };
   }
 
+  // Public headers without auth
   Future<Map<String, String>> _getPublicHeaders() async {
     return {'Content-Type': 'application/json'};
   }
 
+  // Handle API response
   dynamic _handleResponse(http.Response response) {
     if (response.statusCode >= 200 && response.statusCode < 300) {
+      if (response.body.isEmpty) return null;
       return json.decode(utf8.decode(response.bodyBytes));
     } else {
-      throw Exception('Error: ${response.statusCode} - ${response.body}');
+      final error = json.decode(utf8.decode(response.bodyBytes));
+      throw Exception(error['message'] ?? 'Error: ${response.statusCode}');
     }
   }
 
   // Get paginated teams with search and sort options
   Future<EquipoListPageResponse> getEquipos({
     int page = 0,
-    int size = 5,
+    int size = 10,
     String? sort,
     String? nombre,
     String? search,
   }) async {
     try {
+      final uri = Uri.parse('$_baseUrl').replace(
+        queryParameters: {
+          'page': page.toString(),
+          'size': size.toString(),
+          if (sort != null) 'sort': sort,
+          if (nombre != null) 'nombre': nombre,
+          if (search != null) 'search': search,
+        },
+      );
+      
       final response = await _client.get(
-        Uri.parse(
-          '$_baseUrl?'
-          'page=$page'
-          '&size=$size'
-          '${sort != null ? '&sort=$sort' : ''}'
-          '${nombre != null ? '&nombre=$nombre' : ''}'
-          '${search != null ? '&search=$search' : ''}',
-        ),
-        headers: await _getPublicHeaders(),
+        uri, headers: await _getHeaders(),
       );
 
       final data = _handleResponse(response);
@@ -62,9 +69,8 @@ class EquipoService {
     try {
       final response = await _client.get(
         Uri.parse('$_baseUrl/serie/$serieId'),
-        headers: await _getPublicHeaders(),
+        headers: await _getHeaders(),
       );
-
       final data = _handleResponse(response);
       return EquipoListResponse.fromJson(data);
     } catch (e) {
@@ -83,21 +89,20 @@ class EquipoService {
     String? search,
   }) async {
     try {
-      final params = EquipoBySubcategoryParams(
-        serieId: serieId,
-        page: page,
-        size: size,
-        sort: sort,
-        nombre: nombre,
-        search: search,
-      ).toJson();
-
-      final queryString = Uri(queryParameters: params).query;
-      final response = await _client.get(
-        Uri.parse('$_baseUrl/subcategoria/$subcategoriaId?$queryString'),
-        headers: await _getPublicHeaders(),
+      final uri = Uri.parse('$_baseUrl/subcategoria/$subcategoriaId').replace(
+        queryParameters: {
+          if (serieId != null) 'serieId': serieId.toString(),
+          if (page != null) 'page': page.toString(),
+          if (size != null) 'size': size.toString(),
+          if (sort != null) 'sort': sort,
+          if (nombre != null) 'nombre': nombre,
+          if (search != null) 'search': search,
+        },
       );
-
+      
+      final response = await _client.get(
+        uri, headers: await _getHeaders(),
+      );
       final data = _handleResponse(response);
       return EquipoListResponse.fromJson(data);
     } catch (e) {
@@ -106,31 +111,29 @@ class EquipoService {
   }
 
   // Get team by ID
-  Future<EquipoResponse> getEquipoById(int id) async {
+  Future<Equipo> getEquipoById(int id) async {
     try {
       final response = await _client.get(
         Uri.parse('$_baseUrl/$id'),
-        headers: await _getPublicHeaders(),
+        headers: await _getHeaders(),
       );
-
       final data = _handleResponse(response);
-      return EquipoResponse.fromJson(data);
+      return Equipo.fromJson(data);
     } catch (e) {
       throw Exception('Error al obtener el equipo: $e');
     }
   }
 
   // Create a new team
-  Future<EquipoResponse> createEquipo(CreateEquipoRequest request) async {
+  Future<Equipo> createEquipo(CreateEquipoRequest request) async {
     try {
       final response = await _client.post(
         Uri.parse(_baseUrl),
         headers: await _getHeaders(),
-        body: json.encode(request.toJson()),
+        body: jsonEncode(request.toJson()),
       );
-
       final data = _handleResponse(response);
-      return EquipoResponse.fromJson(data);
+      return Equipo.fromJson(data);
     } catch (e) {
       throw Exception('Error al crear el equipo: $e');
     }
@@ -144,9 +147,8 @@ class EquipoService {
       final response = await _client.post(
         Uri.parse('$_baseUrl/bulk'),
         headers: await _getHeaders(),
-        body: json.encode(request.toJson()),
+        body: jsonEncode(request.toJson()),
       );
-
       final data = _handleResponse(response);
       return EquipoListResponse.fromJson(data);
     } catch (e) {
@@ -155,19 +157,15 @@ class EquipoService {
   }
 
   // Update a team
-  Future<EquipoResponse> updateEquipo(
-    int id,
-    UpdateEquipoRequest request,
-  ) async {
+  Future<Equipo> updateEquipo(int id, UpdateEquipoRequest request) async {
     try {
       final response = await _client.put(
         Uri.parse('$_baseUrl/$id'),
         headers: await _getHeaders(),
-        body: json.encode(request.toJson()),
+        body: jsonEncode(request.toJson()),
       );
-
       final data = _handleResponse(response);
-      return EquipoResponse.fromJson(data);
+      return Equipo.fromJson(data);
     } catch (e) {
       throw Exception('Error al actualizar el equipo: $e');
     }
@@ -180,8 +178,7 @@ class EquipoService {
         Uri.parse('$_baseUrl/$id'),
         headers: await _getHeaders(),
       );
-
-      return _handleResponse(response);
+      return _handleResponse(response) as Map<String, dynamic>;
     } catch (e) {
       throw Exception('Error al eliminar el equipo: $e');
     }
@@ -192,13 +189,11 @@ class EquipoService {
     try {
       final response = await _client.get(
         Uri.parse('$_baseUrl/existen'),
-        headers: await _getPublicHeaders(),
+        headers: await _getHeaders(),
       );
-
-      final data = _handleResponse(response);
-      return data as bool;
+      return _handleResponse(response) as bool;
     } catch (e) {
-      throw Exception('Error al verificar existencia de equipos: $e');
+      throw Exception('Error al verificar equipos: $e');
     }
   }
 
@@ -207,9 +202,8 @@ class EquipoService {
     try {
       final response = await _client.get(
         Uri.parse('$_baseUrl/count'),
-        headers: await _getPublicHeaders(),
+        headers: await _getHeaders(),
       );
-
       final data = _handleResponse(response);
       return EquipoCountResponse.fromJson(data);
     } catch (e) {

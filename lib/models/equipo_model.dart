@@ -8,7 +8,6 @@ class Equipo {
   final String nombre;
   final String fundacion;
   final int jugadoresCount;
-  final String estado;
 
   Equipo({
     required this.equipoId,
@@ -19,7 +18,6 @@ class Equipo {
     required this.nombre,
     required this.fundacion,
     required this.jugadoresCount,
-    required this.estado,
   });
 
   factory Equipo.fromJson(Map<String, dynamic> json) {
@@ -32,7 +30,6 @@ class Equipo {
       nombre: json['nombre'] as String,
       fundacion: json['fundacion'] as String,
       jugadoresCount: json['jugadoresCount'] as int,
-      estado: json['estado'] as String,
     );
   }
 
@@ -46,23 +43,19 @@ class Equipo {
       'nombre': nombre,
       'fundacion': fundacion,
       'jugadoresCount': jugadoresCount,
-      'estado': estado,
     };
   }
 }
-
 // Request models
 class CreateEquipoRequest {
   final int subcategoriaId;
   final int serieId;
   final String nombre;
-  final String? estado;
 
   CreateEquipoRequest({
     required this.subcategoriaId,
     required this.serieId,
     required this.nombre,
-    this.estado = 'activo',
   });
 
   Map<String, dynamic> toJson() {
@@ -70,7 +63,6 @@ class CreateEquipoRequest {
       'subcategoriaId': subcategoriaId,
       'serieId': serieId,
       'nombre': nombre,
-      if (estado != null) 'estado': estado,
     };
   }
 }
@@ -79,13 +71,11 @@ class UpdateEquipoRequest {
   final int? subcategoriaId;
   final int? serieId;
   final String? nombre;
-  final String? estado;
 
   UpdateEquipoRequest({
     this.subcategoriaId,
     this.serieId,
     this.nombre,
-    this.estado,
   });
 
   Map<String, dynamic> toJson() {
@@ -93,7 +83,6 @@ class UpdateEquipoRequest {
     if (subcategoriaId != null) json['subcategoriaId'] = subcategoriaId;
     if (serieId != null) json['serieId'] = serieId;
     if (nombre != null) json['nombre'] = nombre;
-    if (estado != null) json['estado'] = estado;
     return json;
   }
 }

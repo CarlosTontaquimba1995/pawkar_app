@@ -1,7 +1,10 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:pawkar_app/models/encuentro_model.dart';
+import 'package:pawkar_app/models/equipo_model.dart';
 import 'package:pawkar_app/services/encuentro_service.dart';
+import 'package:pawkar_app/services/equipo_service.dart';
 import 'package:pawkar_app/features/home/widgets/match_card.dart';
 import 'package:pawkar_app/widgets/loading_widget.dart';
 
@@ -23,6 +26,7 @@ class _MatchesScreenState extends State<MatchesScreen> {
   final _searchController = TextEditingController();
   final _scrollController = ScrollController();
   late EncuentroService _encuentroService;
+  final EquipoService _equipoService = EquipoService();
 
   // State variables
   bool _isLoading = false;
@@ -32,6 +36,14 @@ class _MatchesScreenState extends State<MatchesScreen> {
   int _currentPage = 0;
   final int _pageSize = 10;
   bool _hasMore = true;
+
+  // Team search variables
+  List<Equipo> _teams = [];
+  bool _isLoadingTeams = false;
+  String? _teamSearchQuery;
+  Timer? _searchDebounce;
+  bool _showTeamDropdown = false;
+  FocusNode _teamSearchFocusNode = FocusNode();
 
   // Filter variables
   String _searchQuery = '';
@@ -65,6 +77,8 @@ class _MatchesScreenState extends State<MatchesScreen> {
     _searchController.dispose();
     _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
+    _searchDebounce?.cancel();
+    _teamSearchFocusNode.dispose();
     super.dispose();
   }
 
@@ -135,12 +149,54 @@ class _MatchesScreenState extends State<MatchesScreen> {
     }
   }
 
+  // Update the _searchTeams method in _MatchesScreenState
+  Future<void> _searchTeams() async {
+    if (_teamSearchQuery == null || _teamSearchQuery!.isEmpty) {
+      setState(() {
+        _teams = [];
+        _showTeamDropdown = false;
+      });
+      return;
+    }
+
+    setState(() {
+      _isLoadingTeams = true;
+    });
+
+    try {
+      final response = await _equipoService.getEquipos(
+        search: _teamSearchQuery,
+        size: 10,
+      );
+
+      if (mounted) {
+        setState(() {
+          _teams = response.data.content;
+          _showTeamDropdown = _teams.isNotEmpty;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error al buscar equipos: $e')));
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoadingTeams = false;
+        });
+      }
+    }
+  }
   void _applyFilters() {
     // Reset pagination and reload data with new filters
     setState(() {
       _currentPage = 0;
       _matches.clear();
       _hasMore = true;
+      _teams = [];
+      _showTeamDropdown = false;
     });
     _loadEncuentros(initialLoad: true);
   }
@@ -218,20 +274,185 @@ class _MatchesScreenState extends State<MatchesScreen> {
                             },
                           ),
                           
-                          // Team ID filter
-                          TextField(
-                            decoration: const InputDecoration(
-                              labelText: 'ID de Equipo',
-                              hintText: 'Ej: 1',
-                              border: OutlineInputBorder(),
-                            ),
-                            keyboardType: TextInputType.number,
-                            onChanged: (value) {
-                              _selectedTeamId = value.isNotEmpty ? value : null;
-                            },
-                            controller: TextEditingController(
-                              text: _selectedTeamId ?? '',
-                            ),
+                          // Team selection
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'Equipo',
+                                style: TextStyle(fontWeight: FontWeight.w500),
+                              ),
+                              const SizedBox(height: 8),
+                              GestureDetector(
+                                onTap: () {
+                                  setState(() {
+                                    _showTeamDropdown = !_showTeamDropdown;
+                                    if (_showTeamDropdown) {
+                                      _teamSearchFocusNode.requestFocus();
+                                    }
+                                  });
+                                },
+                                child: InputDecorator(
+                                  decoration: InputDecoration(
+                                    hintText: _selectedTeamId != null
+                                        ? 'Equipo seleccionado'
+                                        : 'Seleccionar equipo',
+                                    border: const OutlineInputBorder(),
+                                    suffixIcon: Icon(
+                                      _showTeamDropdown
+                                          ? Icons.arrow_drop_up
+                                          : Icons.arrow_drop_down,
+                                    ),
+                                  ),
+                                  child: _selectedTeamId != null
+                                      ? Text(
+                                          _teams
+                                                  .where(
+                                                    (t) =>
+                                                        t.equipoId.toString() ==
+                                                        _selectedTeamId,
+                                                  )
+                                                  .firstOrNull
+                                                  ?.nombre ??
+                                              'Equipo seleccionado',
+                                        )
+                                      : null,
+                                ),
+                              ),
+                              if (_showTeamDropdown)
+                                Container(
+                                  margin: const EdgeInsets.only(top: 4),
+                                  decoration: BoxDecoration(
+                                    border: Border.all(
+                                      color: Colors.grey.shade300,
+                                    ),
+                                    borderRadius: BorderRadius.circular(4),
+                                    color: Colors.white,
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.grey.withOpacity(0.3),
+                                        spreadRadius: 1,
+                                        blurRadius: 5,
+                                        offset: const Offset(0, 2),
+                                      ),
+                                    ],
+                                  ),
+                                  constraints: const BoxConstraints(
+                                    maxHeight: 300,
+                                  ),
+                                  child: Column(
+                                    children: [
+                                      // Search field inside dropdown
+                                      Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: TextField(
+                                          controller: TextEditingController(
+                                            text: _teamSearchQuery ?? '',
+                                          ),
+                                          focusNode: _teamSearchFocusNode,
+                                          decoration: InputDecoration(
+                                            hintText: 'Buscar equipo...',
+                                            prefixIcon: const Icon(
+                                              Icons.search,
+                                            ),
+                                            border: const OutlineInputBorder(),
+                                            contentPadding:
+                                                const EdgeInsets.symmetric(
+                                                  vertical: 8,
+                                                ),
+                                            isDense: true,
+                                            suffixIcon: _isLoadingTeams
+                                                ? const Padding(
+                                                    padding: EdgeInsets.all(
+                                                      8.0,
+                                                    ),
+                                                    child: SizedBox(
+                                                      width: 16,
+                                                      height: 16,
+                                                      child:
+                                                          CircularProgressIndicator(
+                                                            strokeWidth: 2,
+                                                          ),
+                                                    ),
+                                                  )
+                                                : null,
+                                          ),
+                                          onChanged: (value) {
+                                            _teamSearchQuery = value;
+                                            _searchDebounce?.cancel();
+                                            _searchDebounce = Timer(
+                                              const Duration(milliseconds: 500),
+                                              () {
+                                                if (value.isNotEmpty) {
+                                                  _searchTeams();
+                                                } else {
+                                                  setState(() {
+                                                    _teams = [];
+                                                  });
+                                                }
+                                              },
+                                            );
+                                          },
+                                        ),
+                                      ),
+                                      // Team list
+                                      if (_teams.isNotEmpty)
+                                        Expanded(
+                                          child: ListView.builder(
+                                            shrinkWrap: true,
+                                            itemCount: _teams.length,
+                                            itemBuilder: (context, index) {
+                                              final team = _teams[index];
+                                              return ListTile(
+                                                dense: true,
+                                                title: Text(team.nombre),
+                                                onTap: () {
+                                                  setState(() {
+                                                    _selectedTeamId = team
+                                                        .equipoId
+                                                        .toString();
+                                                    _showTeamDropdown = false;
+                                                    _teamSearchQuery = null;
+                                                  });
+                                                },
+                                              );
+                                            },
+                                          ),
+                                        ),
+                                    ],
+                                  ),
+                                ),
+                              if (_selectedTeamId != null)
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 8.0),
+                                  child: Row(
+                                    children: [
+                                      Chip(
+                                        label: Text(
+                                          _teams
+                                                  .where(
+                                                    (t) =>
+                                                        t.equipoId.toString() ==
+                                                        _selectedTeamId,
+                                                  )
+                                                  .firstOrNull
+                                                  ?.nombre ??
+                                              'Equipo seleccionado',
+                                        ),
+                                        deleteIcon: const Icon(
+                                          Icons.close,
+                                          size: 16,
+                                        ),
+                                        onDeleted: () {
+                                          setState(() {
+                                            _selectedTeamId = null;
+                                          });
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                            ],
                           ),
                           const SizedBox(height: 16),
 

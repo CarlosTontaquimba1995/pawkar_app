@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:pawkar_app/screens/settings_screen.dart';
 import 'package:pawkar_app/widgets/collapsible_app_bar.dart';
+import 'package:pawkar_app/widgets/categorias_section.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -96,7 +97,10 @@ Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-      
+        const SizedBox(height: 16),
+        const CategoriasSection(),
+        const SizedBox(height: 24),
+        // Add more sections here as needed
       ],
     );
   }

@@ -83,7 +83,7 @@ class _HomeScreenState extends State<HomeScreen> {
       },
     );
 
-    // Load upcoming encuentros
+    // Load encuentros once and share between upcoming events and matches
     _upcomingEventsProvider.executeAsync(
       () async {
         final params = EncuentroSearchParams();
@@ -92,34 +92,27 @@ class _HomeScreenState extends State<HomeScreen> {
           page: 0,
           size: 5, // Get 5 encuentros
         );
+        
+        // Filter for scheduled matches and update matches provider
+        final programados = result.content
+            .where((e) => e.estado == EstadoEncuentro.programado)
+            .toList();
+        if (mounted) {
+          _matchesProvider.setSuccess(programados);
+        }
+        
         return result.content;
       },
       onError: (error) {
         if (mounted) {
-          debugPrint('Error loading upcoming encuentros: $error');
+          debugPrint('Error loading encuentros: $error');
+          _matchesProvider.setError(error);
         }
       },
     );
-
-    // Load matches (using the same endpoint with different parameters if needed)
-    _matchesProvider.executeAsync(
-      () async {
-        final params = EncuentroSearchParams(
-          estado: 'PROGRAMADO', // Only get scheduled matches
-        );
-        final result = await _encuentroService.searchEncuentrosByQuery(
-          params,
-          page: 0,
-          size: 5, // Get 5 matches
-        );
-        return result.content;
-      },
-      onError: (error) {
-        if (mounted) {
-          debugPrint('Error loading matches: $error');
-        }
-      },
-    );
+    
+    // Initialize matches provider with empty list (will be updated by the call above)
+    _matchesProvider.setSuccess(const []);
   }
 
   // Show subcategories in a bottom sheet

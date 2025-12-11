@@ -1,11 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:pawkar_app/models/event.dart';
+import 'package:intl/intl.dart';
+import 'package:pawkar_app/models/encuentro_model.dart';
+import 'package:pawkar_app/services/encuentro_service.dart';
 import 'package:pawkar_app/features/home/widgets/match_card.dart';
+import 'package:pawkar_app/widgets/loading_widget.dart';
 
 class MatchesScreen extends StatefulWidget {
-  final List<Event> initialMatches;
+  final List<Encuentro> initialMatches;
+  final EncuentroService? encuentroService;
 
-  const MatchesScreen({super.key, required this.initialMatches});
+  const MatchesScreen({
+    super.key,
+    required this.initialMatches,
+    this.encuentroService,
+  });
 
   @override
   State<MatchesScreen> createState() => _MatchesScreenState();
@@ -14,95 +22,29 @@ class MatchesScreen extends StatefulWidget {
 class _MatchesScreenState extends State<MatchesScreen> {
   final _searchController = TextEditingController();
   final _scrollController = ScrollController();
-  final _formKey = GlobalKey<FormState>();
+  late EncuentroService _encuentroService;
 
-  // Filtros
+  // State variables
+  bool _isLoading = false;
+  String? _errorMessage;
+  List<Encuentro> _matches = [];
+  List<Encuentro> _filteredMatches = [];
+
+  // Filter variables
   String _searchQuery = '';
   DateTime? _selectedDate;
   String? _selectedStadium;
   String? _selectedTeam;
   String? _selectedCategory;
-
-  // Categorías disponibles
-  final List<String> _categories = [
-    'Fútbol',
-    'Baloncesto',
-    'Vóley',
-    'Tenis',
-    'Béisbol',
-    'Otros',
-  ];
-
-  // Equipos por categoría
-  final Map<String, List<String>> _teamsByCategory = {
-    'Fútbol': [
-      'Barcelona SC',
-      'Emelec',
-      'Liga de Quito',
-      'Independiente del Valle',
-      'Aucas',
-      'Delfín',
-      'Universidad Católica',
-      'Macará',
-      'Técnico Universitario',
-      'Guayaquil City',
-    ],
-    'Baloncesto': [
-      'Guerreros de Santo Domingo',
-      'Piratas de Los Valles',
-      'Triple Tentación',
-      'Cangrejeros de Machala',
-      'Juvenil de la U. Católica',
-    ],
-    'Vóley': [
-      'Emelec',
-      'Universidad Católica',
-      'Liga de Loja',
-      'Portoviejo F.C.',
-      'Club 9 de Octubre',
-    ],
-    'Tenis': [
-      'Equipo Nacional de Tenis',
-      'Club de Tenis Guayaquil',
-      'Quito Tenis y Golf',
-      'Club de Tenis Cuenca',
-    ],
-    'Béisbol': [
-      'Gigantes de Yaguachi',
-      'Tigres de Santo Domingo',
-      'Águilas de Manta',
-      'Toros de Quevedo',
-    ],
-    'Otros': [
-      'Selección Nacional',
-      'Liga de la Costa',
-      'Liga de la Sierra',
-      'Liga del Oriente',
-    ],
-  };
-
-  // Paginación
-  int _currentPage = 0;
-  bool _isLoading = false;
-
-  // Datos de ejemplo
-  List<Event> _allMatches = [];
-  late List<Event> _filteredMatches;
+  final List<String> _categories = [];
 
   @override
   void initState() {
     super.initState();
-
-    // Inicializar con los partidos iniciales
-    _allMatches = List.from(widget.initialMatches);
-
-    // Agregar más partidos generados
-    _allMatches.addAll(_generateMoreMatches());
-
-    // Inicializar la lista filtrada
-    _filteredMatches = List.from(_allMatches);
-
-    _scrollController.addListener(_onScroll);
+    _encuentroService = widget.encuentroService ?? EncuentroService();
+    _matches = widget.initialMatches;
+    _filteredMatches = List.from(_matches);
+    _loadEncuentros();
   }
 
   @override
@@ -112,320 +54,241 @@ class _MatchesScreenState extends State<MatchesScreen> {
     super.dispose();
   }
 
-  void _onScroll() {
-    if (_scrollController.position.pixels ==
-        _scrollController.position.maxScrollExtent) {
-      _loadMoreMatches();
-    }
-  }
-
-  void _loadMoreMatches() {
-    if (_isLoading) return;
-
+  Future<void> _loadEncuentros() async {
+    if (!mounted) return;
+    
     setState(() {
       _isLoading = true;
+      _errorMessage = null;
     });
 
-    // Simular carga de más datos
-    Future.delayed(const Duration(seconds: 1), () {
+    try {
+      final encuentros = await _encuentroService.getAllEncuentros();
+
+      // Extract unique categories
+      final categories =
+          encuentros
+              .map((e) => e.subcategoriaNombre)
+              .where((name) => name.isNotEmpty)
+              .toSet()
+              .toList()
+            ..sort();
+
+      setState(() {
+        _matches = encuentros;
+        _filteredMatches = List.from(_matches);
+        _categories.clear();
+        _categories.addAll(categories);
+      });
+    } catch (e) {
+      setState(() {
+        _errorMessage = 'Error al cargar los encuentros: $e';
+      });
+    } finally {
       if (mounted) {
         setState(() {
-          _allMatches.addAll(_generateMoreMatches());
-          _applyFilters();
-          _currentPage++;
           _isLoading = false;
         });
       }
-    });
+    }
   }
 
-  List<Event> _generateMoreMatches() {
-    // Generar más partidos de ejemplo
-    final now = DateTime.now();
-    final List<Event> moreMatches = [];
+  void _applyFilters() {
+    setState(() {
+      _filteredMatches = _matches.where((encuentro) {
+        // Filter by search query
+        if (_searchQuery.isNotEmpty) {
+          final searchLower = _searchQuery.toLowerCase();
+          if (!(encuentro.titulo.toLowerCase().contains(searchLower)) &&
+              !(encuentro.subcategoriaNombre.toLowerCase().contains(
+                searchLower,
+              )) &&
+              !(encuentro.equipoLocalNombre.toLowerCase().contains(
+                searchLower,
+              )) &&
+              !(encuentro.equipoVisitanteNombre.toLowerCase().contains(
+                searchLower,
+              ))) {
+            return false;
+          }
+        }
 
-    final teams = [
-      'Barcelona',
-      'Emelec',
-      'Liga de Quito',
-      'Independiente',
-      'Aucas',
-      'Orense',
-      'Delfín',
-      'Macará',
-      'Técnico Universitario',
-      'Guayaquil City',
-    ];
+        // Filter by date
+        if (_selectedDate != null) {
+          try {
+            final encounterDate = DateTime.parse(encuentro.fechaHora);
+            if (!DateUtils.isSameDay(_selectedDate, encounterDate)) {
+              return false;
+            }
+          } catch (e) {
+            debugPrint('Error parsing date: ${encuentro.fechaHora}');
+            return false;
+          }
+        }
 
-    final stadiums = [
-      'Estadio Monumental',
-      'Estadio Rodrigo Paz',
-      'Estadio George Capwell',
-      'Estadio Gonzalo Pozo Ripalda',
-      'Estadio Jocay',
-      'Estadio Bellavista',
-    ];
+        // Filter by stadium
+        if (_selectedStadium != null && _selectedStadium!.isNotEmpty) {
+          if (!encuentro.estadioNombre.toLowerCase().contains(
+            _selectedStadium!.toLowerCase(),
+          )) {
+            return false;
+          }
+        }
 
-    for (int i = 0; i < 10; i++) {
-      final daysToAdd = _currentPage * 10 + i;
-      final team1 = teams[i % teams.length];
-      final team2 = teams[(i + 1) % teams.length];
+        // Filter by team
+        if (_selectedTeam != null && _selectedTeam!.isNotEmpty) {
+          if ((encuentro.equipoLocalNombre.toLowerCase()).contains(
+                _selectedTeam!.toLowerCase(),
+              ) ||
+              (encuentro.equipoVisitanteNombre.toLowerCase()).contains(
+                _selectedTeam!.toLowerCase(),
+              )) {
+            return true;
+          }
+          return false;
+        }
 
-      moreMatches.add(
-        Event(
-          id: 'm${_allMatches.length + i}',
-          title: '$team1 vs $team2',
-          description:
-              'Partido de la Liga Pro - Fecha ${_currentPage * 10 + i + 1}',
-          dateTime: now.add(Duration(days: daysToAdd, hours: 18 + (i % 4))),
-          location: stadiums[i % stadiums.length],
-          category: 'Fútbol',
-          isFeatured: i % 3 == 0,
-          price: 10.0 + (i * 2.0),
-          imageUrl: 'assets/images/futbol.jpg',
-        ),
-      );
-    }
+        // Filter by category
+        if (_selectedCategory != null && _selectedCategory!.isNotEmpty) {
+          if (!encuentro.subcategoriaNombre.toLowerCase().contains(
+            _selectedCategory!.toLowerCase(),
+          )) {
+            return false;
+          }
+        }
 
-    return moreMatches;
+        return true;
+      }).toList();
+    });
   }
 
   void _showFilterDialog() {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      builder: (BuildContext context) {
-        return StatefulBuilder(
-          builder: (BuildContext context, StateSetter setState) {
-            return _buildFilterSheet(setState, _selectedCategory);
-          },
-        );
-      },
+      builder: (context) => _buildFilterDialog(),
     );
   }
 
-  void _applyFilters() {
-    if (!mounted) return;
-
-    setState(() {
-      _filteredMatches = _allMatches.where((match) {
-        // Filtrar por búsqueda
-        final searchLower = _searchQuery.toLowerCase();
-        final matchesSearch =
-            match.title.toLowerCase().contains(searchLower) ||
-            match.description.toLowerCase().contains(searchLower) ||
-            match.location.toLowerCase().contains(searchLower);
-
-        // Filtrar por fecha
-        final matchesDate =
-            _selectedDate == null ||
-            (match.dateTime.year == _selectedDate!.year &&
-                match.dateTime.month == _selectedDate!.month &&
-                match.dateTime.day == _selectedDate!.day);
-
-        // Filtrar por estadio
-        final matchesStadium =
-            _selectedStadium == null || match.location == _selectedStadium;
-
-        // Filtrar por equipo
-        final matchesTeam =
-            _selectedTeam == null ||
-            match.title.contains(_selectedTeam!) ||
-            match.description.contains(_selectedTeam!);
-
-        // Filtrar por categoría
-        final matchesCategory =
-            _selectedCategory == null || match.category == _selectedCategory;
-
-        return matchesSearch &&
-            matchesDate &&
-            matchesStadium &&
-            matchesTeam &&
-            matchesCategory;
-      }).toList();
-    });
-  }
-
-  // Helper method to safely update state
-  // (removed) _safeSetState helper was unused and has been deleted.
-
-  void _resetFilters() {
-    _searchController.clear();
-    _selectedDate = null;
-    _selectedStadium = null;
-    _selectedTeam = null;
-    _selectedCategory = null;
-    _searchQuery = '';
-    _applyFilters();
-  }
-
-  // Actualizar la lista de equipos cuando se selecciona una categoría
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Próximos Partidos'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.filter_list),
-            onPressed: _showFilterDialog,
-          ),
-        ],
-      ),
-      body: Column(
-        children: [
-          // Barra de búsqueda
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: TextField(
-              controller: _searchController,
-              decoration: InputDecoration(
-                hintText: 'Buscar partidos...',
-                prefixIcon: const Icon(Icons.search),
-                suffixIcon: _searchQuery.isNotEmpty
-                    ? IconButton(
-                        icon: const Icon(Icons.clear),
-                        onPressed: () {
-                          _searchController.clear();
-                          _searchQuery = '';
-                          _applyFilters();
-                        },
-                      )
-                    : null,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide.none,
-                ),
-                filled: true,
-                fillColor: theme.colorScheme.surfaceContainerHighest,
-                contentPadding: const EdgeInsets.symmetric(
-                  vertical: 0,
-                  horizontal: 16,
-                ),
-              ),
-              onChanged: (value) {
-                _searchQuery = value;
-                _applyFilters();
-              },
-            ),
-          ),
-
-          // Filtros activos
-          _buildActiveFilters(),
-
-          // Contador de resultados
-          Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 16.0,
-              vertical: 8.0,
-            ),
-            child: Row(
+  Widget _buildFilterDialog() {
+    return StatefulBuilder(
+      builder: (context, setState) {
+        return Container(
+          padding: const EdgeInsets.all(16.0),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Text(
-                  '${_filteredMatches.length} partidos encontrados',
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
+                const Text(
+                  'Filtrar partidos',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  textAlign: TextAlign.center,
                 ),
-                const Spacer(),
-                if (_selectedDate != null ||
-                    _selectedStadium != null ||
-                    _selectedTeam != null)
-                  TextButton(
-                    onPressed: _resetFilters,
-                    style: TextButton.styleFrom(
-                      padding: EdgeInsets.zero,
-                      minimumSize: const Size(50, 30),
-                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    ),
-                    child: Text(
-                      'Limpiar filtros',
-                      style: theme.textTheme.labelSmall?.copyWith(
-                        color: theme.colorScheme.primary,
+                const SizedBox(height: 16),
+
+                // Search field
+                TextField(
+                  controller: _searchController,
+                  decoration: const InputDecoration(
+                    labelText: 'Buscar',
+                    hintText: 'Buscar por equipo, categoría...',
+                    prefixIcon: Icon(Icons.search),
+                    border: OutlineInputBorder(),
+                  ),
+                  onChanged: (value) {
+                    _searchQuery = value;
+                  },
+                ),
+                const SizedBox(height: 16),
+                
+                // Date picker
+                ListTile(
+                  title: Text(
+                    _selectedDate == null
+                        ? 'Seleccionar fecha'
+                        : 'Fecha: ${DateFormat('dd/MM/yyyy').format(_selectedDate!)}',
+                  ),
+                  trailing: const Icon(Icons.calendar_today),
+                  onTap: () async {
+                    final date = await showDatePicker(
+                      context: context,
+                      initialDate: DateTime.now(),
+                      firstDate: DateTime.now().subtract(
+                        const Duration(days: 365),
+                      ),
+                      lastDate: DateTime.now().add(const Duration(days: 365)),
+                    );
+                    if (date != null) {
+                      setState(() {
+                        _selectedDate = date;
+                      });
+                    }
+                  },
+                ),
+                
+                // Category filter
+                if (_categories.isNotEmpty) ...[
+                  const SizedBox(height: 8),
+                  const Text(
+                    'Categoría:',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  Wrap(
+                    spacing: 8,
+                    children: _categories.map((category) {
+                      final isSelected = _selectedCategory == category;
+                      return FilterChip(
+                        label: Text(category),
+                        selected: isSelected,
+                        onSelected: (selected) {
+                          setState(() {
+                            _selectedCategory = selected ? category : null;
+                          });
+                        },
+                      );
+                    }).toList(),
+                  ),
+                ],
+
+                const SizedBox(height: 24),
+
+                // Action buttons
+                Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton(
+                        onPressed: () {
+                          setState(() {
+                            _searchQuery = '';
+                            _selectedDate = null;
+                            _selectedStadium = null;
+                            _selectedTeam = null;
+                            _selectedCategory = null;
+                            _searchController.clear();
+                          });
+                        },
+                        child: const Text('Limpiar filtros'),
                       ),
                     ),
-                  ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          _applyFilters();
+                          Navigator.pop(context);
+                        },
+                        child: const Text('Aplicar'),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
               ],
             ),
           ),
-
-          // Lista de partidos
-          Expanded(
-            child: _filteredMatches.isEmpty && !_isLoading
-                ? Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.sports_soccer_outlined,
-                          size: 64,
-                          color: theme.colorScheme.onSurfaceVariant.withAlpha(
-                            128,
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
-                          'No se encontraron partidos',
-                          style: theme.textTheme.bodyLarge?.copyWith(
-                            color: theme.colorScheme.onSurfaceVariant,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'Intenta con otros filtros de búsqueda',
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            color: theme.colorScheme.onSurfaceVariant.withAlpha(
-                              179,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  )
-                : RefreshIndicator(
-                    onRefresh: () async {
-                      // Simular recarga
-                      await Future.delayed(const Duration(seconds: 1));
-                      setState(() {
-                        _currentPage = 0;
-                        _allMatches = _generateMoreMatches();
-                        _applyFilters();
-                      });
-                    },
-                    child: ListView.builder(
-                      controller: _scrollController,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 8,
-                      ),
-                      itemCount: _filteredMatches.length + (_isLoading ? 1 : 0),
-                      itemBuilder: (context, index) {
-                        if (index >= _filteredMatches.length) {
-                          return const Padding(
-                            padding: EdgeInsets.symmetric(vertical: 16.0),
-                            child: Center(child: CircularProgressIndicator()),
-                          );
-                        }
-
-                        final match = _filteredMatches[index];
-                        return Padding(
-                          padding: const EdgeInsets.only(bottom: 12.0),
-                          child: MatchCard(
-                            match: match,
-                            onTap: () {
-                              // Navegar al detalle del partido
-                            },
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 
@@ -454,7 +317,7 @@ class _MatchesScreenState extends State<MatchesScreen> {
       );
     }
 
-    if (_selectedStadium != null) {
+    if (_selectedStadium != null && _selectedStadium!.isNotEmpty) {
       activeFilters.add(
         Chip(
           label: Text(
@@ -475,7 +338,7 @@ class _MatchesScreenState extends State<MatchesScreen> {
       );
     }
 
-    if (_selectedTeam != null) {
+    if (_selectedTeam != null && _selectedTeam!.isNotEmpty) {
       activeFilters.add(
         Chip(
           label: Text(
@@ -496,7 +359,7 @@ class _MatchesScreenState extends State<MatchesScreen> {
       );
     }
 
-    if (_selectedCategory != null) {
+    if (_selectedCategory != null && _selectedCategory!.isNotEmpty) {
       activeFilters.add(
         Chip(
           label: Text(
@@ -525,239 +388,78 @@ class _MatchesScreenState extends State<MatchesScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
-        child: Row(
-          children: activeFilters
-              .map(
-                (filter) => Padding(
-                  padding: const EdgeInsets.only(right: 8.0),
-                  child: filter,
-                ),
-              )
-              .toList(),
-        ),
+        child: Row(children: activeFilters),
       ),
     );
   }
 
-  Widget _buildFilterSheet(StateSetter setState, String? currentCategory) {
-    final theme = Theme.of(context);
+  @override
+  Widget build(BuildContext context) {
+    if (_isLoading && _matches.isEmpty) {
+      return const Scaffold(body: Center(child: LoadingWidget()));
+    }
 
-    // Usar el estado local para manejar la categoría dentro del diálogo
-    final selectedCategory = currentCategory ?? _selectedCategory;
-    final filteredTeams = selectedCategory != null
-        ? _teamsByCategory[selectedCategory] ?? []
-        : [];
-
-    return Container(
-      padding: EdgeInsets.only(
-        bottom: MediaQuery.of(context).viewInsets.bottom,
-        left: 16,
-        right: 16,
-        top: 16,
-      ),
-      decoration: BoxDecoration(
-        color: theme.colorScheme.surface,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      child: Form(
-        key: _formKey,
-        child: SingleChildScrollView(
+    if (_errorMessage != null && _matches.isEmpty) {
+      return Scaffold(
+        body: Center(
           child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Center(
-                child: Container(
-                  width: 40,
-                  height: 4,
-                  margin: const EdgeInsets.only(bottom: 16),
-                  decoration: BoxDecoration(
-                    color: theme.dividerColor,
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                ),
-              ),
-
-              Text(
-                'Filtrar partidos',
-                style: theme.textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 24),
-
-              // Filtro por fecha
-              TextFormField(
-                readOnly: true,
-                controller: TextEditingController(
-                  text: _selectedDate != null
-                      ? '${_selectedDate!.day}/${_selectedDate!.month}/${_selectedDate!.year}'
-                      : '',
-                ),
-                decoration: InputDecoration(
-                  labelText: 'Fecha del partido',
-                  suffixIcon: IconButton(
-                    icon: const Icon(Icons.calendar_today),
-                    onPressed: () async {
-                      final date = await showDatePicker(
-                        context: context,
-                        initialDate: DateTime.now(),
-                        firstDate: DateTime.now(),
-                        lastDate: DateTime.now().add(const Duration(days: 365)),
-                        locale: const Locale('es', 'ES'),
-                      );
-
-                      if (date != null) {
-                        setState(() {
-                          _selectedDate = date;
-                        });
-                      }
-                    },
-                  ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-              ),
+              Text(_errorMessage!),
               const SizedBox(height: 16),
-
-              // Filtro por categoría
-              DropdownButtonFormField<String>(
-                initialValue: selectedCategory,
-                decoration: InputDecoration(
-                  labelText: 'Categoría',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                items: _categories.map((category) {
-                  return DropdownMenuItem(
-                    value: category,
-                    child: Text(category),
-                  );
-                }).toList(),
-                onChanged: (value) {
-                  setState(() {
-                    _selectedCategory = value;
-                    _selectedTeam = null; // Reset team when category changes
-                  });
-                },
+              ElevatedButton(
+                onPressed: _loadEncuentros,
+                child: const Text('Reintentar'),
               ),
-              const SizedBox(height: 16),
-
-              // Filtro por equipo (solo se habilita cuando hay una categoría seleccionada)
-              DropdownButtonFormField<String>(
-                initialValue: _selectedTeam,
-                decoration: InputDecoration(
-                  labelText: 'Equipo',
-                  hintText: selectedCategory == null
-                      ? 'Selecciona una categoría primero'
-                      : 'Selecciona un equipo',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                items: filteredTeams.map<DropdownMenuItem<String>>((
-                  dynamic team,
-                ) {
-                  return DropdownMenuItem<String>(
-                    value: team.toString(),
-                    child: Text(team.toString()),
-                  );
-                }).toList(),
-                onChanged: selectedCategory == null
-                    ? null
-                    : (value) {
-                        setState(() {
-                          _selectedTeam = value;
-                        });
-                      },
-                isExpanded: true,
-                disabledHint: Text(
-                  'Selecciona una categoría primero',
-                  style: TextStyle(color: Theme.of(context).hintColor),
-                ),
-              ),
-              const SizedBox(height: 16),
-
-              // Filtro por estadio
-              DropdownButtonFormField<String>(
-                initialValue: _selectedStadium,
-                decoration: InputDecoration(
-                  labelText: 'Estadio',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                items:
-                    [
-                      'Estadio Monumental',
-                      'Estadio Rodrigo Paz',
-                      'Estadio George Capwell',
-                      'Estadio Gonzalo Pozo Ripalda',
-                      'Estadio Jocay',
-                      'Estadio Bellavista',
-                    ].map((stadium) {
-                      return DropdownMenuItem(
-                        value: stadium,
-                        child: Text(stadium),
-                      );
-                    }).toList(),
-                onChanged: (value) {
-                  setState(() {
-                    _selectedStadium = value;
-                  });
-                },
-              ),
-
-              const SizedBox(height: 24),
-
-              // Botones de acción
-              Row(
-                children: [
-                  Expanded(
-                    child: OutlinedButton(
-                      onPressed: () {
-                        setState(() {
-                          _selectedDate = null;
-                          _selectedStadium = null;
-                          _selectedTeam = null;
-                          _selectedCategory = null;
-                        });
-                      },
-                      style: OutlinedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      child: const Text('Limpiar'),
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: FilledButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                        _applyFilters();
-                      },
-                      style: FilledButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      child: const Text('Aplicar filtros'),
-                    ),
-                  ),
-                ],
-              ),
-
-              const SizedBox(height: 24),
             ],
           ),
         ),
+      );
+    }
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Partidos'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.filter_list),
+            onPressed: _showFilterDialog,
+          ),
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: _loadEncuentros,
+          ),
+        ],
       ),
+      body: _buildContent(),
+    );
+  }
+
+  Widget _buildContent() {
+    if (_matches.isEmpty) {
+      return const Center(child: Text('No hay partidos disponibles'));
+    }
+
+    return Column(
+      children: [
+        _buildActiveFilters(),
+        Expanded(
+          child: _filteredMatches.isEmpty
+              ? const Center(
+                  child: Text(
+                    'No se encontraron partidos con los filtros actuales',
+                  ),
+                )
+              : ListView.builder(
+                  controller: _scrollController,
+                  itemCount: _filteredMatches.length,
+                  itemBuilder: (context, index) {
+                    final match = _filteredMatches[index];
+                    return MatchCard(match: match);
+                  },
+                ),
+        ),
+      ],
     );
   }
 }

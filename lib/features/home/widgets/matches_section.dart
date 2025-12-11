@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:pawkar_app/models/event.dart';
+import 'package:pawkar_app/models/encuentro_model.dart';
 import 'package:pawkar_app/features/home/widgets/match_card.dart';
 
 class MatchesSection extends StatelessWidget {
-  final List<Event> matches;
-  final ValueChanged<Event>? onMatchTap;
+  final List<Encuentro> matches;
+  final ValueChanged<Encuentro>? onMatchTap;
   final VoidCallback? onViewAll;
 
   const MatchesSection({

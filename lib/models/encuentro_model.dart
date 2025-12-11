@@ -151,8 +151,9 @@ class UpdateEncuentroRequest {
     if (estado != null) json['estado'] = estado!.value;
     if (subcategoriaId != null) json['subcategoriaId'] = subcategoriaId;
     if (equipoLocalId != null) json['equipoLocalId'] = equipoLocalId;
-    if (equipoVisitanteId != null)
+    if (equipoVisitanteId != null) {
       json['equipoVisitanteId'] = equipoVisitanteId;
+    }
     return json;
   }
 }

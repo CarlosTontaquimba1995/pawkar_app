@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:pawkar_app/models/event.dart';
+import 'package:pawkar_app/models/encuentro_model.dart';
 
 class MatchCard extends StatelessWidget {
-  final Event match;
+  final Encuentro match;
   final VoidCallback? onTap;
 
   const MatchCard({super.key, required this.match, this.onTap});
@@ -10,6 +10,7 @@ class MatchCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final matchDate = DateTime.parse(match.fechaHora);
 
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
@@ -25,7 +26,7 @@ class MatchCard extends StatelessWidget {
             children: [
               // Fecha y hora
               Text(
-                '${_formatDate(match.dateTime)} • ${_formatTime(match.dateTime)}',
+                '${_formatDate(matchDate)} • ${_formatTime(matchDate)}',
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: theme.colorScheme.onSurfaceVariant,
                 ),
@@ -38,7 +39,7 @@ class MatchCard extends StatelessWidget {
                   // Equipo local
                   Expanded(
                     child: Text(
-                      _getTeamName(match.title, isHome: true),
+                      match.equipoLocalNombre,
                       style: theme.textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.w500,
                       ),
@@ -58,7 +59,7 @@ class MatchCard extends StatelessWidget {
                       borderRadius: BorderRadius.circular(16),
                     ),
                     child: Text(
-                      _getScore(match),
+                      _getScore(),
                       style: theme.textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                         color: theme.colorScheme.onPrimaryContainer,
@@ -69,7 +70,7 @@ class MatchCard extends StatelessWidget {
                   // Equipo visitante
                   Expanded(
                     child: Text(
-                      _getTeamName(match.title, isHome: false),
+                      match.equipoVisitanteNombre,
                       style: theme.textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.w500,
                       ),
@@ -79,7 +80,7 @@ class MatchCard extends StatelessWidget {
               ),
 
               // Lugar
-              if (match.location.isNotEmpty) ...[
+              if (match.estadioNombre.isNotEmpty) ...[
                 const SizedBox(height: 12),
                 Row(
                   children: [
@@ -90,7 +91,7 @@ class MatchCard extends StatelessWidget {
                     ),
                     const SizedBox(width: 4),
                     Text(
-                      match.location,
+                      match.estadioNombre,
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: theme.colorScheme.onSurfaceVariant,
                       ),
@@ -113,18 +114,9 @@ class MatchCard extends StatelessWidget {
     return '${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}';
   }
 
-  String _getTeamName(String title, {required bool isHome}) {
-    // Suponemos que el título del evento está en formato "Equipo Local vs Equipo Visitante"
-    final parts = title.split(' vs ');
-    if (parts.length == 2) {
-      return isHome ? parts[0] : parts[1];
-    }
-    return title; // Si no está en el formato esperado, devolvemos el título completo
-  }
-
-  String _getScore(Event match) {
-    // Aquí podrías extraer el marcador del evento si lo tienes disponible
+  String _getScore() {
     // Por ahora, devolvemos un marcador ficticio
-    return '2 - 1';
+    // En el futuro, podrías añadir un campo de marcador al modelo Encuentro
+    return '0 - 0';
   }
 }

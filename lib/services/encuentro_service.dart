@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer' as developer;
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/encuentro_model.dart';
@@ -172,29 +173,11 @@ class EncuentroService {
     }
   }
 
-  // Search encuentros with search parameters
-  Future<EncuentroPageData> searchEncuentros(
-      EncuentroSearchParams searchParams) async {
-    try {
-      final response = await _client.post(
-        Uri.parse('$_baseUrl/search'),
-        headers: await _getHeaders(),
-        body: json.encode(searchParams.toJson()),
-      );
-
-      final data = _handleResponse(response);
-      final responseObj = EncuentroPageResponse.fromJson(data);
-      return responseObj.data;
-    } catch (e) {
-      throw Exception('Error al buscar encuentros: $e');
-    }
-  }
-
   // Search encuentros by query parameters
   Future<EncuentroPageData> searchEncuentrosByQuery(
     EncuentroSearchParams params, {
     int page = 0,
-    int size = 10,
+    int size = 5,
   }) async {
     try {
       final queryParams = {
@@ -210,9 +193,20 @@ class EncuentroService {
         if (params.estado != null) 'estado': params.estado,
       };
 
+      final uri = Uri.parse('$_baseUrl/search').replace(
+        queryParameters: queryParams.map(
+          (key, value) => MapEntry(key, value.toString()),
+        ),
+      );
+
+      // Log the complete URL
+      developer.log(
+        'EncuentroService - Request URL: ${uri.toString()}',
+        name: 'EncuentroService',
+      );
+
       final response = await _client.get(
-        Uri.parse('$_baseUrl/search').replace(queryParameters: queryParams
-            .map((key, value) => MapEntry(key, value.toString()))),
+        uri,
         headers: _getPublicHeaders(),
       );
 
@@ -220,6 +214,11 @@ class EncuentroService {
       final responseObj = EncuentroPageResponse.fromJson(data);
       return responseObj.data;
     } catch (e) {
+      developer.log(
+        'Error al buscar encuentros por consulta: $e',
+        name: 'EncuentroService',
+        error: e,
+      );
       throw Exception('Error al buscar encuentros por consulta: $e');
     }
   }

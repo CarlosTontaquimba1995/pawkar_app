@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:pawkar_app/features/home/widgets/category_card.dart';
 import 'package:pawkar_app/features/home/widgets/section_header.dart';
-import 'package:pawkar_app/models/category.dart';
+import 'package:pawkar_app/models/categoria_model.dart';
 
 class CategoriesSection extends StatelessWidget {
-  final List<Category> categories;
-  final ValueChanged<Category>? onCategoryTap;
+  final List<Categoria> categories;
+  final ValueChanged<Categoria>? onCategoryTap;
   final VoidCallback? onViewAll;
 
   const CategoriesSection({

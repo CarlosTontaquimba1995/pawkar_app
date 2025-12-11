@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:pawkar_app/models/category.dart';
+import 'package:pawkar_app/models/categoria_model.dart';
 
 class CategoryCard extends StatefulWidget {
-  final Category category;
+  final Categoria category;
   final VoidCallback? onTap;
   final int index;
 
@@ -95,7 +95,7 @@ class _CategoryCardState extends State<CategoryCard>
                     duration: const Duration(milliseconds: 200),
                     curve: Curves.easeInOut,
                     child: Icon(
-                      _getCategoryIcon(widget.category.name),
+                      _getCategoryIcon(widget.category.nombre),
                       size: 38,
                       color: _isHovered
                           ? colorScheme.onPrimary
@@ -109,7 +109,7 @@ class _CategoryCardState extends State<CategoryCard>
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        widget.category.name,
+                        widget.category.nombre,
                         textAlign: TextAlign.center,
                         style: theme.textTheme.bodyMedium?.copyWith(
                           fontWeight: FontWeight.w600,

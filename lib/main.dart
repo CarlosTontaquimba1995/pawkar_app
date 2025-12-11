@@ -63,8 +63,8 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
       builder: (context, themeProvider, _) {
         return MaterialApp(
           title: 'Pawkar App',
-          theme: AppTheme.light(),
-          darkTheme: AppTheme.dark(),
+          theme: AppTheme.lightTheme,
+          darkTheme: AppTheme.darkTheme,
           themeMode: themeProvider.themeMode,
           debugShowCheckedModeBanner: false,
           home: const SplashScreen(),

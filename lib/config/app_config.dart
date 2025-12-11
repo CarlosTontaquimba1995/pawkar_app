@@ -47,29 +47,25 @@ class AppConfig {
     try {
       final config = await getConfig();
 
-      // Update theme colors from config
-      final colorMap = {
-        'primario': config.primario,
-        'secundario': config.secundario,
-        'acento1': config.acento1,
-        'acento2': config.acento2,
-      };
-      
-      // Update AppColors
-      AppColors.initialize(
-        primary: _parseColor(config.primario),
-        secondary: _parseColor(config.secundario),
-        accent1: _parseColor(config.acento1),
-        accent2: _parseColor(config.acento2),
-      );
-      
-      // Update AppTheme
-      AppTheme.updateColors(colorMap);
+      // Parse colors from config
+      final primaryColor = _parseColor(config.primario);
+      final secondaryColor = _parseColor(config.secundario);
+      final accent1 = _parseColor(config.acento1);
+      final accent2 = _parseColor(config.acento2);
 
-      return AppTheme.light();
+      // Update AppColors with the new colors
+      AppColors.updateColors(
+        primaryColor: primaryColor,
+        secondaryColor: secondaryColor,
+        primaryVariantColor: accent1,
+        secondaryVariantColor: accent2,
+        isDark: false, // or determine based on theme mode
+      );
+
+      return AppTheme.lightTheme;
     } catch (e) {
       debugPrint('Error loading theme configuration: $e');
-      return AppTheme.light(); // Fallback to default theme
+      return AppTheme.lightTheme; // Fallback to default theme
     }
   }
 

@@ -6,8 +6,8 @@ import '../theme/app_theme.dart';
 
 class ThemeProvider with ChangeNotifier {
   // Light & dark theme support
-  ThemeData _lightTheme = AppTheme.light();
-  ThemeData _darkTheme = AppTheme.dark();
+  ThemeData _lightTheme = AppTheme.lightTheme;
+  ThemeData _darkTheme = AppTheme.darkTheme;
 
   // Manual theme override (null = follow system)
   ThemeMode _themeMode = ThemeMode.system;
@@ -56,17 +56,18 @@ class ThemeProvider with ChangeNotifier {
     _configuracion = config;
 
     // Update AppColors
-    AppColors.initialize(
-      primary: _hexToColor(config.primario),
-      secondary: _hexToColor(config.secundario),
-      accent1: _hexToColor(config.acento1),
-      accent2: _hexToColor(config.acento2),
+    AppColors.updateColors(
+      primaryColor: _hexToColor(config.primario),
+      secondaryColor: _hexToColor(config.secundario),
+      primaryVariantColor: _hexToColor(config.acento1),
+      secondaryVariantColor: _hexToColor(config.acento2),
+      isDark: _isDarkMode,
     );
 
     // For now, use AppTheme's built-in light/dark themes
     // (Optional: could create custom themes from config here)
-    _lightTheme = AppTheme.light();
-    _darkTheme = AppTheme.dark();
+    _lightTheme = AppTheme.lightTheme;
+    _darkTheme = AppTheme.darkTheme;
     notifyListeners();
   }
 

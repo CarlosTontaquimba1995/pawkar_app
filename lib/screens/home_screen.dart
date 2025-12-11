@@ -4,6 +4,7 @@ import 'package:pawkar_app/screens/settings_screen.dart';
 import 'package:pawkar_app/widgets/collapsible_app_bar.dart';
 import 'package:pawkar_app/widgets/categorias_section.dart';
 import 'package:pawkar_app/widgets/eventos_destacados_section.dart';
+import 'package:pawkar_app/widgets/proximos_eventos_section.dart';
 import 'package:pawkar_app/widgets/proximos_encuentros_section.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -105,6 +106,8 @@ Widget build(BuildContext context) {
         const EventosDestacadosSection(),
         const SizedBox(height: 24),
         const ProximosEncuentrosSection(),
+        const SizedBox(height: 24),
+        const ProximosEventosSection(),
         const SizedBox(height: 24),
       ],
     );

@@ -32,7 +32,7 @@ class _MatchesScreenState extends State<MatchesScreen> {
   bool _isLoading = false;
   bool _isLoadingMore = false;
   String? _errorMessage;
-  List<Encuentro> _matches = [];
+  final List<Encuentro> _matches = [];
   int _currentPage = 0;
   final int _pageSize = 10;
   bool _hasMore = true;

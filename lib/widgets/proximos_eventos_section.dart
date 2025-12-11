@@ -178,18 +178,6 @@ class _ProximosEventosSectionState extends State<ProximosEventosSection> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-          child: Text(
-            'Próximos Eventos',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-          ),
-        ),
-        _buildContent(),
-      ],
-    );
+    return _buildContent();
   }
 }

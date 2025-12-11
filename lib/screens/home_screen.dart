@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:pawkar_app/screens/settings_screen.dart';
-import 'package:pawkar_app/widgets/collapsible_app_bar.dart';
 import 'package:pawkar_app/widgets/categorias_section.dart';
 import 'package:pawkar_app/widgets/eventos_destacados_section.dart';
 import 'package:pawkar_app/widgets/proximos_eventos_section.dart';
@@ -60,12 +58,6 @@ class _HomeScreenState extends State<HomeScreen> {
     await Future.delayed(const Duration(seconds: 1));
   }
 
-  void _showThemeSelector(BuildContext context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const SettingsScreen()),
-    );
-  }
 
   Future<void> _handleRefresh() async {
     try {
@@ -100,63 +92,107 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     return Scaffold(
-      body: AnnotatedRegion<SystemUiOverlayStyle>(
-        value: SystemUiOverlayStyle.light.copyWith(
-          statusBarColor: Colors.transparent,
-          statusBarIconBrightness: Brightness.light,
-        ),
-        child: RefreshIndicator(
-          key: _refreshIndicatorKey,
-          onRefresh: _handleRefresh,
-          color: Theme.of(context).primaryColor,
-          backgroundColor: Colors.white,
-          strokeWidth: 2.5,
-          triggerMode: RefreshIndicatorTriggerMode.onEdge,
-          child: CustomScrollView(
-            physics: const AlwaysScrollableScrollPhysics(
-              parent: BouncingScrollPhysics(),
-            ),
-            slivers: [
-            CollapsibleAppBar(
-              title: 'PAWKAR',
-              subtitle: 'Festival Cultural y Deportivo',
-              greeting: 'Bienvenido a',
+      backgroundColor: colorScheme.surface,
+      body: RefreshIndicator(
+        key: _refreshIndicatorKey,
+        onRefresh: _handleRefresh,
+        child: CustomScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          slivers: [
+            SliverAppBar(
+              title: Text(
+                'Pawkar',
+                style: theme.textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+              backgroundColor: colorScheme.primary,
+              elevation: 0,
+              floating: true,
+              pinned: true,
               actions: [
-                Padding(
-                  padding: const EdgeInsets.only(right: 16),
-                  child: IconButton(
-                    icon: const Icon(
-                      Icons.settings,
-                      color: Colors.white,
-                      size: 24,
-                    ),
-                    onPressed: () => _showThemeSelector(context),
-                    tooltip: 'Ajustes',
-                  ),
+                IconButton(
+                  icon: const Icon(Icons.settings, color: Colors.white),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const SettingsScreen(),
+                      ),
+                    );
+                  },
                 ),
               ],
             ),
-              SliverToBoxAdapter(child: _buildBody(theme)),
-            ],
-          ),
+            SliverToBoxAdapter(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Categorías Section
+                  _buildSection(
+                    context,
+                    title: 'Categorías',
+                    child: const CategoriasSection(),
+                  ),
+
+                  // Próximos Encuentros Section
+                  _buildSection(
+                    context,
+                    title: 'Próximos Encuentros',
+                    child: const ProximosEncuentrosSection(),
+                  ),
+
+                  // Eventos Destacados Section
+                  _buildSection(
+                    context,
+                    title: 'Eventos Destacados',
+                    child: const EventosDestacadosSection(),
+                  ),
+
+                  // Próximos Eventos Section
+                  _buildSection(
+                    context,
+                    title: 'Próximos Eventos',
+                    child: const ProximosEventosSection(),
+                  ),
+
+                  const SizedBox(height: 24),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
-  Widget _buildBody(ThemeData theme) {
+
+  Widget _buildSection(
+    BuildContext context, {
+    required String title,
+    required Widget child,
+  }) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const SizedBox(height: 16),
-        const CategoriasSection(),
-        const SizedBox(height: 24),
-        const EventosDestacadosSection(),
-        const SizedBox(height: 24),
-        const ProximosEncuentrosSection(),
-        const SizedBox(height: 24),
-        const ProximosEventosSection(),
-        const SizedBox(height: 24),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(20, 24, 20, 16),
+          child: Text(
+            title,
+            style: theme.textTheme.headlineSmall?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: colorScheme.onSurface,
+            ),
+          ),
+        ),
+        child,
+        const SizedBox(height: 8),
       ],
     );
   }

@@ -31,16 +31,8 @@ class CategoriasSectionState extends State<CategoriasSection> {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-          child: Text(
-            'Categorías',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-          ),
-        ),
-        const SizedBox(height: 4),
         SizedBox(
-          height: 150, // Slightly increased height to accommodate content
+          height: 150,
           child: FutureBuilder<List<Categoria>>(
             future: _categoriasFuture,
             builder: (context, snapshot) {
@@ -57,7 +49,10 @@ class CategoriasSectionState extends State<CategoriasSection> {
               final categorias = snapshot.data!;
               return ListView.builder(
                 scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 4.0,
+                  vertical: 2.0,
+                ),
                 itemCount: categorias.length,
                 itemBuilder: (context, index) {
                   return _buildCategoriaItem(categorias[index]);
@@ -75,6 +70,9 @@ class CategoriasSectionState extends State<CategoriasSection> {
     if (nemonico == null) return Icons.category;
 
     final nemonicoLower = nemonico.toLowerCase();
+    
+    // Debug log to see the nemonico being processed
+    debugPrint('Nemonico: $nemonicoLower');
 
     switch (nemonicoLower) {
       case 'sports':
@@ -86,6 +84,10 @@ class CategoriasSectionState extends State<CategoriasSection> {
       case 'gastronomy':
       case 'gastronomia':
         return Icons.restaurant;
+      case 'music':
+      case 'musica':
+      case 'msica':
+        return Icons.music_note;
       case 'futbol':
         return Icons.sports_soccer;
       case 'basquet':

@@ -186,21 +186,6 @@ class _MatchesScreenState extends State<MatchesScreen> {
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          // Search field
-                          TextField(
-                            controller: _searchController,
-                            decoration: const InputDecoration(
-                              labelText: 'Buscar',
-                              hintText: 'Buscar por equipo, categoría...',
-                              prefixIcon: Icon(Icons.search),
-                              border: OutlineInputBorder(),
-                            ),
-                            onChanged: (value) {
-                              _searchQuery = value;
-                            },
-                          ),
-                          const SizedBox(height: 16),
-                          
                           // Date range picker
                           ListTile(
                             title: Text(

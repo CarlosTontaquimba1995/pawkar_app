@@ -220,7 +220,12 @@ class _MatchesScreenState extends State<MatchesScreen> {
       final response = await _subcategoriaService.getSubcategorias();
       if (mounted) {
         setState(() {
-          _categories = response;
+          // Filtrar solo las subcategorías de la categoría DEPORTES
+          _categories = response
+              .where(
+                (subcat) => subcat.categoriaNombre.toUpperCase() == 'DEPORTES',
+              )
+              .toList();
         });
       }
     } catch (e) {

@@ -8,7 +8,9 @@ import 'package:pawkar_app/models/subcategoria_model.dart';
 import 'package:pawkar_app/services/encuentro_service.dart';
 import 'package:pawkar_app/services/equipo_service.dart';
 import 'package:pawkar_app/services/estadio_service.dart';
+import 'package:pawkar_app/services/serie_service.dart';
 import 'package:pawkar_app/services/subcategoria_service.dart';
+import 'package:pawkar_app/models/serie_model.dart';
 import 'package:pawkar_app/features/home/widgets/match_card.dart';
 import 'package:pawkar_app/widgets/loading_widget.dart';
 
@@ -46,6 +48,12 @@ class _MatchesScreenState extends State<MatchesScreen> {
   String? _errorMessage;
   int _currentPage = 0;
   final int _pageSize = 10;
+  
+  // Series state
+  final SerieService _serieService = SerieService();
+  List<Serie> _series = [];
+  bool _isLoadingSeries = false;
+  int? _selectedSerieId;
   
   // Filter state
   DateTime? _startDate;
@@ -291,6 +299,36 @@ class _MatchesScreenState extends State<MatchesScreen> {
     }
   }
 
+  Future<void> _loadSeriesByCategory(int? subcategoriaId) async {
+    if (subcategoriaId == null) {
+      setState(() {
+        _series = [];
+        _selectedSerieId = null;
+      });
+      return;
+    }
+
+    setState(() => _isLoadingSeries = true);
+    try {
+      final series = await _serieService.getSeriesBySubcategoria(
+        subcategoriaId,
+      );
+      setState(() {
+        _series = series;
+      });
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Error al cargar las series')),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isLoadingSeries = false);
+      }
+    }
+  }
+
   void _resetFilters() {
     _formKey.currentState?.reset();
     setState(() {
@@ -298,6 +336,8 @@ class _MatchesScreenState extends State<MatchesScreen> {
       _selectedTeamName = null;
       _selectedCategoryId = null;
       _selectedCategoryName = null;
+      _selectedSerieId = null;
+      _series = [];
       _selectedStadiumId = null;
       _selectedStadiumName = null;
       _selectedStatus = null;
@@ -477,9 +517,48 @@ class _MatchesScreenState extends State<MatchesScreen> {
                               .firstWhere((c) => c.subcategoriaId == value)
                               .nombre
                         : null;
+                    _selectedSerieId = null;
+                    _loadSeriesByCategory(value);
                   });
                 },
               ),
+              const SizedBox(height: 16),
+              _isLoadingSeries
+                  ? const Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Serie'),
+                        SizedBox(height: 4),
+                        SizedBox(
+                          height: 60,
+                          child: Center(child: CircularProgressIndicator()),
+                        ),
+                      ],
+                    )
+                  : DropdownButtonFormField<int>(
+                      value: _selectedSerieId,
+                      decoration: const InputDecoration(
+                        labelText: 'Serie',
+                        border: OutlineInputBorder(),
+                      ),
+                      items: [
+                        const DropdownMenuItem(
+                          value: null,
+                          child: Text('Todas las series'),
+                        ),
+                        ..._series.map(
+                          (serie) => DropdownMenuItem(
+                            value: serie.serieId,
+                            child: Text(serie.nombreSerie),
+                          ),
+                        ),
+                      ],
+                      onChanged: (value) {
+                        setState(() {
+                          _selectedSerieId = value;
+                        });
+                      },
+                    ),
               const SizedBox(height: 16),
               _isLoadingTeams
                   ? const Column(

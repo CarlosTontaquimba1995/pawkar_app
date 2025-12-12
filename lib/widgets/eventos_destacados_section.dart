@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pawkar_app/models/subcategoria_model.dart';
+import 'package:pawkar_app/screens/evento_detalle_screen.dart';
 import 'package:pawkar_app/services/categoria_service.dart';
 import 'package:pawkar_app/services/subcategoria_service.dart';
 
@@ -32,7 +33,7 @@ class EventosDestacadosSectionState extends State<EventosDestacadosSection> {
       );
     } catch (e) {
       debugPrint('Error loading featured events: $e');
-      return []; // Return empty list on error
+      return [];
     }
   }
 
@@ -64,7 +65,6 @@ class EventosDestacadosSectionState extends State<EventosDestacadosSection> {
     );
   }
 
-  // Map event types to their corresponding image paths
   String _getImageForEvent(String eventName) {
     final lowerName = eventName.toLowerCase();
     if (lowerName.contains('futbol') || lowerName.contains('fútbol')) {
@@ -79,75 +79,54 @@ class EventosDestacadosSectionState extends State<EventosDestacadosSection> {
         lowerName.contains('gastronomia')) {
       return 'assets/images/gastronomia.jpg';
     }
-    // Default image if no match is found
     return 'assets/images/splash_logo.png';
   }
 
   Widget _buildEventoItem(Subcategoria evento) {
     final imagePath = _getImageForEvent(evento.nombre);
     
-    return Container(
-      width: 180,
-      margin: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
-      child: Card(
-        elevation: 4,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12.0),
-        ),
-        clipBehavior: Clip.antiAlias,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // Image section (2/3 of the card)
-            Expanded(
-              flex: 2,
-              child: Image.asset(
-                imagePath,
-                fit: BoxFit.cover,
-                height: 100,
-                errorBuilder: (context, error, stackTrace) => Container(
-                  color: Colors.grey[300],
-                  child: const Icon(
-                    Icons.image_not_supported,
-                    size: 40,
-                    color: Colors.grey,
-                  ),
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => EventoDetalleScreen(evento: evento),
+          ),
+        );
+      },
+      child: Container(
+        width: 180,
+        margin: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+        child: Card(
+          elevation: 4,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12.0),
+          ),
+          clipBehavior: Clip.antiAlias,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Expanded(
+                child: Image.asset(
+                  imagePath,
+                  fit: BoxFit.cover,
+                  width: double.infinity,
                 ),
               ),
-            ),
-            // Content section (1/3 of the card)
-            Expanded(
-              child: Container(
+              Padding(
                 padding: const EdgeInsets.all(8.0),
-                decoration: BoxDecoration(color: Theme.of(context).cardColor),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      evento.nombre,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14,
-                        color: Colors.black87,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    if (evento.descripcion.isNotEmpty) ...[
-                      const SizedBox(height: 2),
-                      Text(
-                        evento.descripcion,
-                        style: TextStyle(fontSize: 10, color: Colors.grey[600]),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ],
-                  ],
+                child: Text(
+                  evento.nombre,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

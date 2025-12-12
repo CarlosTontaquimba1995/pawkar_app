@@ -51,7 +51,7 @@ class EventosDestacadosSectionState extends State<EventosDestacadosSection> {
 
         final eventos = snapshot.data!;
         return SizedBox(
-          height: 150,
+          height: 200,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             itemCount: eventos.length,
@@ -64,38 +64,90 @@ class EventosDestacadosSectionState extends State<EventosDestacadosSection> {
     );
   }
 
+  // Map event types to their corresponding image paths
+  String _getImageForEvent(String eventName) {
+    final lowerName = eventName.toLowerCase();
+    if (lowerName.contains('futbol') || lowerName.contains('fútbol')) {
+      return 'assets/images/futbol.jpg';
+    } else if (lowerName.contains('basket') ||
+        lowerName.contains('básket') ||
+        lowerName.contains('baloncesto')) {
+      return 'assets/images/basket.jpg';
+    } else if (lowerName.contains('voley') || lowerName.contains('voleibol')) {
+      return 'assets/images/voley.jpg';
+    } else if (lowerName.contains('gastronomía') ||
+        lowerName.contains('gastronomia')) {
+      return 'assets/images/gastronomia.jpg';
+    }
+    // Default image if no match is found
+    return 'assets/images/splash_logo.png';
+  }
+
   Widget _buildEventoItem(Subcategoria evento) {
+    final imagePath = _getImageForEvent(evento.nombre);
+    
     return Container(
-      width: 200,
-      margin: const EdgeInsets.symmetric(horizontal: 8.0),
+      width: 180,
+      margin: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
       child: Card(
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                evento.nombre,
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                ),
-                textAlign: TextAlign.center,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-              if (evento.descripcion.isNotEmpty)
-                Padding(
-                  padding: const EdgeInsets.only(top: 4.0),
-                  child: Text(
-                    evento.descripcion,
-                    style: const TextStyle(fontSize: 12),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
+        elevation: 4,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12.0),
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // Image section (2/3 of the card)
+            Expanded(
+              flex: 2,
+              child: Image.asset(
+                imagePath,
+                fit: BoxFit.cover,
+                height: 100,
+                errorBuilder: (context, error, stackTrace) => Container(
+                  color: Colors.grey[300],
+                  child: const Icon(
+                    Icons.image_not_supported,
+                    size: 40,
+                    color: Colors.grey,
                   ),
                 ),
-            ],
-          ),
+              ),
+            ),
+            // Content section (1/3 of the card)
+            Expanded(
+              child: Container(
+                padding: const EdgeInsets.all(8.0),
+                decoration: BoxDecoration(color: Theme.of(context).cardColor),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      evento.nombre,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                        color: Colors.black87,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    if (evento.descripcion.isNotEmpty) ...[
+                      const SizedBox(height: 2),
+                      Text(
+                        evento.descripcion,
+                        style: TextStyle(fontSize: 10, color: Colors.grey[600]),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );

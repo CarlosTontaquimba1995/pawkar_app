@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:pawkar_app/screens/matches_screen.dart';
+import 'package:pawkar_app/screens/settings_screen.dart';
 import 'package:pawkar_app/widgets/categorias_section.dart';
 import 'package:pawkar_app/widgets/eventos_destacados_section.dart';
 import 'package:pawkar_app/widgets/proximos_eventos_section.dart';
@@ -132,7 +133,12 @@ class _HomeScreenState extends State<HomeScreen>
                 IconButton(
                   icon: const Icon(Icons.settings, color: Colors.white),
                   onPressed: () {
-                    // TODO: Add settings navigation
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const SettingsScreen(),
+                      ),
+                    );
                   },
                 ),
               ],

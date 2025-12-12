@@ -451,6 +451,36 @@ class _MatchesScreenState extends State<MatchesScreen> {
                 ],
               ),
               const SizedBox(height: 16),
+              DropdownButtonFormField<int>(
+                value: _selectedCategoryId,
+                decoration: const InputDecoration(
+                  labelText: 'Categoría',
+                  border: OutlineInputBorder(),
+                ),
+                items: [
+                  const DropdownMenuItem(
+                    value: null,
+                    child: Text('Todas las categorías'),
+                  ),
+                  ..._categories.map(
+                    (category) => DropdownMenuItem(
+                      value: category.subcategoriaId,
+                      child: Text(category.nombre),
+                    ),
+                  ),
+                ],
+                onChanged: (value) {
+                  setState(() {
+                    _selectedCategoryId = value;
+                    _selectedCategoryName = value != null
+                        ? _categories
+                              .firstWhere((c) => c.subcategoriaId == value)
+                              .nombre
+                        : null;
+                  });
+                },
+              ),
+              const SizedBox(height: 16),
               _isLoadingTeams
                   ? const Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -492,36 +522,6 @@ class _MatchesScreenState extends State<MatchesScreen> {
                         });
                       },
                     ),
-              const SizedBox(height: 16),
-              DropdownButtonFormField<int>(
-                value: _selectedCategoryId,
-                decoration: const InputDecoration(
-                  labelText: 'Categoría',
-                  border: OutlineInputBorder(),
-                ),
-                items: [
-                  const DropdownMenuItem(
-                    value: null,
-                    child: Text('Todas las categorías'),
-                  ),
-                  ..._categories.map(
-                    (category) => DropdownMenuItem(
-                      value: category.subcategoriaId,
-                      child: Text(category.nombre),
-                    ),
-                  ),
-                ],
-                onChanged: (value) {
-                  setState(() {
-                    _selectedCategoryId = value;
-                    _selectedCategoryName = value != null
-                        ? _categories
-                              .firstWhere((c) => c.subcategoriaId == value)
-                              .nombre
-                        : null;
-                  });
-                },
-              ),
               const SizedBox(height: 16),
               DropdownButtonFormField<int>(
                 value: _selectedStadiumId,

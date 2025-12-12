@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pawkar_app/models/subcategoria_model.dart';
-import 'package:pawkar_app/screens/equipos_screen.dart';
+import 'package:pawkar_app/screens/evento_detalle_screen.dart';
 import 'package:pawkar_app/services/categoria_service.dart';
 import 'package:pawkar_app/services/subcategoria_service.dart';
 
@@ -87,11 +87,11 @@ class EventosDestacadosSectionState extends State<EventosDestacadosSection> {
     
     return GestureDetector(
       onTap: () {
+        // First navigate to EventoDetalleScreen
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) =>
-                EquiposScreen(subcategoriaId: evento.subcategoriaId),
+            builder: (context) => EventoDetalleScreen(evento: evento),
           ),
         );
       },

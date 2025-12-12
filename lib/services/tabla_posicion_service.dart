@@ -89,9 +89,19 @@ class TablaPosicionService {
   /// [params] Parámetros de búsqueda
   Future<List<TablaPosicion>> search(SearchParams params) async {
     try {
+      // Convert params to query parameters, ensuring all values are strings
+      final paramsMap = params.toJson();
+      final queryParams = <String, String>{};
+
+      paramsMap.forEach((key, value) {
+        if (value != null) {
+          queryParams[key] = value.toString();
+        }
+      });
+
       final uri = Uri.parse(
         '$_baseUrl/search',
-      ).replace(queryParameters: params.toJson());
+      ).replace(queryParameters: queryParams.isNotEmpty ? queryParams : null);
 
       final response = await _client.get(uri, headers: await _getHeaders());
 

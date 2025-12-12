@@ -24,6 +24,7 @@ class _PlantillasScreenState extends State<PlantillasScreen> {
 
   Future<void> _loadPlantillas() async {
     try {
+      if (!mounted) return;
       setState(() {
         _isLoading = true;
         _errorMessage = '';
@@ -34,12 +35,16 @@ class _PlantillasScreenState extends State<PlantillasScreen> {
 
       // Datos de ejemplo (eliminar cuando se implemente el servicio real)
       await Future.delayed(const Duration(seconds: 1));
+      
+      if (!mounted) return;
       _equipos = []; // Aquí irían los datos reales
 
+      if (!mounted) return;
       setState(() {
         _isLoading = false;
       });
     } catch (e) {
+      if (!mounted) return;
       setState(() {
         _errorMessage = 'Error al cargar las plantillas: ${e.toString()}';
         _isLoading = false;

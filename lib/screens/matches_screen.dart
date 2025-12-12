@@ -32,7 +32,6 @@ class _MatchesScreenState extends State<MatchesScreen> {
   // Controllers
   final _searchController = TextEditingController();
   final _scrollController = ScrollController();
-  final _titleController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
   // Services
@@ -106,7 +105,6 @@ class _MatchesScreenState extends State<MatchesScreen> {
   void dispose() {
     _searchController.dispose();
     _scrollController.dispose();
-    _titleController.dispose();
     super.dispose();
   }
 
@@ -148,7 +146,6 @@ class _MatchesScreenState extends State<MatchesScreen> {
 
     try {
       final params = EncuentroSearchParams(
-        titulo: _titleController.text.isNotEmpty ? _titleController.text : null,
         equipoId: _selectedTeamId,
         estadioId: _selectedStadiumId,
         fechaInicio: _startDate != null
@@ -162,8 +159,12 @@ class _MatchesScreenState extends State<MatchesScreen> {
               )
             : null,
         subcategoriaId: _selectedCategoryId,
+        serieId: _selectedSerieId,
         estado: _selectedStatus,
       );
+      
+      // Debug: Print the search parameters
+      print('Searching with params: ${params.toJson()}');
 
       final result = await _encuentroService.searchEncuentrosByQuery(
         params,
@@ -197,20 +198,34 @@ class _MatchesScreenState extends State<MatchesScreen> {
   }
 
   Future<void> _loadTeams() async {
-    if (_teams.isNotEmpty) return;
+    // Don't reload if we already have teams and no series is selected
+    if (_teams.isNotEmpty && _selectedSerieId == null) return;
     
     setState(() => _isLoadingTeams = true);
     try {
-      final response = await _equipoService.getEquipos(size: 100);
-      if (mounted) {
-        setState(() {
-          _teams = response.data.content;
-        });
+      if (_selectedSerieId != null) {
+        // Load teams filtered by selected series
+        final response = await _equipoService.getEquiposBySerie(
+          _selectedSerieId!,
+        );
+        if (mounted) {
+          setState(() {
+            _teams = response.data;
+          });
+        }
+      } else {
+        // Load all teams if no series is selected
+        final response = await _equipoService.getEquipos(size: 100);
+        if (mounted) {
+          setState(() {
+            _teams = response.data.content;
+          });
+        }
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Error al cargar equipos')),
+          SnackBar(content: Text('Error al cargar equipos: $e')),
         );
       }
     } finally {
@@ -424,15 +439,6 @@ class _MatchesScreenState extends State<MatchesScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              TextFormField(
-                controller: _titleController,
-                decoration: const InputDecoration(
-                  labelText: 'Buscar por título',
-                  prefixIcon: Icon(Icons.search),
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              const SizedBox(height: 16),
               Row(
                 children: [
                   Expanded(

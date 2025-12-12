@@ -193,6 +193,25 @@ class SubcategoriaService {
     }
   }
 
+  // Get subcategory by nemonico (mnemonic code)
+  Future<Subcategoria> getSubcategoriaByNemonico(String nemonico) async {
+    try {
+      final response = await _client.get(
+        Uri.parse('$_baseUrl/nemonico/$nemonico'),
+        headers: _getPublicHeaders(),
+      );
+
+      final data = _handleResponse(response);
+      final responseObj = SubcategoriaResponse.fromJson(data);
+      if (responseObj.data == null) {
+        throw Exception('Subcategoría no encontrada');
+      }
+      return responseObj.data!;
+    } catch (e) {
+      throw Exception('Error al obtener la subcategoría por nemónico: $e');
+    }
+  }
+
   // Get past events (subcategorías with proximo = false)
   Future<List<Subcategoria>> getEventosPasados() async {
     try {

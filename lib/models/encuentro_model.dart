@@ -346,7 +346,8 @@ class EncuentroSearchParams {
   final String? fechaFin;
   final int? subcategoriaId;
   final int? equipoId;
-  final String? estadioLugar;
+  final int? estadioId;
+  final int? serieId;
   final String? estado;
   final int? page;
   final int? size;
@@ -357,7 +358,8 @@ class EncuentroSearchParams {
     this.fechaFin,
     this.subcategoriaId,
     this.equipoId,
-    this.estadioLugar,
+    this.estadioId,
+    this.serieId,
     this.estado,
     this.page,
     this.size,
@@ -370,7 +372,8 @@ class EncuentroSearchParams {
     if (fechaFin != null) json['fechaFin'] = fechaFin;
     if (subcategoriaId != null) json['subcategoriaId'] = subcategoriaId;
     if (equipoId != null) json['equipoId'] = equipoId;
-    if (estadioLugar != null) json['estadioLugar'] = estadioLugar;
+    if (estadioId != null) json['estadioId'] = estadioId;
+    if (serieId != null) json['serieId'] = serieId;
     if (estado != null) json['estado'] = estado;
     if (page != null) json['page'] = page;
     if (size != null) json['size'] = size;

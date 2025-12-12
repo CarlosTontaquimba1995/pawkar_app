@@ -189,21 +189,19 @@ class EncuentroService {
         if (params.subcategoriaId != null)
           'subcategoriaId': params.subcategoriaId.toString(),
         if (params.equipoId != null) 'equipoId': params.equipoId.toString(),
-        if (params.estadioLugar != null) 'estadioLugar': params.estadioLugar,
+        if (params.estadioId != null) 'estadioId': params.estadioId.toString(),
+        if (params.serieId != null) 'serieId': params.serieId.toString(),
         if (params.estado != null) 'estado': params.estado,
       };
 
       final uri = Uri.parse('$_baseUrl/search').replace(
-        queryParameters: queryParams.map(
-          (key, value) => MapEntry(key, value.toString()),
-        ),
+        queryParameters: queryParams,
       );
 
-      // Log the complete URL
-      developer.log(
-        'EncuentroService - Request URL: ${uri.toString()}',
-        name: 'EncuentroService',
-      );
+      // Log the complete URL with query parameters
+      print('=== URL de la API ===');
+      print('URL completa: $uri');
+      print('=====================');
 
       final response = await _client.get(
         uri,

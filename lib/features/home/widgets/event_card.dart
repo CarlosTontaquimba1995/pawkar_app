@@ -113,13 +113,16 @@ class EventCard extends StatelessWidget {
   // Helper method to get an icon based on subcategory name
   IconData _getCategoryIcon(String subcategoryName) {
     final name = subcategoryName.toLowerCase();
-    if (name.contains('futbol') || name.contains('fútbol'))
+    if (name.contains('futbol') || name.contains('fútbol')) {
       return Icons.sports_soccer;
-    if (name.contains('basquet') || name.contains('básquet'))
+    }
+    if (name.contains('basquet') || name.contains('básquet')) {
       return Icons.sports_basketball;
+    }
     if (name.contains('tenis')) return Icons.sports_tennis;
-    if (name.contains('voley') || name.contains('vóley'))
+    if (name.contains('voley') || name.contains('vóley')) {
       return Icons.sports_volleyball;
+    }
     if (name.contains('natación')) return Icons.pool;
     if (name.contains('ciclismo')) return Icons.directions_bike;
     if (name.contains('atletismo')) return Icons.directions_run;

@@ -66,7 +66,7 @@ extension ContextExtensions on BuildContext {
   Color get surface => Theme.of(this).colorScheme.surface;
 
   /// Returns the background color from the current theme
-  Color get background => Theme.of(this).colorScheme.background;
+  Color get background => Theme.of(this).colorScheme.surface;
 
   /// Returns the error color from the current theme
   Color get errorColor => Theme.of(this).colorScheme.error;
@@ -81,7 +81,7 @@ extension ContextExtensions on BuildContext {
   Color get onSurface => Theme.of(this).colorScheme.onSurface;
 
   /// Returns the onBackground color from the current theme
-  Color get onBackground => Theme.of(this).colorScheme.onBackground;
+  Color get onBackground => Theme.of(this).colorScheme.onSurface;
 
   /// Returns the onError color from the current theme
   Color get onError => Theme.of(this).colorScheme.onError;

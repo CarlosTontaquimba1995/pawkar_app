@@ -6,8 +6,7 @@ import 'package:intl/intl.dart';
 class TablaPosicionesScreen extends StatefulWidget {
   final int subcategoriaId;
 
-  const TablaPosicionesScreen({Key? key, required this.subcategoriaId})
-    : super(key: key);
+  const TablaPosicionesScreen({super.key, required this.subcategoriaId});
 
   @override
   _TablaPosicionesScreenState createState() => _TablaPosicionesScreenState();
@@ -96,7 +95,7 @@ class _TablaPosicionesScreenState extends State<TablaPosicionesScreen> {
                         labelText: 'Equipo',
                         border: OutlineInputBorder(),
                       ),
-                      value: _selectedEquipoId,
+                      initialValue: _selectedEquipoId,
                       items: [
                         const DropdownMenuItem(
                           value: null,
@@ -123,7 +122,7 @@ class _TablaPosicionesScreenState extends State<TablaPosicionesScreen> {
                         labelText: 'Serie',
                         border: OutlineInputBorder(),
                       ),
-                      value: _selectedSerieId,
+                      initialValue: _selectedSerieId,
                       items: [
                         const DropdownMenuItem(
                           value: null,

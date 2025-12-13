@@ -7,9 +7,9 @@ class EquiposScreen extends StatefulWidget {
   final int subcategoriaId;
 
   const EquiposScreen({
-    Key? key,
+    super.key,
     required this.subcategoriaId,
-  }) : super(key: key);
+  });
 
   @override
   _EquiposScreenState createState() => _EquiposScreenState();

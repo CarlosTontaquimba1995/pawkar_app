@@ -8,12 +8,12 @@ class LoadingOverlay extends StatelessWidget {
   final Widget child;
 
   const LoadingOverlay({
-    Key? key,
+    super.key,
     this.isLoading = false,
     this.opacity = 0.5,
     this.color = Colors.black,
     required this.child,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

@@ -336,18 +336,12 @@ class EquipoBySubcategoryParams extends EquipoQueryParams {
 
   EquipoBySubcategoryParams({
     this.serieId,
-    int? page,
-    int? size,
-    String? sort,
-    String? nombre,
-    String? search,
-  }) : super(
-         page: page,
-         size: size,
-         sort: sort,
-         nombre: nombre,
-         search: search,
-       );
+    super.page,
+    super.size,
+    super.sort,
+    super.nombre,
+    super.search,
+  });
 
   @override
   Map<String, dynamic> toJson() {

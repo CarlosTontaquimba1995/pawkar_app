@@ -5,10 +5,10 @@ class JugadoresScreen extends StatefulWidget {
   final bool mostrarSoloSancionados;
 
   const JugadoresScreen({
-    Key? key,
+    super.key,
     required this.subcategoriaId,
     this.mostrarSoloSancionados = false,
-  }) : super(key: key);
+  });
 
   @override
   _JugadoresScreenState createState() => _JugadoresScreenState();
@@ -16,7 +16,7 @@ class JugadoresScreen extends StatefulWidget {
 
 class _JugadoresScreenState extends State<JugadoresScreen> {
   bool _isLoading = true;
-  String _errorMessage = '';
+  final String _errorMessage = '';
   final TextEditingController _searchController = TextEditingController();
 
   @override

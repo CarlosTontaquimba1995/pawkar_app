@@ -127,8 +127,6 @@ class AppTheme {
         onSecondaryContainer: AppColors.lightOnSecondary,
         surface: AppColors.lightSurface,
         onSurface: AppColors.lightOnSurface,
-        background: AppColors.lightBackground,
-        onBackground: AppColors.lightOnBackground,
         error: AppColors.lightError,
         onError: AppColors.lightOnError,
         brightness: Brightness.light,
@@ -221,7 +219,6 @@ class AppTheme {
   // Dark theme
   static ThemeData get darkTheme {
     final theme = ThemeData.dark().copyWith(
-      useMaterial3: true,
       colorScheme: const ColorScheme.dark(
         primary: AppColors.darkPrimary,
         onPrimary: AppColors.darkOnPrimary,
@@ -235,8 +232,6 @@ class AppTheme {
         onSecondaryContainer: AppColors.darkOnSecondary,
         surface: AppColors.darkSurface,
         onSurface: AppColors.darkOnSurface,
-        background: AppColors.darkBackground,
-        onBackground: AppColors.darkOnBackground,
         error: AppColors.darkError,
         onError: AppColors.darkOnError,
         brightness: Brightness.dark,

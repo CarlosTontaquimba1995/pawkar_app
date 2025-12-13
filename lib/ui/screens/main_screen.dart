@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:pawkar_app/ui/components/navigation/bottom_nav_bar.dart';
 
 class MainScreen extends StatefulWidget {
-  const MainScreen({Key? key}) : super(key: key);
+  const MainScreen({super.key});
 
   @override
   State<MainScreen> createState() => _MainScreenState();

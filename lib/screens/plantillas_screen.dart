@@ -3,8 +3,7 @@ import 'package:flutter/material.dart';
 class PlantillasScreen extends StatefulWidget {
   final int subcategoriaId;
 
-  const PlantillasScreen({Key? key, required this.subcategoriaId})
-    : super(key: key);
+  const PlantillasScreen({super.key, required this.subcategoriaId});
 
   @override
   _PlantillasScreenState createState() => _PlantillasScreenState();

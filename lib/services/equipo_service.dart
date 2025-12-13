@@ -43,7 +43,7 @@ class EquipoService {
     String? search,
   }) async {
     try {
-      final uri = Uri.parse('$_baseUrl').replace(
+      final uri = Uri.parse(_baseUrl).replace(
         queryParameters: {
           'page': page.toString(),
           'size': size.toString(),

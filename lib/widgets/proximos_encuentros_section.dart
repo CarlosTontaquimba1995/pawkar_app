@@ -170,7 +170,7 @@ class _ProximosEncuentrosSectionState extends State<ProximosEncuentrosSection> {
       margin: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
       padding: const EdgeInsets.all(24.0),
       decoration: BoxDecoration(
-        color: colorScheme.surfaceVariant.withOpacity(0.5),
+        color: colorScheme.surfaceContainerHighest.withOpacity(0.5),
         borderRadius: BorderRadius.circular(16.0),
       ),
       child: Column(

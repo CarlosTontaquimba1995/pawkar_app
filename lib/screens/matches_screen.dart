@@ -498,7 +498,7 @@ class _MatchesScreenState extends State<MatchesScreen> {
               ),
               const SizedBox(height: 16),
               DropdownButtonFormField<int>(
-                value: _selectedCategoryId,
+                initialValue: _selectedCategoryId,
                 decoration: const InputDecoration(
                   labelText: 'Categoría',
                   border: OutlineInputBorder(),
@@ -542,7 +542,7 @@ class _MatchesScreenState extends State<MatchesScreen> {
                       ],
                     )
                   : DropdownButtonFormField<int>(
-                      value: _selectedSerieId,
+                      initialValue: _selectedSerieId,
                       decoration: const InputDecoration(
                         labelText: 'Serie',
                         border: OutlineInputBorder(),
@@ -579,7 +579,7 @@ class _MatchesScreenState extends State<MatchesScreen> {
                       ],
                     )
                   : DropdownButtonFormField<int>(
-                      value: _selectedTeamId,
+                      initialValue: _selectedTeamId,
                       decoration: const InputDecoration(
                         labelText: 'Equipo',
                         border: OutlineInputBorder(),
@@ -609,7 +609,7 @@ class _MatchesScreenState extends State<MatchesScreen> {
                     ),
               const SizedBox(height: 16),
               DropdownButtonFormField<int>(
-                value: _selectedStadiumId,
+                initialValue: _selectedStadiumId,
                 decoration: const InputDecoration(
                   labelText: 'Estadio',
                   border: OutlineInputBorder(),
@@ -637,7 +637,7 @@ class _MatchesScreenState extends State<MatchesScreen> {
               ),
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
-                value: _selectedStatus,
+                initialValue: _selectedStatus,
                 decoration: const InputDecoration(
                   labelText: 'Estado',
                   border: OutlineInputBorder(),

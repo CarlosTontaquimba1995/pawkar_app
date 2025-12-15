@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:pawkar_app/models/equipo_model.dart';
+import 'package:pawkar_app/models/serie_model.dart';
 import 'package:pawkar_app/services/equipo_service.dart';
+import 'package:pawkar_app/services/serie_service.dart';
 import 'package:pawkar_app/widgets/error_widget.dart' as custom;
 
 class EquiposScreen extends StatefulWidget {
@@ -17,20 +19,54 @@ class EquiposScreen extends StatefulWidget {
 
 class _EquiposScreenState extends State<EquiposScreen> {
   bool _isLoading = true;
+  bool _isLoadingSeries = true;
   String _errorMessage = '';
   List<Equipo> _equipos = [];
+  List<Serie> _series = [];
+  int? _selectedSerieId;
   final EquipoService _equipoService = EquipoService();
+  final SerieService _serieService = SerieService();
 
   @override
   void initState() {
     super.initState();
-    _loadEquipos();
+    _loadSeries();
+  }
+
+  Future<void> _loadSeries() async {
+    try {
+      final series = await _serieService.getSeriesBySubcategoria(
+        widget.subcategoriaId,
+      );
+
+      setState(() {
+        _series = series;
+        _isLoadingSeries = false;
+      });
+
+      // Load equipos after series are loaded
+      _loadEquipos();
+    } catch (e) {
+      setState(() {
+        _errorMessage = 'Error al cargar las series: $e';
+        _isLoading = false;
+        _isLoadingSeries = false;
+      });
+    }
   }
 
   Future<void> _loadEquipos() async {
+    if (_isLoadingSeries) return; // Wait for series to load first
+
+    setState(() {
+      _isLoading = true;
+      _errorMessage = '';
+    });
+    
     try {
       final response = await _equipoService.getEquiposBySubcategoria(
         widget.subcategoriaId,
+        serieId: _selectedSerieId,
       );
 
       setState(() {
@@ -70,8 +106,44 @@ class _EquiposScreenState extends State<EquiposScreen> {
     );
   }
 
+  Widget _buildSeriesFilter() {
+    if (_isLoadingSeries) {
+      return const Padding(
+        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        child: LinearProgressIndicator(),
+      );
+    }
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: DropdownButtonFormField<int>(
+        value: _selectedSerieId,
+        decoration: const InputDecoration(
+          labelText: 'Filtrar por serie',
+          border: OutlineInputBorder(),
+          contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 0),
+        ),
+        items: [
+          const DropdownMenuItem(value: null, child: Text('Todas las series')),
+          ..._series.map((serie) {
+            return DropdownMenuItem(
+              value: serie.serieId,
+              child: Text(serie.nombreSerie),
+            );
+          }).toList(),
+        ],
+        onChanged: (value) {
+          setState(() {
+            _selectedSerieId = value;
+          });
+          _loadEquipos();
+        },
+      ),
+    );
+  }
+
   Widget _buildBody() {
-    if (_isLoading) {
+    if (_isLoading && _equipos.isEmpty) {
       return const Center(child: CircularProgressIndicator());
     }
 
@@ -85,24 +157,33 @@ class _EquiposScreenState extends State<EquiposScreen> {
     }
 
     if (_equipos.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.group_off, size: 64, color: Colors.grey),
-            const SizedBox(height: 16),
-            const Text(
-              'No hay equipos disponibles',
-              style: TextStyle(fontSize: 16, color: Colors.grey),
+      return Column(
+        children: [
+          _buildSeriesFilter(),
+          Expanded(
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.group_off, size: 64, color: Colors.grey),
+                  const SizedBox(height: 16),
+                  Text(
+                    _selectedSerieId == null
+                        ? 'No hay equipos disponibles'
+                        : 'No hay equipos en esta serie',
+                    style: const TextStyle(fontSize: 16, color: Colors.grey),
+                  ),
+                  const SizedBox(height: 8),
+                  TextButton.icon(
+                    onPressed: _handleRefresh,
+                    icon: const Icon(Icons.refresh),
+                    label: const Text('Reintentar'),
+                  ),
+                ],
+              ),
             ),
-            const SizedBox(height: 8),
-            TextButton.icon(
-              onPressed: _handleRefresh,
-              icon: const Icon(Icons.refresh),
-              label: const Text('Reintentar'),
-            ),
-          ],
-        ),
+          ),
+        ],
       );
     }
 
@@ -113,33 +194,28 @@ class _EquiposScreenState extends State<EquiposScreen> {
   }
   
   Widget _buildEquiposList() {
-    return ListView.builder(
-      padding: const EdgeInsets.all(8.0),
-      itemCount: _equipos.length,
-      itemBuilder: (context, index) {
-        final equipo = _equipos[index];
-        return Card(
-          margin: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
-          child: ListTile(
-            leading: CircleAvatar(
-              backgroundColor: Theme.of(context).primaryColor.withOpacity(0.1),
-              child: const Icon(Icons.people, color: Colors.blueGrey),
-            ),
-            title: Text(
-              equipo.nombre,
-              style: const TextStyle(fontWeight: FontWeight.w500),
-            ),
-            subtitle: Text(
-              '${equipo.jugadoresCount} ${equipo.jugadoresCount == 1 ? 'jugador' : 'jugadores'}\n${equipo.serieNombre}',
-              style: const TextStyle(fontSize: 13),
-            ),
-            trailing: const Icon(Icons.chevron_right, color: Colors.grey),
-            onTap: () {
-              // TODO: Navegar al detalle del equipo si es necesario
+    return Column(
+      children: [
+        _buildSeriesFilter(),
+        Expanded(
+          child: ListView.builder(
+            itemCount: _equipos.length,
+            itemBuilder: (context, index) {
+              final equipo = _equipos[index];
+              return Card(
+                margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                child: ListTile(
+                  leading: const CircleAvatar(child: Icon(Icons.sports_soccer)),
+                  title: Text(equipo.nombre),
+                  onTap: () {
+                    // TODO: Navegar al detalle del equipo
+                  },
+                ),
+              );
             },
           ),
-        );
-      },
+        ),
+      ],
     );
   }
 }

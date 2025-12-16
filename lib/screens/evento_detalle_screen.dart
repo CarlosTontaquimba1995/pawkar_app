@@ -106,27 +106,143 @@ class _EventoDetalleScreenState extends State<EventoDetalleScreen> {
             ),
 
 
-            SliverPadding(
-              padding: const EdgeInsets.only(
-                left: 16.0,
-                right: 16.0,
-                top: 64.0,
-                bottom: 8.0,
-              ),
-              sliver: SliverGrid(
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: MediaQuery.of(context).size.width > 600
-                      ? 3
-                      : 2,
-                  crossAxisSpacing: 16,
-                  mainAxisSpacing: 16,
-                  childAspectRatio: 1.5,
-                  mainAxisExtent: 140,
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.only(
+                  top: 24,
+                  left: 16,
+                  right: 16,
+                  bottom: 16,
                 ),
-                delegate: SliverChildListDelegate(_buildActionButtons(context)),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Información del evento
+                    Card(
+                      elevation: 2,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Column(
+                        children: [
+                          ListTile(
+                            leading: Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: colorScheme.primary.withOpacity(0.1),
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Icon(
+                                Icons.info_outline,
+                                color: Colors.blue,
+                              ),
+                            ),
+                            title: Text(
+                              'Información del Evento',
+                              style: Theme.of(context).textTheme.titleMedium
+                                  ?.copyWith(fontWeight: FontWeight.w600),
+                            ),
+                            subtitle: Text(
+                              widget.evento.descripcion.isNotEmpty
+                                  ? widget.evento.descripcion
+                                  : 'No hay descripción disponible',
+                              style: Theme.of(context).textTheme.bodyMedium,
+                            ),
+                            isThreeLine: true,
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    const SizedBox(height: 24),
+
+                    // Acciones principales
+                    Text(
+                      'Acciones disponibles',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    ..._buildActionTiles(context),
+
+                    // Información adicional
+                    const SizedBox(height: 24),
+                    Text(
+                      'Detalles adicionales',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Card(
+                      elevation: 2,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Column(
+                        children: [
+                          ListTile(
+                            leading: Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: Colors.orange.withOpacity(0.1),
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Icon(
+                                Icons.calendar_today,
+                                color: Colors.orange,
+                              ),
+                            ),
+                            title: Text(
+                              'Fecha de inicio',
+                              style: Theme.of(context).textTheme.bodyLarge,
+                            ),
+                            trailing: Text(
+                              'Próximamente',
+                              style: Theme.of(context).textTheme.bodyMedium
+                                  ?.copyWith(
+                                    color: Theme.of(
+                                      context,
+                                    ).textTheme.bodySmall?.color,
+                                  ),
+                            ),
+                          ),
+                          const Divider(height: 1, indent: 72, endIndent: 16),
+                          ListTile(
+                            leading: Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: Colors.green.withOpacity(0.1),
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Icon(
+                                Icons.group,
+                                color: Colors.green,
+                              ),
+                            ),
+                            title: Text(
+                              'Equipos participantes',
+                              style: Theme.of(context).textTheme.bodyLarge,
+                            ),
+                            trailing: Text(
+                              '0',
+                              style: Theme.of(context).textTheme.bodyLarge
+                                  ?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.primary,
+                                  ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
-            const SliverToBoxAdapter(child: SizedBox(height: 24)),
           ],
         ),
         floatingActionButton: _buildFloatingActionButton(context),
@@ -135,26 +251,29 @@ class _EventoDetalleScreenState extends State<EventoDetalleScreen> {
     );
   }
 
-  List<Widget> _buildActionButtons(BuildContext context) {
+  List<Widget> _buildActionTiles(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     
     final actions = [
-      _ActionButtonData(
+      _ActionTileData(
         icon: Icons.sports_soccer,
-        label: 'Encuentros',
+        title: 'Encuentros',
+        subtitle: 'Ver todos los partidos programados',
         onTap: () => _navigateToEncuentros(context),
         color: colorScheme.primary,
       ),
-      _ActionButtonData(
+      _ActionTileData(
         icon: Icons.people,
-        label: 'Equipos',
+        title: 'Equipos',
+        subtitle: 'Explorar equipos participantes',
         onTap: () => _navigateToEquipos(context),
         color: colorScheme.secondary,
       ),
-      _ActionButtonData(
+      _ActionTileData(
         icon: Icons.person,
-        label: 'Jugadores',
+        title: 'Jugadores',
+        subtitle: 'Ver jugadores registrados',
         onTap: () => _navigateToJugadores(context),
         color: colorScheme.tertiary,
       ),
@@ -162,9 +281,10 @@ class _EventoDetalleScreenState extends State<EventoDetalleScreen> {
 
     if (isFutbol) {
       actions.add(
-        _ActionButtonData(
+        _ActionTileData(
           icon: Icons.format_list_numbered,
-          label: 'Tabla de\nPosiciones',
+          title: 'Tabla de Posiciones',
+          subtitle: 'Ver la clasificación actual',
           onTap: () => _navigateToTablaPosiciones(context),
           color: colorScheme.primaryContainer,
           textColor: colorScheme.onPrimaryContainer,
@@ -174,10 +294,11 @@ class _EventoDetalleScreenState extends State<EventoDetalleScreen> {
 
     return actions
         .map(
-          (action) => _buildActionButton(
+          (action) => _buildActionTile(
             context: context,
             icon: action.icon,
-            label: action.label,
+            title: action.title,
+            subtitle: action.subtitle,
             onTap: action.onTap,
             color: action.color,
             textColor: action.textColor,
@@ -186,81 +307,62 @@ class _EventoDetalleScreenState extends State<EventoDetalleScreen> {
         .toList();
   }
 
-  Widget _buildActionButton({
+  Widget _buildActionTile({
     required BuildContext context,
     required IconData icon,
-    required String label,
+    required String title,
+    required String subtitle,
     required VoidCallback onTap,
-    Color? color,
+    required Color color,
     Color? textColor,
   }) {
     final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-    // Use primary color with better contrast for text
-    final defaultColor = color ?? colorScheme.primary;
-    // Use onSurface for better text contrast in both light and dark themes
-    final defaultTextColor =
-        textColor ?? theme.textTheme.bodyLarge?.color ?? colorScheme.onSurface;
-    final isLightTheme = theme.brightness == Brightness.light;
 
-    return Material(
-      color: Colors.transparent,
+    return Card(
+      margin: const EdgeInsets.only(bottom: 12),
+      elevation: 1,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(color: theme.dividerColor.withOpacity(0.1), width: 1),
+      ),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(16),
-        child: Container(
-          decoration: BoxDecoration(
-            color: isLightTheme
-                ? defaultColor.withOpacity(0.08)
-                : defaultColor.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color: isLightTheme
-                  ? defaultColor.withOpacity(0.3)
-                  : defaultColor.withOpacity(0.2),
-              width: 1,
+        borderRadius: BorderRadius.circular(12),
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: ListTile(
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 8,
+              vertical: 4,
             ),
-            boxShadow: isLightTheme
-                ? [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
-                      blurRadius: 8,
-                      offset: const Offset(0, 2),
-                    ),
-                  ]
-                : null,
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: defaultColor.withOpacity(0.1),
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: defaultColor.withOpacity(0.3),
-                    width: 2,
-                  ),
-                ),
-                child: Icon(icon, size: 24, color: defaultColor),
+            leading: Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: color.withOpacity(0.1),
+                shape: BoxShape.circle,
               ),
-              const SizedBox(height: 12),
-              Text(
-                label.replaceAll('\\n', '\n'),
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                  color: defaultTextColor,
-                  height: 1.2,
-                  fontSize: 14, // Slightly smaller font size for better fit
-                  fontFamily:
-                      GoogleFonts.poppins().fontFamily, // Use Poppins font
-                ),
-                textAlign: TextAlign.center,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
+              child: Icon(icon, color: color, size: 24),
+            ),
+            title: Text(
+              title,
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+                color: textColor ?? theme.textTheme.titleMedium?.color,
               ),
-            ],
+            ),
+            subtitle: Text(
+              subtitle,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color:
+                    textColor?.withOpacity(0.8) ??
+                    theme.textTheme.bodySmall?.color,
+              ),
+            ),
+            trailing: Icon(
+              Icons.arrow_forward_ios,
+              size: 16,
+              color: theme.textTheme.bodySmall?.color?.withOpacity(0.6),
+            ),
           ),
         ),
       ),
@@ -407,16 +509,18 @@ class _EventoDetalleScreenState extends State<EventoDetalleScreen> {
   }
 }
 
-class _ActionButtonData {
+class _ActionTileData {
   final IconData icon;
-  final String label;
+  final String title;
+  final String subtitle;
   final VoidCallback onTap;
   final Color color;
   final Color? textColor;
 
-  _ActionButtonData({
+  const _ActionTileData({
     required this.icon,
-    required this.label,
+    required this.title,
+    this.subtitle = '',
     required this.onTap,
     required this.color,
     this.textColor,

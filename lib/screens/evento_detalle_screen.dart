@@ -6,7 +6,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:shimmer/shimmer.dart';
 
 import '../models/subcategoria_model.dart';
-import 'matches_screen.dart';
 import 'equipos_screen.dart';
 import 'jugadores_screen.dart';
 import 'tabla_posiciones_screen.dart';
@@ -171,13 +170,6 @@ class _EventoDetalleScreenState extends State<EventoDetalleScreen> {
     
     final actions = [
       _ActionTileData(
-        icon: Icons.sports_soccer,
-        title: 'Encuentros',
-        subtitle: 'Ver todos los partidos programados',
-        onTap: () => _navigateToEncuentros(context),
-        color: colorScheme.primary,
-      ),
-      _ActionTileData(
         icon: Icons.people,
         title: 'Equipos',
         subtitle: 'Explorar equipos participantes',
@@ -280,28 +272,6 @@ class _EventoDetalleScreenState extends State<EventoDetalleScreen> {
 
   Widget? _buildFloatingActionButton(BuildContext context) {
     return null;
-  }
-
-  /// Navigates to the matches screen with a consistent slide transition.
-  void _navigateToEncuentros(BuildContext context) {
-    try {
-      Navigator.of(context).push(
-        CustomPageRoute(
-          child: const MatchesScreen(initialMatches: []),
-          direction: AxisDirection.right,
-        ),
-      );
-    } catch (e, stackTrace) {
-      log(
-        'Error navigating to matches screen',
-        error: e,
-        stackTrace: stackTrace,
-      );
-      _showErrorSnackBar(
-        context,
-        'No se pudo cargar la pantalla de encuentros',
-      );
-    }
   }
 
   void _navigateToEquipos(BuildContext context) {

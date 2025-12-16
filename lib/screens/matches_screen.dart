@@ -22,7 +22,7 @@ class MatchesScreen extends StatefulWidget {
 
   const MatchesScreen({
     super.key,
-    required this.initialMatches,
+    this.initialMatches = const [],
     this.encuentroService,
   });
 
@@ -160,7 +160,8 @@ class _MatchesScreenState extends State<MatchesScreen> {
                 ),
               )
             : null,
-        subcategoriaId: _selectedCategoryId,
+        subcategoriaId:
+            _selectedCategoryId, // Will be null by default, showing all categories
         serieId: _selectedSerieId,
         estado: _selectedStatus,
       );

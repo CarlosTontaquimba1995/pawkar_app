@@ -141,52 +141,14 @@ class _EventoDetalleScreenState extends State<EventoDetalleScreen> {
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.only(
-                  top: 24,
+                  top: 32,
                   left: 16,
                   right: 16,
-                  bottom: 16,
+                  bottom: 24,
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Información del evento
-                    Card(
-                      elevation: 2,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Column(
-                        children: [
-                          ListTile(
-                            leading: Container(
-                              padding: const EdgeInsets.all(8),
-                              decoration: BoxDecoration(
-                                color: colorScheme.primary.withOpacity(0.1),
-                                shape: BoxShape.circle,
-                              ),
-                              child: const Icon(
-                                Icons.info_outline,
-                                color: Colors.blue,
-                              ),
-                            ),
-                            title: Text(
-                              'Información del Evento',
-                              style: Theme.of(context).textTheme.titleMedium
-                                  ?.copyWith(fontWeight: FontWeight.w600),
-                            ),
-                            subtitle: Text(
-                              widget.evento.descripcion.isNotEmpty
-                                  ? widget.evento.descripcion
-                                  : 'No hay descripción disponible',
-                              style: Theme.of(context).textTheme.bodyMedium,
-                            ),
-                            isThreeLine: true,
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    const SizedBox(height: 24),
 
                     // Acciones principales
                     Text(
@@ -195,82 +157,9 @@ class _EventoDetalleScreenState extends State<EventoDetalleScreen> {
                         fontWeight: FontWeight.w600,
                       ),
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 24),
                     ..._buildActionTiles(context),
 
-                    // Información adicional
-                    const SizedBox(height: 24),
-                    Text(
-                      'Detalles adicionales',
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    Card(
-                      elevation: 2,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Column(
-                        children: [
-                          ListTile(
-                            leading: Container(
-                              padding: const EdgeInsets.all(8),
-                              decoration: BoxDecoration(
-                                color: Colors.orange.withOpacity(0.1),
-                                shape: BoxShape.circle,
-                              ),
-                              child: const Icon(
-                                Icons.calendar_today,
-                                color: Colors.orange,
-                              ),
-                            ),
-                            title: Text(
-                              'Fecha de inicio',
-                              style: Theme.of(context).textTheme.bodyLarge,
-                            ),
-                            trailing: Text(
-                              'Próximamente',
-                              style: Theme.of(context).textTheme.bodyMedium
-                                  ?.copyWith(
-                                    color: Theme.of(
-                                      context,
-                                    ).textTheme.bodySmall?.color,
-                                  ),
-                            ),
-                          ),
-                          const Divider(height: 1, indent: 72, endIndent: 16),
-                          ListTile(
-                            leading: Container(
-                              padding: const EdgeInsets.all(8),
-                              decoration: BoxDecoration(
-                                color: Colors.green.withOpacity(0.1),
-                                shape: BoxShape.circle,
-                              ),
-                              child: const Icon(
-                                Icons.group,
-                                color: Colors.green,
-                              ),
-                            ),
-                            title: Text(
-                              'Equipos participantes',
-                              style: Theme.of(context).textTheme.bodyLarge,
-                            ),
-                            trailing: Text(
-                              '0',
-                              style: Theme.of(context).textTheme.bodyLarge
-                                  ?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                    color: Theme.of(
-                                      context,
-                                    ).colorScheme.primary,
-                                  ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
                   ],
                 ),
               ),
@@ -319,7 +208,6 @@ class _EventoDetalleScreenState extends State<EventoDetalleScreen> {
           subtitle: 'Ver la clasificación actual',
           onTap: () => _navigateToTablaPosiciones(context),
           color: colorScheme.primaryContainer,
-          textColor: colorScheme.onPrimaryContainer,
         ),
       );
     }
@@ -333,7 +221,6 @@ class _EventoDetalleScreenState extends State<EventoDetalleScreen> {
             subtitle: action.subtitle,
             onTap: action.onTap,
             color: action.color,
-            textColor: action.textColor,
           ),
         )
         .toList();
@@ -346,12 +233,11 @@ class _EventoDetalleScreenState extends State<EventoDetalleScreen> {
     required String subtitle,
     required VoidCallback onTap,
     required Color color,
-    Color? textColor,
   }) {
     final theme = Theme.of(context);
 
     return Card(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: const EdgeInsets.only(bottom: 16),
       elevation: 1,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
@@ -379,14 +265,13 @@ class _EventoDetalleScreenState extends State<EventoDetalleScreen> {
               title,
               style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.w600,
-                color: textColor ?? theme.textTheme.titleMedium?.color,
+                color: theme.textTheme.titleMedium?.color,
               ),
             ),
             subtitle: Text(
               subtitle,
               style: theme.textTheme.bodySmall?.copyWith(
                 color:
-                    textColor?.withOpacity(0.8) ??
                     theme.textTheme.bodySmall?.color,
               ),
             ),
@@ -547,7 +432,6 @@ class _ActionTileData {
   final String subtitle;
   final VoidCallback onTap;
   final Color color;
-  final Color? textColor;
 
   const _ActionTileData({
     required this.icon,
@@ -555,7 +439,6 @@ class _ActionTileData {
     this.subtitle = '',
     required this.onTap,
     required this.color,
-    this.textColor,
   });
 }
 
@@ -608,7 +491,7 @@ class _EventHeader extends StatelessWidget {
             bottom: 24.0,
             top:
                 kToolbarHeight *
-                2.2, // Aumentado de 1.5 a 2.2 para bajar el contenido
+                2.2, 
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,

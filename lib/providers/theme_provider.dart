@@ -9,8 +9,8 @@ class ThemeProvider with ChangeNotifier {
   ThemeData _lightTheme = AppTheme.lightTheme;
   ThemeData _darkTheme = AppTheme.darkTheme;
 
-  // Manual theme override (null = follow system)
-  ThemeMode _themeMode = ThemeMode.system;
+  // Default to light theme
+  ThemeMode _themeMode = ThemeMode.light;
   bool _isDarkMode = false;
 
   Configuracion? _configuracion;
@@ -39,8 +39,8 @@ class ThemeProvider with ChangeNotifier {
 
   /// Toggle between light and dark theme (manual override)
   void toggleTheme() {
-    _themeMode = ThemeMode.light;
     _isDarkMode = !_isDarkMode;
+    _themeMode = _isDarkMode ? ThemeMode.dark : ThemeMode.light;
     notifyListeners();
   }
 

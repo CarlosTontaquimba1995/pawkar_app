@@ -11,8 +11,7 @@ class EventoCard extends StatelessWidget {
     return 'assets/images/splash_logo.png';
   }
 
-  const EventoCard({Key? key, required this.subcategoria, this.imageUrl})
-    : super(key: key);
+  const EventoCard({super.key, required this.subcategoria, this.imageUrl});
 
   @override
   Widget build(BuildContext context) {

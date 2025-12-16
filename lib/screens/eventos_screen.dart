@@ -5,7 +5,7 @@ import '../services/subcategoria_service.dart';
 import '../widgets/evento_card.dart';
 
 class EventosScreen extends StatefulWidget {
-  const EventosScreen({Key? key}) : super(key: key);
+  const EventosScreen({super.key});
 
   @override
   State<EventosScreen> createState() => _EventosScreenState();

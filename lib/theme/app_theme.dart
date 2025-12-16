@@ -230,8 +230,6 @@ class AppTheme {
         onSecondaryContainer: AppColors.darkOnSecondary,
         surface: AppColors.darkSurface,
         onSurface: AppColors.darkOnSurface,
-        background: AppColors.darkBackground,
-        onBackground: AppColors.darkOnBackground,
         error: AppColors.darkError,
         onError: AppColors.darkOnError,
         brightness: Brightness.dark,

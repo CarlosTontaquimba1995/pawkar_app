@@ -288,7 +288,7 @@ class _PlantillasScreenState extends State<PlantillasScreen> {
       decoration: BoxDecoration(
         color: isError
             ? Theme.of(context).colorScheme.errorContainer.withOpacity(0.2)
-            : Theme.of(context).colorScheme.surfaceVariant,
+            : Theme.of(context).colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Row(
@@ -553,7 +553,7 @@ class _PlantillasScreenState extends State<PlantillasScreen> {
                     ],
                   ),
                 );
-              }).toList(),
+              }),
 
               // Footer
               const SizedBox(height: 16),

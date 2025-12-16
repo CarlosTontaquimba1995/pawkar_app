@@ -173,7 +173,7 @@ class _EquiposScreenState extends State<EquiposScreen> {
                         ),
                       ),
                     );
-                  }).toList(),
+                  }),
                 ],
                 onChanged: (value) {
                   setState(() {

@@ -73,14 +73,35 @@ class _EventoDetalleScreenState extends State<EventoDetalleScreen> {
               expandedHeight: 280,
               pinned: true,
               stretch: true,
+              shadowColor: Colors.black26,
               flexibleSpace: FlexibleSpaceBar(
+                centerTitle: true,
                 title: _showAppBarTitle
-                    ? Text(
-                        widget.evento.nombre,
-                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          fontFamily: GoogleFonts.poppins().fontFamily,
-                          fontWeight: FontWeight.w600,
-                          color: colorScheme.onSurface,
+                    ? Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: colorScheme.surface.withOpacity(0.9),
+                          borderRadius: BorderRadius.circular(20),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.1),
+                              blurRadius: 8,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: Text(
+                          widget.evento.nombre,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: GoogleFonts.poppins(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: colorScheme.onSurface,
+                          ),
                         ),
                       )
                     : null,
@@ -90,16 +111,27 @@ class _EventoDetalleScreenState extends State<EventoDetalleScreen> {
                   description: widget.evento.descripcion,
                 ),
               ),
-              leading: IconButton(
-                icon: Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: colorScheme.surface.withOpacity(0.8),
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(Icons.arrow_back),
+              leading: Container(
+                margin: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: colorScheme.surface.withOpacity(0.9),
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 4,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
                 ),
-                onPressed: () => Navigator.of(context).pop(),
+                child: IconButton(
+                  icon: const Icon(Icons.arrow_back),
+                  onPressed: () => Navigator.of(context).pop(),
+                  style: IconButton.styleFrom(
+                    foregroundColor: colorScheme.onSurface,
+                    padding: const EdgeInsets.all(8),
+                  ),
+                ),
               ),
               backgroundColor: Colors.transparent,
               elevation: 0,
@@ -540,61 +572,95 @@ class _EventHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-
+    final colorScheme = Theme.of(context).colorScheme;
+    
     return Stack(
       fit: StackFit.expand,
       children: [
-        // Background image with gradient overlay
         _buildBackgroundImage(),
-
-        // Gradient overlay
-        Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [
-                Colors.transparent,
-                colorScheme.surface.withOpacity(0.7),
-                colorScheme.surface.withOpacity(0.9),
-              ],
+        Positioned(
+          bottom: 0,
+          left: 0,
+          right: 0,
+          child: Container(
+            padding: const EdgeInsets.all(20.0),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.bottomCenter,
+                end: Alignment.topCenter,
+                colors: [
+                  colorScheme.surface.withOpacity(0.95),
+                  colorScheme.surface.withOpacity(0.7),
+                  colorScheme.surface.withOpacity(0.4),
+                  Colors.transparent,
+                ],
+                stops: const [0.0, 0.3, 0.7, 1.0],
+              ),
             ),
           ),
         ),
 
         // Content
         Padding(
-          padding: const EdgeInsets.all(
-            24.0,
-          ).copyWith(top: kToolbarHeight * 1.5),
+          padding: const EdgeInsets.only(
+            left: 24.0,
+            right: 24.0,
+            bottom: 24.0,
+            top:
+                kToolbarHeight *
+                2.2, // Aumentado de 1.5 a 2.2 para bajar el contenido
+          ),
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              Text(
-                title,
-                style: GoogleFonts.poppins(
-                  color: colorScheme.onSurface,
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  height: 1.2,
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
                 ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
+                decoration: BoxDecoration(
+                  color: colorScheme.primary.withOpacity(0.9),
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.2),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Text(
+                  title,
+                  style: GoogleFonts.poppins(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w700,
+                    color: colorScheme.onPrimary,
+                    height: 1.2,
+                  ),
+                ),
               ),
               if (description.isNotEmpty) ...[
-                const SizedBox(height: 8),
-                Text(
-                  description,
-                  style: GoogleFonts.poppins(
-                    color: colorScheme.onSurface.withOpacity(0.9),
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
+                const SizedBox(height: 12),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
                   ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
+                  decoration: BoxDecoration(
+                    color: colorScheme.surface.withOpacity(0.8),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    description,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: GoogleFonts.poppins(
+                      color: colorScheme.onSurface,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
                 ),
               ],
             ],

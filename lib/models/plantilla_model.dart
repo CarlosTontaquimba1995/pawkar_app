@@ -17,9 +17,9 @@ class Sancion {
     return Sancion(
       sancionId: json['sancionId'] as int,
       tipoSancion: json['tipoSancion'] as String,
-      motivo: json['motivo'] as String,
-      detalleSancion: json['detalleSancion'] as String,
-      fechaRegistro: json['fechaRegistro'] as String,
+      motivo: json['motivo'] as String? ?? '',
+      detalleSancion: json['detalleSancion'] as String? ?? '',
+      fechaRegistro: json['fechaRegistro'] as String? ?? '', 
     );
   }
 

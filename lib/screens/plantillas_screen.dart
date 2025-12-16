@@ -582,7 +582,11 @@ class _PlantillasScreenState extends State<PlantillasScreen> {
     required String value,
     bool isMultiline = false,
   }) {
-    final colorScheme = Theme.of(context).colorScheme;
+    // Use explicit dark colors that will be visible on light backgrounds
+    final textColor = const Color(0xFF212121); // Dark gray
+    final labelColor = const Color(
+      0xFF424242,
+    ); // Slightly lighter gray for labels
 
     return Row(
       crossAxisAlignment: isMultiline
@@ -592,7 +596,7 @@ class _PlantillasScreenState extends State<PlantillasScreen> {
         Icon(
           icon,
           size: 18,
-          color: colorScheme.onSurfaceVariant.withOpacity(0.7),
+          color: labelColor,
         ),
         const SizedBox(width: 8),
         Expanded(
@@ -604,8 +608,8 @@ class _PlantillasScreenState extends State<PlantillasScreen> {
                       '$label:',
                       style: TextStyle(
                         fontSize: 13,
-                        fontWeight: FontWeight.w500,
-                        color: colorScheme.onSurfaceVariant.withOpacity(0.8),
+                        fontWeight: FontWeight.w600,
+                        color: labelColor,
                       ),
                     ),
                     const SizedBox(height: 4),
@@ -613,7 +617,8 @@ class _PlantillasScreenState extends State<PlantillasScreen> {
                       value,
                       style: TextStyle(
                         fontSize: 14,
-                        color: colorScheme.onSurface,
+                        color: textColor,
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
                   ],
@@ -622,14 +627,15 @@ class _PlantillasScreenState extends State<PlantillasScreen> {
                   text: TextSpan(
                     style: TextStyle(
                       fontSize: 14,
-                      color: colorScheme.onSurface,
+                      color: textColor,
+                      fontWeight: FontWeight.w500,
                     ),
                     children: [
                       TextSpan(
                         text: '$label: ',
                         style: TextStyle(
-                          fontWeight: FontWeight.w500,
-                          color: colorScheme.onSurfaceVariant.withOpacity(0.8),
+                          fontWeight: FontWeight.w600,
+                          color: labelColor,
                         ),
                       ),
                       TextSpan(text: value),

@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import '../utils/custom_page_route.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -149,14 +150,6 @@ class _EventoDetalleScreenState extends State<EventoDetalleScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-
-                    // Acciones principales
-                    Text(
-                      'Acciones disponibles',
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
                     const SizedBox(height: 24),
                     ..._buildActionTiles(context),
 
@@ -200,17 +193,16 @@ class _EventoDetalleScreenState extends State<EventoDetalleScreen> {
       ),
     ];
 
-    if (isFutbol) {
-      actions.add(
-        _ActionTileData(
-          icon: Icons.format_list_numbered,
-          title: 'Tabla de Posiciones',
-          subtitle: 'Ver la clasificación actual',
-          onTap: () => _navigateToTablaPosiciones(context),
-          color: colorScheme.primaryContainer,
-        ),
-      );
-    }
+    // Show Tabla de Posiciones for all events
+    actions.add(
+      _ActionTileData(
+        icon: Icons.format_list_numbered,
+        title: 'Tabla de Posiciones',
+        subtitle: 'Ver la clasificación actual',
+        onTap: () => _navigateToTablaPosiciones(context),
+        color: colorScheme.primaryContainer,
+      ),
+    );
 
     return actions
         .map(
@@ -290,27 +282,13 @@ class _EventoDetalleScreenState extends State<EventoDetalleScreen> {
     return null;
   }
 
-  /// Navigates to the matches screen with a slide transition.
+  /// Navigates to the matches screen with a consistent slide transition.
   void _navigateToEncuentros(BuildContext context) {
     try {
       Navigator.of(context).push(
-        PageRouteBuilder<dynamic>(
-          pageBuilder: (_, __, ___) => const MatchesScreen(initialMatches: []),
-          transitionsBuilder: (_, animation, __, child) {
-            const begin = Offset(1.0, 0.0);
-            const end = Offset.zero;
-            const curve = Curves.easeInOut;
-
-            final tween = Tween<Offset>(
-              begin: begin,
-              end: end,
-            ).chain(CurveTween(curve: curve));
-
-            return SlideTransition(
-              position: animation.drive(tween),
-              child: child,
-            );
-          },
+        CustomPageRoute(
+          child: const MatchesScreen(initialMatches: []),
+          direction: AxisDirection.right,
         ),
       );
     } catch (e, stackTrace) {
@@ -327,54 +305,32 @@ class _EventoDetalleScreenState extends State<EventoDetalleScreen> {
   }
 
   void _navigateToEquipos(BuildContext context) {
-    Navigator.push(
-      context,
-      PageRouteBuilder(
-        pageBuilder: (context, animation, secondaryAnimation) =>
-            EquiposScreen(subcategoriaId: widget.evento.subcategoriaId),
-        transitionsBuilder: (context, animation, secondaryAnimation, child) {
-          return FadeTransition(opacity: animation, child: child);
-        },
+    Navigator.of(context).push(
+      CustomPageRoute(
+        child: EquiposScreen(subcategoriaId: widget.evento.subcategoriaId),
+        direction: AxisDirection.right,
       ),
     );
   }
 
   void _navigateToJugadores(BuildContext context) {
-    Navigator.push(
-      context,
-      PageRouteBuilder(
-        pageBuilder: (context, animation, secondaryAnimation) =>
-            JugadoresScreen(subcategoriaId: widget.evento.subcategoriaId),
-        transitionsBuilder: (context, animation, secondaryAnimation, child) {
-          return FadeTransition(opacity: animation, child: child);
-        },
+    Navigator.of(context).push(
+      CustomPageRoute(
+        child: JugadoresScreen(subcategoriaId: widget.evento.subcategoriaId),
+        direction: AxisDirection.right,
       ),
     );
   }
 
-  /// Navigates to the standings screen with a slide-up transition.
+  /// Navigates to the standings screen with a consistent slide transition.
   void _navigateToTablaPosiciones(BuildContext context) {
     try {
       Navigator.of(context).push(
-        PageRouteBuilder<dynamic>(
-          pageBuilder: (_, __, ___) => TablaPosicionesScreen(
+        CustomPageRoute(
+          child: TablaPosicionesScreen(
             subcategoriaId: widget.evento.subcategoriaId,
           ),
-          transitionsBuilder: (_, animation, __, child) {
-            const begin = Offset(0.0, 1.0);
-            const end = Offset.zero;
-            const curve = Curves.easeInOut;
-
-            final tween = Tween<Offset>(
-              begin: begin,
-              end: end,
-            ).chain(CurveTween(curve: curve));
-
-            return SlideTransition(
-              position: animation.drive(tween),
-              child: child,
-            );
-          },
+          direction: AxisDirection.right,
         ),
       );
     } catch (e, stackTrace) {

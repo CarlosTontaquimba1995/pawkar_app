@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:pawkar_app/models/jugador_model.dart';
 import 'package:pawkar_app/services/jugador_service.dart';
@@ -78,14 +79,29 @@ class _JugadoresScreenState extends State<JugadoresScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    
     return Scaffold(
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text(
           widget.mostrarSoloSancionados 
               ? 'Jugadores Sancionados' 
               : 'Jugadores',
+          style: GoogleFonts.poppins(
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
+            color: theme.colorScheme.onSurface,
+            letterSpacing: 0.15,
+          ),
         ),
         centerTitle: true,
+        elevation: 0,
+        backgroundColor: theme.colorScheme.surface,
+        foregroundColor: theme.colorScheme.onSurface,
+        surfaceTintColor: const Color.fromARGB(0, 214, 5, 5),
+        shadowColor: theme.colorScheme.shadow.withOpacity(0.3),
+        scrolledUnderElevation: 1,
       ),
       body: Column(
         children: [
@@ -111,12 +127,6 @@ class _JugadoresScreenState extends State<JugadoresScreen> {
                     : _buildJugadoresList(),
           ),
         ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // TODO: Implementar adición de nuevo jugador
-        },
-        child: const Icon(Icons.person_add),
       ),
     );
   }

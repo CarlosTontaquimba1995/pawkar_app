@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:intl/intl.dart';
 import 'package:pawkar_app/models/encuentro_model.dart';
 import 'package:pawkar_app/models/equipo_model.dart';
@@ -388,12 +390,33 @@ class _MatchesScreenState extends State<MatchesScreen> {
       return const Scaffold(body: Center(child: LoadingWidget()));
     }
 
+    final theme = Theme.of(context);
+    
     return Scaffold(
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        title: const Text('Partidos'),
+        title: Text(
+          'Encuentros',
+          style: GoogleFonts.poppins(
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
+            color: theme.colorScheme.onSurface,
+            letterSpacing: 0.15,
+          ),
+        ),
+        centerTitle: true,
+        elevation: 0,
+        backgroundColor: theme.colorScheme.surface,
+        foregroundColor: theme.colorScheme.onSurface,
+        surfaceTintColor: const Color.fromARGB(0, 214, 5, 5),
+        shadowColor: theme.colorScheme.shadow.withOpacity(0.3),
+        scrolledUnderElevation: 1,
         actions: [
           IconButton(
-            icon: Icon(_showFilters ? Icons.close : Icons.filter_list),
+            icon: Icon(
+              _showFilters ? Icons.close : Iconsax.filter,
+              color: theme.colorScheme.primary,
+            ),
             onPressed: () {
               setState(() => _showFilters = !_showFilters);
             },

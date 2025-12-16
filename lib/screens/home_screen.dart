@@ -190,7 +190,7 @@ class _HomeScreenState extends State<HomeScreen>
                         .slideY(begin: 0.1, end: 0),
                     _buildSection(
                           context,
-                          title: 'Tus Próximos Encuentros',
+                          title: 'Próximos Encuentros',
                           showAction: true,
                           onAction: () {
                             Navigator.push(

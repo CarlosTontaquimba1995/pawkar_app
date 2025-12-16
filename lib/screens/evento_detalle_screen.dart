@@ -161,7 +161,7 @@ class _EventoDetalleScreenState extends State<EventoDetalleScreen> {
     ];
 
     if (isFutbol) {
-      actions.addAll([
+      actions.add(
         _ActionButtonData(
           icon: Icons.format_list_numbered,
           label: 'Tabla de\nPosiciones',
@@ -169,14 +169,7 @@ class _EventoDetalleScreenState extends State<EventoDetalleScreen> {
           color: colorScheme.primaryContainer,
           textColor: colorScheme.onPrimaryContainer,
         ),
-        _ActionButtonData(
-          icon: Icons.warning_amber_rounded,
-          label: 'Jugadores\nSancionados',
-          onTap: () => _navigateToJugadoresSancionados(context),
-          color: colorScheme.errorContainer,
-          textColor: colorScheme.onErrorContainer,
-        ),
-      ]);
+      );
     }
 
     return actions
@@ -375,14 +368,6 @@ class _EventoDetalleScreenState extends State<EventoDetalleScreen> {
     }
   }
 
-  void _navigateToJugadoresSancionados(BuildContext context) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Pantalla de jugadores sancionados en desarrollo'),
-        behavior: SnackBarBehavior.floating,
-      ),
-    );
-  }
 
   /// Shows an error message in a snackbar.
   void _showErrorSnackBar(BuildContext context, String message) {

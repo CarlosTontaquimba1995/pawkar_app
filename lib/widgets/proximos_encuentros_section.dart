@@ -348,70 +348,9 @@ class _ProximosEncuentrosSectionState extends State<ProximosEncuentrosSection> {
                 
                 const SizedBox(height: 12.0),
 
-                // Participants and action button
-                Row(
-                  children: [
-                    // Participant avatars (example)
-                    _buildParticipantAvatars(),
-
-                    const Spacer(),
-
-                    // Action button
-                    FilledButton.tonal(
-                      onPressed: () {
-                        // Handle action
-                      },
-                      style: FilledButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16.0,
-                          vertical: 8.0,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12.0),
-                        ),
-                      ),
-                      child: const Text('Ver detalles'),
-                    ),
-                  ],
-                ),
+                // Removed participant avatars and 'Ver detalles' button
               ],
             ),
-          ),
-        ),
-      ),
-    );
-  }
-  
-  Widget _buildParticipantAvatars() {
-    // Example participant avatars
-    return Stack(
-      children: [
-        _buildAvatar('A', 0),
-        _buildAvatar('B', 1),
-        _buildAvatar('+2', 2),
-      ],
-    );
-  }
-
-  Widget _buildAvatar(String text, int index) {
-    return Container(
-      margin: EdgeInsets.only(left: index * 16.0),
-      width: 32.0,
-      height: 32.0,
-      decoration: BoxDecoration(
-        color: Colors.primaries[index % Colors.primaries.length].withOpacity(
-          0.2,
-        ),
-        shape: BoxShape.circle,
-        border: Border.all(color: Colors.white, width: 2.0),
-      ),
-      child: Center(
-        child: Text(
-          text,
-          style: const TextStyle(
-            color: Colors.black87,
-            fontWeight: FontWeight.bold,
-            fontSize: 12.0,
           ),
         ),
       ),

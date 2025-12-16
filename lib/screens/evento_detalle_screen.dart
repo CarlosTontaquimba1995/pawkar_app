@@ -8,15 +8,10 @@ import '../models/subcategoria_model.dart';
 import 'matches_screen.dart';
 import 'equipos_screen.dart';
 import 'jugadores_screen.dart';
-import 'plantillas_screen.dart';
 import 'tabla_posiciones_screen.dart';
 
-/// Screen that displays the details of an event and provides navigation to related features.
 class EventoDetalleScreen extends StatefulWidget {
-  /// The event to display details for.
   final Subcategoria evento;
-
-  /// Creates an [EventoDetalleScreen] for the given [evento].
   const EventoDetalleScreen({super.key, required this.evento});
 
   @override
@@ -173,13 +168,6 @@ class _EventoDetalleScreenState extends State<EventoDetalleScreen> {
           onTap: () => _navigateToTablaPosiciones(context),
           color: colorScheme.primaryContainer,
           textColor: colorScheme.onPrimaryContainer,
-        ),
-        _ActionButtonData(
-          icon: Icons.assignment_ind,
-          label: 'Plantillas',
-          onTap: () => _navigateToPlantillas(context),
-          color: colorScheme.secondaryContainer,
-          textColor: colorScheme.onSecondaryContainer,
         ),
         _ActionButtonData(
           icon: Icons.warning_amber_rounded,
@@ -385,19 +373,6 @@ class _EventoDetalleScreenState extends State<EventoDetalleScreen> {
       );
       _showErrorSnackBar(context, 'No se pudo cargar la tabla de posiciones');
     }
-  }
-
-  void _navigateToPlantillas(BuildContext context) {
-    Navigator.push(
-      context,
-      PageRouteBuilder(
-        pageBuilder: (context, animation, secondaryAnimation) =>
-            PlantillasScreen(subcategoriaId: widget.evento.subcategoriaId),
-        transitionsBuilder: (context, animation, secondaryAnimation, child) {
-          return FadeTransition(opacity: animation, child: child);
-        },
-      ),
-    );
   }
 
   void _navigateToJugadoresSancionados(BuildContext context) {

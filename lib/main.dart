@@ -7,6 +7,7 @@ import 'theme/app_colors.dart';
 import 'providers/theme_provider.dart';
 import 'routes/app_routes.dart';
 import 'services/navigation_service.dart';
+import 'services/subcategoria_service.dart';
 import 'theme/app_theme.dart';
 
 void main() async {
@@ -33,11 +34,15 @@ void main() async {
     debugPrint('Error initializing app: $e');
   }
 
+  // Create an instance of SubcategoriaService
+  final subcategoriaService = SubcategoriaService();
+
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider.value(value: themeProvider),
         Provider.value(value: navigationService),
+        Provider<SubcategoriaService>.value(value: subcategoriaService),
       ],
       child: const MyApp(),
     ),

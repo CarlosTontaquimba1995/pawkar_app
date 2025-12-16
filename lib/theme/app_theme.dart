@@ -216,27 +216,73 @@ class AppTheme {
     );
   }
 
-  // Dark theme
+  // Dark theme with enhanced contrast
   static ThemeData get darkTheme {
     final theme = ThemeData.dark().copyWith(
       colorScheme: const ColorScheme.dark(
         primary: AppColors.darkPrimary,
         onPrimary: AppColors.darkOnPrimary,
-        primaryContainer:
-            AppColors.darkPrimaryVariant, // Replaces primaryVariant
+        primaryContainer: AppColors.darkPrimaryVariant,
         onPrimaryContainer: AppColors.darkOnPrimary,
         secondary: AppColors.darkSecondary,
         onSecondary: AppColors.darkOnSecondary,
-        secondaryContainer:
-            AppColors.darkSecondaryVariant, // Replaces secondaryVariant
+        secondaryContainer: AppColors.darkSecondaryVariant,
         onSecondaryContainer: AppColors.darkOnSecondary,
         surface: AppColors.darkSurface,
         onSurface: AppColors.darkOnSurface,
+        background: AppColors.darkBackground,
+        onBackground: AppColors.darkOnBackground,
         error: AppColors.darkError,
         onError: AppColors.darkOnError,
         brightness: Brightness.dark,
       ),
-      textTheme: _textTheme,
+      textTheme: TextTheme(
+        displayLarge: _textTheme.displayLarge?.copyWith(
+          color: AppColors.darkTextPrimary,
+        ),
+        displayMedium: _textTheme.displayMedium?.copyWith(
+          color: AppColors.darkTextPrimary,
+        ),
+        displaySmall: _textTheme.displaySmall?.copyWith(
+          color: AppColors.darkTextPrimary,
+        ),
+        headlineLarge: _textTheme.headlineLarge?.copyWith(
+          color: AppColors.darkTextPrimary,
+        ),
+        headlineMedium: _textTheme.headlineMedium?.copyWith(
+          color: AppColors.darkTextPrimary,
+        ),
+        headlineSmall: _textTheme.headlineSmall?.copyWith(
+          color: AppColors.darkTextPrimary,
+        ),
+        titleLarge: _textTheme.titleLarge?.copyWith(
+          color: AppColors.darkTextPrimary,
+        ),
+        titleMedium: _textTheme.titleMedium?.copyWith(
+          color: AppColors.darkTextPrimary,
+        ),
+        titleSmall: _textTheme.titleSmall?.copyWith(
+          color: AppColors.darkTextSecondary,
+        ),
+        bodyLarge: _textTheme.bodyLarge?.copyWith(
+          color: AppColors.darkTextSecondary,
+        ),
+        bodyMedium: _textTheme.bodyMedium?.copyWith(
+          color: AppColors.darkTextSecondary,
+        ),
+        bodySmall: _textTheme.bodySmall?.copyWith(
+          color: AppColors.darkTextHint,
+        ),
+        labelLarge: _textTheme.labelLarge?.copyWith(
+          color: AppColors.darkTextPrimary,
+        ),
+        labelMedium: _textTheme.labelMedium?.copyWith(
+          color: AppColors.darkTextSecondary,
+        ),
+        labelSmall: _textTheme.labelSmall?.copyWith(
+          color: AppColors.darkTextHint,
+        ),
+      ),
       appBarTheme: AppBarTheme(
         elevation: 0,
         centerTitle: true,
@@ -247,8 +293,14 @@ class AppTheme {
         ),
       ),
       cardTheme: CardThemeData(
-        elevation: 1,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        elevation: 2, // Increased elevation for better depth
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+          side: BorderSide(
+            color: Colors.grey[800]!,
+            width: 0.5,
+          ), // Add subtle border
+        ),
         color: AppColors.darkSurface,
         clipBehavior: Clip.antiAlias,
       ),

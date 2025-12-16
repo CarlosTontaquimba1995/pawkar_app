@@ -16,19 +16,29 @@ class AppColors {
   static const Color lightOnSurfaceVariant = Color(0xFF49454F);
   static const Color lightOnError = Color(0xFFFFFFFF);
 
-  // Dark Theme Colors
-  static const Color darkPrimary = Color(0xFFBB86FC);
-  static const Color darkPrimaryVariant = Color(0xFF3700B3);
-  static const Color darkSecondary = Color(0xFF03DAC6);
-  static const Color darkSecondaryVariant = Color(0xFF018786);
-  static const Color darkBackground = Color(0xFF121212);
-  static const Color darkSurface = Color(0xFF1E1E1E);
-  static const Color darkError = Color(0xFFCF6679);
-  static const Color darkOnPrimary = Color(0xFF000000);
-  static const Color darkOnSecondary = Color(0xFF000000);
-  static const Color darkOnBackground = Color(0xFFFFFFFF);
-  static const Color darkOnSurface = Color(0xFFFFFFFF);
-  static const Color darkOnError = Color(0xFF000000);
+  // Dark Theme Colors - Enhanced contrast
+  static const Color darkPrimary = Color(
+    0xFF9C64FF,
+  ); // Brighter purple for better visibility
+  static const Color darkPrimaryVariant = Color(
+    0xFF7C4DFF,
+  ); // More saturated purple
+  static const Color darkSecondary = Color(0xFF00E5FF); // Brighter teal
+  static const Color darkSecondaryVariant = Color(
+    0xFF00B8D4,
+  ); // More saturated teal
+  static const Color darkBackground = Color(0xFF121212); // Keep dark background
+  static const Color darkSurface = Color(
+    0xFF1E1E1E,
+  ); // Slightly lighter than background
+  static const Color darkError = Color(0xFFFF5252); // Brighter red for errors
+  static const Color darkOnPrimary = Color(0xFFFFFFFF); // White text on primary
+  static const Color darkOnSecondary = Color(
+    0xFF000000,
+  ); // Black text on secondary
+  static const Color darkOnBackground = Color(0xFFFFFFFF); // White text
+  static const Color darkOnSurface = Color(0xFFFFFFFF); // White text on surface
+  static const Color darkOnError = Color(0xFFFFFFFF); // White text on error
 
   // Semantic Colors
   static const Color success = Color(0xFF4CAF50);
@@ -36,18 +46,33 @@ class AppColors {
   static const Color info = Color(0xFF2196F3);
   static const Color error = Color(0xFFF44336);
 
-  // Neutral Colors
+  // Neutral Colors - Enhanced contrast
   static const Color white = Color(0xFFFFFFFF);
   static const Color black = Color(0xFF000000);
   static const Color transparent = Colors.transparent;
-  static const Color grey = Color(0xFF9E9E9E);
+  static const Color grey = Color(
+    0xFFB0B0B0,
+  ); // Lighter grey for better visibility
   static const Color greyLight = Color(0xFFE0E0E0);
-  static const Color greyDark = Color(0xFF424242);
+  static const Color greyDark = Color(
+    0xFF616161,
+  ); // Lighter dark grey for better contrast
 
-  // Text Colors
+  // Text Colors - Enhanced contrast
   static const Color textPrimary = Color(0xFF1A1A1A);
-  static const Color textSecondary = Color(0xFF666666);
+  static const Color textSecondary = Color(
+    0xFF757575,
+  ); // Lighter for better contrast
   static const Color textHint = Color(0xFF9E9E9E);
+  
+  // Dark Theme Text Colors
+  static const Color darkTextPrimary = Color(
+    0xFFFFFFFF,
+  ); // White for primary text
+  static const Color darkTextSecondary = Color(
+    0xFFE0E0E0,
+  ); // Light grey for secondary text
+  static const Color darkTextHint = Color(0xFFB0B0B0); // Lighter grey for hints
   static const Color textDisabled = Color(0xFFBDBDBD);
 
   // Initialize colors for runtime theming

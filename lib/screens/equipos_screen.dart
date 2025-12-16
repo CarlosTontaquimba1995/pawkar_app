@@ -118,15 +118,6 @@ class _EquiposScreenState extends State<EquiposScreen> {
         scrolledUnderElevation: 1,
       ),
       body: _buildBody(),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          // TODO: Implementar creación de nuevo equipo
-        },
-        label: const Text('Nuevo Equipo'),
-        icon: const Icon(Iconsax.add, size: 20),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        elevation: 2,
-      ),
     );
   }
 

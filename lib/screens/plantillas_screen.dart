@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:pawkar_app/extensions/string_extensions.dart';
 import 'package:pawkar_app/models/plantilla_model.dart';
 import 'package:pawkar_app/services/plantilla_service.dart';
 
@@ -84,16 +85,6 @@ class _PlantillasScreenState extends State<PlantillasScreen> {
         ],
       ),
       body: _buildContent(),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          // TODO: Implementar agregar jugador a la plantilla
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Agregar jugador a la plantilla')),
-          );
-        },
-        icon: const Icon(Icons.person_add),
-        label: const Text('Agregar Jugador'),
-      ),
     );
   }
 
@@ -181,7 +172,10 @@ class _PlantillasScreenState extends State<PlantillasScreen> {
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       child: InkWell(
-        onTap: () => _mostrarOpcionesJugador(jugador),
+        onTap: tieneSancion ? () => _mostrarSanciones(jugador) : null,
+        onLongPress: !tieneSancion
+            ? () => _mostrarOpcionesJugador(jugador)
+            : null,
         borderRadius: BorderRadius.circular(12),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -223,38 +217,39 @@ class _PlantillasScreenState extends State<PlantillasScreen> {
                               ? jugador.rolNombre
                               : 'Sin posición',
                         ),
-                        // Sanction indicator
-                        if (tieneSancion && sancion != null) ...[
-                          const SizedBox(width: 8),
-                          Container(
-                            width: 24,
-                            height: 24,
-                            decoration: BoxDecoration(
-                              color: sancion.tipoSancion == 'TARJETA_ROJA'
-                                  ? Colors.red[700]
-                                  : Colors.amber[600],
-                              borderRadius: BorderRadius.circular(4),
-                              border: Border.all(
-                                color: sancion.tipoSancion == 'TARJETA_ROJA'
-                                    ? Colors.red[900]!
-                                    : Colors.amber[800]!,
-                                width: 1,
-                              ),
-                              boxShadow: const [
-                                BoxShadow(
-                                  color: Colors.black12,
-                                  blurRadius: 2,
-                                  offset: Offset(0, 1),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
                       ],
                     ),
                   ],
                 ),
               ),
+              // Sanction indicator moved here to the right side
+              if (tieneSancion && sancion != null)
+                Container(
+                  width: 16, // Made narrower
+                  height: 24, // Kept the same height
+                  margin: const EdgeInsets.only(right: 8),
+                  decoration: BoxDecoration(
+                    color: sancion.tipoSancion == 'TARJETA_ROJA'
+                        ? Colors.red[700]
+                        : Colors.amber[600],
+                    borderRadius: BorderRadius.circular(
+                      2,
+                    ), // More subtle border radius
+                    border: Border.all(
+                      color: sancion.tipoSancion == 'TARJETA_ROJA'
+                          ? Colors.red[900]!
+                          : Colors.amber[800]!,
+                      width: 1,
+                    ),
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Colors.black12,
+                        blurRadius: 2,
+                        offset: Offset(0, 1),
+                      ),
+                    ],
+                  ),
+                ),
               // Chevron icon to indicate tappable
               Icon(
                 Icons.chevron_right,
@@ -355,66 +350,278 @@ class _PlantillasScreenState extends State<PlantillasScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('El jugador no tiene sanciones registradas'),
+          behavior: SnackBarBehavior.floating,
         ),
       );
       return;
     }
 
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text('Sanciones de ${jugador.jugadorNombreCompleto}'),
-        content: SingleChildScrollView(
+      builder: (context) => Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        child: Container(
+          constraints: const BoxConstraints(maxWidth: 500),
+          padding: const EdgeInsets.all(20),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: jugador.sanciones
-                .map(
-                  (sancion) => Card(
-                    margin: const EdgeInsets.only(bottom: 8),
-                    child: Padding(
-                      padding: const EdgeInsets.all(12),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            sancion.tipoSancion,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text('Motivo: ${sancion.motivo}'),
-                          if (sancion.detalleSancion.isNotEmpty) ...[
-                            const SizedBox(height: 4),
-                            Text('Detalle: ${sancion.detalleSancion}'),
-                          ],
-                          const SizedBox(height: 4),
-                          Text(
-                            'Fecha: ${DateFormat('dd/MM/yyyy').format(DateTime.parse(sancion.fechaRegistro))}',
-                            style: TextStyle(
-                              color: Theme.of(
-                                context,
-                              ).textTheme.bodySmall?.color,
-                              fontSize: 12,
-                            ),
-                          ),
-                        ],
-                      ),
+            children: [
+              // Header
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: colorScheme.primaryContainer,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      Icons.gavel_rounded,
+                      color: colorScheme.onPrimaryContainer,
+                      size: 28,
                     ),
                   ),
-                )
-                .toList(),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Sanciones del Jugador',
+                          style: textTheme.titleLarge?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          jugador.jugadorNombreCompleto,
+                          style: textTheme.titleMedium?.copyWith(
+                            color: colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.close_rounded),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              const Divider(height: 1),
+              const SizedBox(height: 16),
+
+              // Sanciones List
+              ...jugador.sanciones.map((sancion) {
+                final isRedCard = sancion.tipoSancion == 'TARJETA_ROJA';
+                final cardColor = isRedCard
+                    ? Colors.red.shade50
+                    : Colors.amber.shade50;
+                final borderColor = isRedCard
+                    ? Colors.red.shade200
+                    : Colors.amber.shade200;
+                final iconColor = isRedCard
+                    ? Colors.red.shade700
+                    : Colors.amber.shade700;
+
+                return Container(
+                  margin: const EdgeInsets.only(bottom: 12),
+                  decoration: BoxDecoration(
+                    color: cardColor,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: borderColor, width: 1),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.05),
+                        blurRadius: 6,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      // Header con tipo de sanción
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 12,
+                        ),
+                        decoration: BoxDecoration(
+                          color: borderColor.withOpacity(0.3),
+                          borderRadius: const BorderRadius.only(
+                            topLeft: Radius.circular(11),
+                            topRight: Radius.circular(11),
+                          ),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(
+                              isRedCard
+                                  ? Icons.block
+                                  : Icons.warning_amber_rounded,
+                              color: iconColor,
+                              size: 20,
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              sancion.tipoSancion
+                                  .replaceAll('_', ' ')
+                                  .toTitleCase(),
+                              style: textTheme.titleMedium?.copyWith(
+                                color: iconColor,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            const Spacer(),
+                            Text(
+                              DateFormat(
+                                'dd MMM yyyy',
+                              ).format(DateTime.parse(sancion.fechaRegistro)),
+                              style: textTheme.bodySmall?.copyWith(
+                                color: iconColor.withOpacity(0.8),
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      // Detalles de la sanción
+                      Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Motivo
+                            _buildDetailRow(
+                              context,
+                              icon: Icons.info_outline_rounded,
+                              label: 'Motivo',
+                              value: sancion.motivo,
+                            ),
+                            
+                            // Detalle si existe
+                            if (sancion.detalleSancion.isNotEmpty) ...[
+                              const SizedBox(height: 10),
+                              _buildDetailRow(
+                                context,
+                                icon: Icons.description_rounded,
+                                label: 'Detalles',
+                                value: sancion.detalleSancion,
+                                isMultiline: true,
+                              ),
+                            ],
+
+                            // Fecha de registro
+                            const SizedBox(height: 10),
+                            _buildDetailRow(
+                              context,
+                              icon: Icons.calendar_today_rounded,
+                              label: 'Fecha de registro',
+                              value:
+                                  DateFormat("EEEE, d 'de' MMMM 'de' y", 'es')
+                                      .format(
+                                        DateTime.parse(sancion.fechaRegistro),
+                                      )
+                                      .capitalizeFirst(),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              }).toList(),
+
+              // Footer
+              const SizedBox(height: 16),
+              const Divider(height: 1),
+              const SizedBox(height: 8),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text('Cerrar'),
+                  ),
+                ],
+              ),
+            ],
           ),
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cerrar'),
-          ),
-        ],
       ),
+    );
+  }
+
+  Widget _buildDetailRow(
+    BuildContext context, {
+    required IconData icon,
+    required String label,
+    required String value,
+    bool isMultiline = false,
+  }) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Row(
+      crossAxisAlignment: isMultiline
+          ? CrossAxisAlignment.start
+          : CrossAxisAlignment.center,
+      children: [
+        Icon(
+          icon,
+          size: 18,
+          color: colorScheme.onSurfaceVariant.withOpacity(0.7),
+        ),
+        const SizedBox(width: 8),
+        Expanded(
+          child: isMultiline
+              ? Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '$label:',
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500,
+                        color: colorScheme.onSurfaceVariant.withOpacity(0.8),
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      value,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: colorScheme.onSurface,
+                      ),
+                    ),
+                  ],
+                )
+              : RichText(
+                  text: TextSpan(
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: colorScheme.onSurface,
+                    ),
+                    children: [
+                      TextSpan(
+                        text: '$label: ',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w500,
+                          color: colorScheme.onSurfaceVariant.withOpacity(0.8),
+                        ),
+                      ),
+                      TextSpan(text: value),
+                    ],
+                  ),
+                ),
+        ),
+      ],
     );
   }
 }

@@ -13,7 +13,7 @@ A new Flutter project.
 4.- cd C:\Program Files\Android\Android Studio\jbr\bin
 5.- ./keytool -genkey -v -keystore ~/upload-keystore.jks -keyalg RSA -keysize 2048 -validity 10000 -alias upload
 6.- Copiar upload-keystore de C:\Users\nombre-usuario\  y pegar en C:\Users\usuario\Documents\Flutter\pawkar_app\android\app
-7.- Editar build.gradle.kts
+7.- Editar build.gradle.kts dentro de app
 
 # Ejecutar comando para poder generar compilado android 
 

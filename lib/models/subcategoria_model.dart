@@ -10,6 +10,8 @@ class Subcategoria {
   final bool estado;
   final String? deporte;
   final String? ubicacion;
+  final double? latitud;
+  final double? longitud;
 
   Subcategoria({
     required this.subcategoriaId,
@@ -22,6 +24,8 @@ class Subcategoria {
     this.estado = true,
     this.deporte,
     this.ubicacion,
+    this.latitud,
+    this.longitud,
   }) : assert(nombre.isNotEmpty, 'Nombre cannot be empty'),
        assert(subcategoriaId > 0, 'SubcategoriaId must be positive');
 
@@ -64,6 +68,8 @@ class Subcategoria {
         estado: json['estado'] as bool? ?? true,
         deporte: json['deporte'] as String?,
         ubicacion: json['ubicacion'] as String?,
+        latitud: json['latitud']?.toDouble(),
+        longitud: json['longitud']?.toDouble(),
       );
     } catch (e) {
       throw FormatException('Error parsing Subcategoria from JSON: $e');
@@ -82,6 +88,8 @@ class Subcategoria {
       'estado': estado,
       'deporte': deporte,
       'ubicacion': ubicacion,
+      'latitud': latitud,
+      'longitud': longitud,
     };
   }
 

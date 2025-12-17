@@ -16,6 +16,17 @@ class EventoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Log de coordenadas
+    if (subcategoria.latitud != null && subcategoria.longitud != null) {
+      debugPrint(
+        'Coordenadas del evento ${subcategoria.nombre}: ${subcategoria.latitud}, ${subcategoria.longitud}',
+      );
+    } else {
+      debugPrint(
+        'El evento ${subcategoria.nombre} no tiene coordenadas definidas',
+      );
+    }
+    
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final textTheme = theme.textTheme;
@@ -241,11 +252,23 @@ class EventoCard extends StatelessWidget {
                     width: double.infinity,
                     child: ElevatedButton.icon(
                       onPressed: () async {
-                        // Coordenadas específicas de destino
-                        const double lat = 0.248320;
-                        const double lng = -78.243049;
+                        // Usar las coordenadas del objeto subcategoria si están disponibles
+                        final double? lat = subcategoria.latitud;
+                        final double? lng = subcategoria.longitud;
 
-                        // URL de Google Maps con las coordenadas específicas
+                        if (lat == null || lng == null) {
+                          if (!context.mounted) return;
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                'Ubicación no disponible para este evento',
+                              ),
+                            ),
+                          );
+                          return;
+                        }
+
+                        // URL de Google Maps con las coordenadas
                         final String googleMapsUrl =
                             'https://www.google.com/maps/dir/?api=1&destination=$lat,$lng&travelmode=driving&dir_action=navigate';
 
@@ -346,10 +369,7 @@ class EventoCard extends StatelessWidget {
             );
           },
         ),
-        Container(
-          height: 150,
-          color: Colors.black26,
-        ),
+        Container(height: 150, color: Colors.black26),
       ],
     );
   }
@@ -385,7 +405,7 @@ class EventoCard extends StatelessWidget {
     return 'Fecha no disponible';
   }
 
-String _formatDateTime(DateTime date) {
+  String _formatDateTime(DateTime date) {
     const months = [
       'enero',
       'febrero',
@@ -400,7 +420,7 @@ String _formatDateTime(DateTime date) {
       'noviembre',
       'diciembre',
     ];
-  
+
     final day = date.day;
     final month = months[date.month - 1];
     final year = date.year;

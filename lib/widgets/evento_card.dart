@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
+import 'package:url_launcher/url_launcher.dart';
 import '../models/subcategoria_model.dart';
 
 class EventoCard extends StatelessWidget {
@@ -113,48 +114,48 @@ class EventoCard extends StatelessWidget {
                                     Shadow(
                                       // bottom right
                                       color: Colors.black54,
-                                      offset: Offset(3, 3),
+                                      offset: const Offset(3, 3),
                                       blurRadius: 8,
                                     ),
                                     Shadow(
                                       // top left
                                       color: Colors.black54,
-                                      offset: Offset(-3, -3),
+                                      offset: const Offset(-3, -3),
                                       blurRadius: 8,
                                     ),
                                     Shadow(
                                       // bottom
                                       color: Colors.black87,
-                                      offset: Offset(0, 3),
+                                      offset: const Offset(0, 3),
                                       blurRadius: 10,
                                     ),
                                     // Main text outline
                                     Shadow(
                                       // left
                                       color: Colors.black,
-                                      offset: Offset(-2, 0),
+                                      offset: const Offset(-2, 0),
                                       blurRadius: 0,
                                     ),
                                     Shadow(
                                       // right
                                       color: Colors.black,
-                                      offset: Offset(2, 0),
+                                      offset: const Offset(2, 0),
                                       blurRadius: 0,
                                     ),
                                     Shadow(
                                       // top
                                       color: Colors.black,
-                                      offset: Offset(0, -2),
+                                      offset: const Offset(0, -2),
                                       blurRadius: 0,
                                     ),
                                     Shadow(
                                       // bottom
                                       color: Colors.black,
-                                      offset: Offset(0, 2),
+                                      offset: const Offset(0, 2),
                                       blurRadius: 0,
                                     ),
                                   ],
-                                  fontFeatures: [
+                                  fontFeatures: const [
                                     FontFeature.enable('kern'),
                                     FontFeature.tabularFigures(),
                                     FontFeature.enable('smcp'),
@@ -188,8 +189,6 @@ class EventoCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Removed duplicate title to keep only the one on the image
-
                   // Event Description
                   Text(
                     subcategoria.descripcion,
@@ -240,20 +239,67 @@ class EventoCard extends StatelessWidget {
                   // Action Button
                   SizedBox(
                     width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        // TODO: Handle button press
+                    child: ElevatedButton.icon(
+                      onPressed: () async {
+                        // Coordenadas específicas de destino
+                        const double lat = 0.248320;
+                        const double lng = -78.243049;
+
+                        // URL de Google Maps con las coordenadas específicas
+                        final String googleMapsUrl =
+                            'https://www.google.com/maps/dir/?api=1&destination=$lat,$lng&travelmode=driving&dir_action=navigate';
+
+                        // URL alternativa para abrir en el navegador
+                        const String googleMapsFallbackUrl =
+                            'https://maps.app.goo.gl/uwxf79sPFYJzn3pR8';
+
+                        try {
+                          // Primero intentamos abrir la aplicación de Google Maps
+                          if (await canLaunchUrl(Uri.parse(googleMapsUrl))) {
+                            await launchUrl(
+                              Uri.parse(googleMapsUrl),
+                              mode: LaunchMode.externalApplication,
+                            );
+                          }
+                          // Si falla, intentamos con la URL del enlace directo
+                          else if (await canLaunchUrl(
+                            Uri.parse(googleMapsFallbackUrl),
+                          )) {
+                            await launchUrl(
+                              Uri.parse(googleMapsFallbackUrl),
+                              mode: LaunchMode.externalApplication,
+                            );
+                          } else {
+                            if (!context.mounted) return;
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                  'No se pudo abrir Google Maps. Por favor, instálalo e inténtalo de nuevo.',
+                                ),
+                              ),
+                            );
+                          }
+                        } catch (e) {
+                          if (!context.mounted) return;
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Error: ${e.toString()}')),
+                          );
+                        }
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: colorScheme.primary,
                         foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 12.0),
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 12.0,
+                          horizontal: 16.0,
+                        ),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8.0),
                         ),
                         elevation: 0,
                       ),
-                      child: const Text('VER MÁS'),
+                      icon: const Icon(Icons.directions, size: 20),
+                      label: const Text('CÓMO LLEGAR'),
                     ),
                   ),
                 ],
@@ -300,169 +346,67 @@ class EventoCard extends StatelessWidget {
             );
           },
         ),
-        // Dark overlay for better text visibility
         Container(
           height: 150,
-          width: double.infinity,
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.bottomCenter,
-              end: Alignment.topCenter,
-              colors: [Colors.black.withOpacity(0.7), Colors.transparent],
-            ),
-          ),
-        ),
-        // Event name overlay - centered
-        Positioned.fill(
-          child: Center(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Text(
-                subcategoria.nombre.toUpperCase(),
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 34,
-                  fontWeight: FontWeight.w900,
-                  fontFamily: 'Roboto',
-                  letterSpacing: 2.0,
-                  shadows: [
-                    // 3D effect shadows
-                    Shadow(
-                      // bottom right
-                      color: Colors.black54,
-                      offset: Offset(3, 3),
-                      blurRadius: 8,
-                    ),
-                    Shadow(
-                      // top left
-                      color: Colors.black54,
-                      offset: Offset(-3, -3),
-                      blurRadius: 8,
-                    ),
-                    Shadow(
-                      // bottom
-                      color: Colors.black87,
-                      offset: Offset(0, 3),
-                      blurRadius: 10,
-                    ),
-                    // Main text outline
-                    Shadow(
-                      // left
-                      color: Colors.black,
-                      offset: Offset(-2, 0),
-                      blurRadius: 0,
-                    ),
-                    Shadow(
-                      // right
-                      color: Colors.black,
-                      offset: Offset(2, 0),
-                      blurRadius: 0,
-                    ),
-                    Shadow(
-                      // top
-                      color: Colors.black,
-                      offset: Offset(0, -2),
-                      blurRadius: 0,
-                    ),
-                    Shadow(
-                      // bottom
-                      color: Colors.black,
-                      offset: Offset(0, 2),
-                      blurRadius: 0,
-                    ),
-                  ],
-                  fontFeatures: [
-                    FontFeature.enable('kern'),
-                    FontFeature.tabularFigures(),
-                    FontFeature.enable('smcp'),
-                  ],
-                  height: 1.1,
-                  inherit: false,
-                  textBaseline: TextBaseline.alphabetic,
-                  leadingDistribution: TextLeadingDistribution.even,
-                  locale: const Locale('es', 'ES'),
-                  wordSpacing: 1.5,
-                ),
-                maxLines: 3,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-          ),
+          color: Colors.black26,
         ),
       ],
     );
   }
 
   Widget _buildDetailRow(IconData icon, String text, ColorScheme colorScheme) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4.0),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(icon, size: 20.0, color: colorScheme.primary),
-          const SizedBox(width: 12.0),
-          Expanded(
-            child: Text(
-              text,
-              style: TextStyle(
-                color: Colors.grey[800],
-                fontWeight: FontWeight.w500,
-              ),
-            ),
+    return Row(
+      children: [
+        Icon(icon, size: 20, color: colorScheme.primary),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Text(
+            text,
+            style: TextStyle(color: Colors.grey[800], fontSize: 14),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
   String _formatDate(dynamic date) {
-    DateTime dateTime;
-
     if (date is String) {
       try {
-        dateTime = DateTime.parse(date);
+        // Try to parse the string as a DateTime
+        final dateTime = DateTime.parse(date);
+        return _formatDateTime(dateTime);
       } catch (e) {
-        // If parsing fails, return the original string or a default message
-        return date.toString();
+        // If parsing fails, return the original string
+        return date;
       }
     } else if (date is DateTime) {
-      dateTime = date;
-    } else {
-      return ''; // or some default value
+      return _formatDateTime(date);
     }
-
-    return '${_getWeekday(dateTime.weekday)}, ${dateTime.day} de ${_getMonthName(dateTime.month)} ${dateTime.year}';
+    return 'Fecha no disponible';
   }
 
-  String _getWeekday(int weekday) {
-    const weekdays = [
-      'Domingo',
-      'Lunes',
-      'Martes',
-      'Miércoles',
-      'Jueves',
-      'Viernes',
-      'Sábado',
-    ];
-    return weekdays[weekday % 7];
-  }
-
-  String _getMonthName(int month) {
+String _formatDateTime(DateTime date) {
     const months = [
-      'Enero',
-      'Febrero',
-      'Marzo',
-      'Abril',
-      'Mayo',
-      'Junio',
-      'Julio',
-      'Agosto',
-      'Septiembre',
-      'Octubre',
-      'Noviembre',
-      'Diciembre',
+      'enero',
+      'febrero',
+      'marzo',
+      'abril',
+      'mayo',
+      'junio',
+      'julio',
+      'agosto',
+      'septiembre',
+      'octubre',
+      'noviembre',
+      'diciembre',
     ];
-    return months[month - 1];
+  
+    final day = date.day;
+    final month = months[date.month - 1];
+    final year = date.year;
+    final hour = date.hour.toString().padLeft(2, '0');
+    final minute = date.minute.toString().padLeft(2, '0');
+
+    return '$day de $month de $year a las $hour:$minute';
   }
 }

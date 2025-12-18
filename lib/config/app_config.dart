@@ -6,6 +6,26 @@ import 'package:pawkar_app/theme/app_colors.dart';
 import 'package:pawkar_app/theme/app_theme.dart';
 
 class AppConfig {
+  // Default colors for offline mode
+  static const String defaultPrimary = '#574496'; // Indigo/Púrpura
+  static const String defaultSecondary = '#1FBEF2'; // Celeste Cyan
+  static const String defaultAccent1 = '#E84095'; // Rosa Intenso
+  static const String defaultAccent2 = '#FECD1C'; // Amarillo Sol
+
+  static Color get defaultPrimaryColor => _parseColor(defaultPrimary);
+  static Color get defaultSecondaryColor => _parseColor(defaultSecondary);
+  static Color get defaultAccent1Color => _parseColor(defaultAccent1);
+  static Color get defaultAccent2Color => _parseColor(defaultAccent2);
+
+  static Configuracion get defaultConfig => Configuracion(
+    configuracionId: 0,
+    primario: defaultPrimary,
+    secundario: defaultSecondary,
+    acento1: defaultAccent1,
+    acento2: defaultAccent2,
+  );
+
+
   static final ConfiguracionService _configService = ConfiguracionService();
   static Configuracion? _cachedConfig;
   static DateTime? _lastFetched;
@@ -45,7 +65,13 @@ class AppConfig {
   /// Loads and applies theme configuration
   static Future<ThemeData> loadTheme() async {
     try {
-      final config = await getConfig();
+      Configuracion config;
+      try {
+        config = await getConfig();
+      } catch (e) {
+        debugPrint('Using default color scheme due to: $e');
+        config = defaultConfig;
+      }
 
       // Parse colors from config
       final primaryColor = _parseColor(config.primario);
@@ -64,23 +90,43 @@ class AppConfig {
 
       return AppTheme.lightTheme;
     } catch (e) {
-      debugPrint('Error loading theme configuration: $e');
-      return AppTheme.lightTheme; // Fallback to default theme
+      debugPrint('Error applying theme configuration: $e');
+      // Apply default colors as fallback
+      AppColors.updateColors(
+        primaryColor: defaultPrimaryColor,
+        secondaryColor: defaultSecondaryColor,
+        primaryVariantColor: defaultAccent1Color,
+        secondaryVariantColor: defaultAccent2Color,
+        isDark: false,
+      );
+      return AppTheme.lightTheme;
     }
   }
 
   /// Helper method to parse color from hex string
   static Color _parseColor(String hexColor) {
     try {
+      // Ensure the color string is properly formatted
+      String formattedColor = hexColor.trim();
+      if (!formattedColor.startsWith('#')) {
+        formattedColor = '#$formattedColor';
+      }
+
+      // Handle 3-digit hex codes
+      if (formattedColor.length == 4) {
+        final r = formattedColor[1];
+        final g = formattedColor[2];
+        final b = formattedColor[3];
+        formattedColor = '#$r$r$g$g$b$b';
+      }
+
+      // Parse the color
       return Color(
         int.parse(
-          hexColor.startsWith('#')
-              ? '0xFF${hexColor.substring(1)}'
-              : '0xFF$hexColor',
-        ),
+          formattedColor.replaceFirst('#', ''), radix: 16) + 0xFF000000,
       );
     } catch (e) {
-      debugPrint('Error parsing color $hexColor: $e');
+      debugPrint('Error parsing color "$hexColor": $e');
       return Colors.blue; // Fallback color
     }
   }

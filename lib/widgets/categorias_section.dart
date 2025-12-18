@@ -4,6 +4,7 @@ import '../models/categoria_model.dart';
 import '../models/subcategoria_model.dart';
 import '../screens/evento_detalle_screen.dart';
 import '../screens/eventos_screen.dart';
+import '../screens/musica_screen.dart';
 import '../services/categoria_service.dart';
 import '../services/subcategoria_service.dart';
 
@@ -172,7 +173,9 @@ class CategoriasSectionState extends State<CategoriasSection> {
   }
 
   Future<void> _onCategoryTap(Categoria categoria) async {
-    if (categoria.nemonico?.toLowerCase() == 'deportes') {
+    final nemonico = categoria.nemonico?.toLowerCase() ?? '';
+
+    if (nemonico == 'deportes') {
       try {
         final subcategoriaService = Provider.of<SubcategoriaService>(
           context,
@@ -199,11 +202,17 @@ class CategoriasSectionState extends State<CategoriasSection> {
           ),
         );
       }
-    } else if (categoria.nemonico?.toLowerCase() == 'eventos') {
+    } else if (nemonico == 'eventos') {
       if (!mounted) return;
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => const EventosScreen()),
+      );
+    } else if (nemonico == 'musica' || nemonico == 'música') {
+      if (!mounted) return;
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const MusicaScreen()),
       );
     } else {
       if (mounted) {

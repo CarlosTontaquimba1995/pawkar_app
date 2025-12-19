@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pawkar_app/models/subcategoria_model.dart';
 import 'package:pawkar_app/services/subcategoria_service.dart';
+import 'package:pawkar_app/widgets/empty_state_widget.dart';
 import 'package:intl/intl.dart';
 
 class ProximosEventosSection extends StatefulWidget {
@@ -92,19 +93,9 @@ class _ProximosEventosSectionState extends State<ProximosEventosSection> {
     }
 
     if (_eventos.isEmpty) {
-      return const Padding(
-        padding: EdgeInsets.all(16.0),
-        child: Center(
-          child: Text(
-            'No hay eventos próximos programados',
-            style: TextStyle(
-              fontSize: 16,
-              color: Colors.grey,
-              fontStyle: FontStyle.italic,
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ),
+      return EmptyStateWidget(
+        message: 'No hay eventos próximos programados',
+        icon: Icons.event_available_outlined,
       );
     }
 

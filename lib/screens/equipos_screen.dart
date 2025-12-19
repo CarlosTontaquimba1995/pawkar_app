@@ -7,6 +7,7 @@ import 'package:pawkar_app/screens/plantillas_screen.dart';
 import 'package:pawkar_app/services/equipo_service.dart';
 import 'package:pawkar_app/services/serie_service.dart';
 import 'package:pawkar_app/widgets/error_widget.dart' as custom;
+import 'package:pawkar_app/widgets/empty_state_widget.dart';
 import 'package:iconsax/iconsax.dart';
 
 class EquiposScreen extends StatefulWidget {
@@ -277,39 +278,11 @@ class _EquiposScreenState extends State<EquiposScreen> {
   }
 
   Widget _buildEmptyState() {
-    final theme = Theme.of(context);
     return Column(
       children: [
         _buildSeriesFilter(),
         Expanded(
-          child: Center(
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'No hay equipos disponibles',
-                    style: GoogleFonts.poppins(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                      color: theme.colorScheme.onSurface,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: _handleRefresh,
-                    child: Text(
-                      'Recargar',
-                      style: GoogleFonts.poppins(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                        color: theme.colorScheme.onPrimary,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+          child: EmptyStateWidget.equipos(onRetry: _handleRefresh,
           ),
         ),
       ],

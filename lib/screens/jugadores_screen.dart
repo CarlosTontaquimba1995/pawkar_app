@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:pawkar_app/models/jugador_model.dart';
 import 'package:pawkar_app/services/jugador_service.dart';
 import 'package:pawkar_app/services/subcategoria_service.dart';
+import 'package:pawkar_app/widgets/empty_state_widget.dart';
 
 class JugadoresScreen extends StatefulWidget {
   final int subcategoriaId;
@@ -133,12 +134,13 @@ class _JugadoresScreenState extends State<JugadoresScreen> {
 
   Widget _buildJugadoresList() {
     if (_jugadores.isEmpty) {
-      return Center(
-        child: Text(
-          _searchController.text.isEmpty
-              ? 'No hay jugadores registrados'
-              : 'No se encontraron jugadores',
-        ),
+      return EmptyStateWidget(
+        message: _searchController.text.isEmpty
+            ? 'No hay jugadores registrados'
+            : 'No se encontraron jugadores',
+        actionLabel: 'Recargar',
+        onAction: () => _loadJugadores(),
+        icon: Icons.people_outline,
       );
     }
 

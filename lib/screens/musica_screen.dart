@@ -36,6 +36,10 @@ class _MusicaScreenState extends State<MusicaScreen> {
 
       // Get the music category by nemonico
       final categoria = await categoriaService.getCategoriaByNemonico('MUSICA');
+      
+      if (categoria == null) {
+        throw Exception('No se encontró la categoría de música');
+      }
 
       // Get subcategories for this category
       _conciertosFuture = subcategoriaService.getSubcategoriasByCategoria(
@@ -61,7 +65,10 @@ class _MusicaScreenState extends State<MusicaScreen> {
     return Scaffold(
       backgroundColor: colorScheme.surface,
       appBar: AppBar(
-        title: const Text('Conciertos y Eventos Musicales'),
+        title: Text(
+          'Conciertos y Eventos Musicales',
+          style: TextStyle(color: colorScheme.onSurface),
+        ),
         centerTitle: true,
         backgroundColor: colorScheme.surface,
         elevation: 0,

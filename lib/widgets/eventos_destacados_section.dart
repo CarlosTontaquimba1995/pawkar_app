@@ -3,6 +3,7 @@ import 'package:pawkar_app/models/subcategoria_model.dart';
 import 'package:pawkar_app/screens/evento_detalle_screen.dart';
 import 'package:pawkar_app/services/categoria_service.dart';
 import 'package:pawkar_app/services/subcategoria_service.dart';
+import 'package:pawkar_app/widgets/empty_state_widget.dart';
 
 class EventosDestacadosSection extends StatefulWidget {
   const EventosDestacadosSection({super.key});
@@ -28,6 +29,12 @@ class EventosDestacadosSectionState extends State<EventosDestacadosSection> {
       final categoriaDeportes = await _categoriaService.getCategoriaByNemonico(
         'DEPORTES',
       );
+
+      if (categoriaDeportes == null) {
+        debugPrint('No se encontró la categoría de deportes');
+        return [];
+      }
+      
       return await _subcategoriaService.getSubcategoriasByCategoria(
         categoriaDeportes.categoriaId,
       );
@@ -47,7 +54,10 @@ class EventosDestacadosSectionState extends State<EventosDestacadosSection> {
         } else if (snapshot.hasError) {
           return Center(child: Text('Error: ${snapshot.error}'));
         } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return const Center(child: Text('No hay eventos destacados'));
+          return EmptyStateWidget(
+            message: 'No hay eventos destacados',
+            icon: Icons.star_outline,
+          );
         }
 
         final eventos = snapshot.data!;

@@ -178,18 +178,25 @@ class CategoriaService {
   }
 
   // Get category by nemonico
-  Future<Categoria> getCategoriaByNemonico(String nemonico) async {
+  Future<Categoria?> getCategoriaByNemonico(String nemonico) async {
     try {
       final response = await _client.get(
         Uri.parse('$_baseUrl/nemonico/$nemonico'),
-        headers: await _getHeaders(),
+        headers: _getPublicHeaders(),
       );
+
+      if (response.statusCode == 404) {
+        return null;
+      }
 
       final data = _handleResponse(response);
       final responseObj = CategoriaResponse.fromJson(data);
-      if (responseObj.data == null) throw Exception('Categoría no encontrada');
-      return responseObj.data!;
+      return responseObj.data;
     } catch (e) {
+      if (e.toString().contains('404') ||
+          e.toString().contains('no encontrada')) {
+        return null;
+      }
       throw Exception('Error al obtener la categoría por nemónico: $e');
     }
   }

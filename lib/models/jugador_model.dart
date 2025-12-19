@@ -28,12 +28,12 @@ class Jugador {
   factory Jugador.fromJson(Map<String, dynamic> json) {
     return Jugador(
       id: json['id'] as int?,
-      nombre: json['nombre'] as String,
-      apellido: json['apellido'] as String,
-      fechaNacimiento: json['fechaNacimiento'] as String,
-      documentoIdentidad: json['documentoIdentidad'] as String,
-      nombreEquipo: json['nombreEquipo'] as String,
-      nombreRol: json['nombreRol'] as String,
+      nombre: json['nombre']?.toString() ?? '',
+      apellido: json['apellido']?.toString() ?? '',
+      fechaNacimiento: json['fechaNacimiento']?.toString() ?? '',
+      documentoIdentidad: json['documentoIdentidad']?.toString() ?? '',
+      nombreEquipo: json['nombreEquipo']?.toString() ?? '',
+      nombreRol: json['nombreRol']?.toString() ?? '',
       subcategoriaId: json['subcategoriaId'] as int?,
       equipoId: json['equipoId'] as int?,
       numeroCamiseta: json['numeroCamiseta'] as int?,

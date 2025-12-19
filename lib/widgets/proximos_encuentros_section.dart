@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pawkar_app/models/encuentro_model.dart';
 import 'package:pawkar_app/services/encuentro_service.dart';
+import 'package:pawkar_app/widgets/empty_state_widget.dart';
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:shimmer/shimmer.dart';
@@ -166,54 +167,11 @@ class _ProximosEncuentrosSectionState extends State<ProximosEncuentrosSection> {
   }
 
   Widget _buildEmptyState(ThemeData theme, ColorScheme colorScheme) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
-      padding: const EdgeInsets.all(24.0),
-      decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerHighest.withOpacity(0.5),
-        borderRadius: BorderRadius.circular(16.0),
-      ),
-      child: Column(
-        children: [
-          Icon(
-            Icons.calendar_today_outlined,
-            size: 48.0,
-            color: colorScheme.onSurfaceVariant.withOpacity(0.6),
-          ),
-          const SizedBox(height: 12.0),
-          Text(
-            'No hay encuentros próximos',
-            style: theme.textTheme.titleMedium?.copyWith(
-              color: colorScheme.onSurfaceVariant,
-              fontWeight: FontWeight.w600,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 8.0),
-          Text(
-            'No hay encuentros programados en este momento. Vuelve más tarde para ver las próximas actividades.',
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: colorScheme.onSurfaceVariant.withOpacity(0.7),
-            ),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 16.0),
-          FilledButton.icon(
-            onPressed: _loadProximosEncuentros,
-            icon: const Icon(Icons.refresh, size: 18.0),
-            label: const Text('Actualizar'),
-            style: FilledButton.styleFrom(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 20.0,
-                vertical: 12.0,
-              ),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12.0),
-              ),
-            ),
-          ),
-        ],
-      ),
+    return EmptyStateWidget(
+      message: 'No hay encuentros próximos',
+      icon: Icons.calendar_today_outlined,
+      actionLabel: 'Recargar',
+      onAction: _loadProximosEncuentros,
     );
   }
 

@@ -22,14 +22,14 @@ class Equipo {
 
   factory Equipo.fromJson(Map<String, dynamic> json) {
     return Equipo(
-      equipoId: json['equipoId'] as int,
-      subcategoriaId: json['subcategoriaId'] as int,
-      subcategoriaNombre: json['subcategoriaNombre'] as String,
-      serieId: json['serieId'] as int,
-      serieNombre: json['serieNombre'] as String,
-      nombre: json['nombre'] as String,
-      fundacion: json['fundacion'] as String,
-      jugadoresCount: json['jugadoresCount'] as int,
+      equipoId: (json['equipoId'] as num?)?.toInt() ?? 0,
+      subcategoriaId: (json['subcategoriaId'] as num?)?.toInt() ?? 0,
+      subcategoriaNombre: (json['subcategoriaNombre'] as String?) ?? '',
+      serieId: (json['serieId'] as num?)?.toInt() ?? 0,
+      serieNombre: (json['serieNombre'] as String?) ?? '',
+      nombre: (json['nombre'] as String?) ?? '',
+      fundacion: (json['fundacion'] as String?) ?? '',
+      jugadoresCount: (json['jugadoresCount'] as num?)?.toInt() ?? 0,
     );
   }
 
@@ -136,12 +136,14 @@ class EquipoListResponse {
 
   factory EquipoListResponse.fromJson(Map<String, dynamic> json) {
     return EquipoListResponse(
-      success: json['success'] as bool,
-      message: json['message'] as String,
-      data: (json['data'] as List)
-          .map((e) => Equipo.fromJson(e as Map<String, dynamic>))
-          .toList(),
-      timestamp: json['timestamp'] as String,
+      success: json['success'] as bool? ?? false,
+      message: json['message'] as String? ?? '',
+      data:
+          (json['data'] as List<dynamic>?)
+              ?.map((e) => Equipo.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          [],
+      timestamp: json['timestamp'] as String? ?? '',
     );
   }
 }

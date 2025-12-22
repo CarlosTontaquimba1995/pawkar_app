@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../models/subcategoria_model.dart';
 import '../services/subcategoria_service.dart';
 
@@ -258,12 +259,41 @@ class _MusicaScreenState extends State<MusicaScreen> {
                                         'Fecha y Hora'
                                       ),
                                         
-                                    if (evento.ubicacion.isNotEmpty)
+                                    if (evento.ubicacion.isNotEmpty) ...[
                                       ..._buildInfoRow(
                                         Icons.location_on,
                                         evento.ubicacion,
                                         'Ubicación',
                                       ),
+                                      const SizedBox(height: 8),
+                                      Align(
+                                        alignment: Alignment.centerLeft,
+                                        child: ElevatedButton.icon(
+                                          onPressed: () => _openMap(evento),
+                                          icon: const Icon(
+                                            Icons.directions,
+                                            size: 18,
+                                          ),
+                                          label: const Text('Cómo llegar'),
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor:
+                                                theme.colorScheme.primary,
+                                            foregroundColor:
+                                                theme.colorScheme.onPrimary,
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 16,
+                                              vertical: 8,
+                                            ),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(20),
+                                            ),
+                                            elevation: 1,
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(height: 8),
+                                    ],
                                   ],
                                 ),
                               ),
@@ -504,6 +534,28 @@ class _MusicaScreenState extends State<MusicaScreen> {
           );
     } catch (e) {
       return dateTimeString;
+    }
+  }
+
+  Future<void> _openMap(Subcategoria evento) async {
+    final double lat = evento.latitud;
+    final double lng = evento.longitud;
+
+    if (lat == 0.0 || lng == 0.0) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Ubicación no disponible')));
+      return;
+    }
+
+    final Uri googleMapsUrl = Uri.parse(
+      'https://www.google.com/maps/search/?api=1&query=$lat,$lng',
+    );
+
+    if (await canLaunchUrl(googleMapsUrl)) {
+      await launchUrl(googleMapsUrl, mode: LaunchMode.externalApplication);
+    } else {
+      throw 'No se pudo abrir Google Maps';
     }
   }
 }

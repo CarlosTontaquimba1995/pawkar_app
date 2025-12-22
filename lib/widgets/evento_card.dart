@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
-import 'package:url_launcher/url_launcher.dart';
 import '../models/subcategoria_model.dart';
+import '../screens/musica_screen.dart';
 
 class EventoCard extends StatelessWidget {
   final Subcategoria subcategoria;
@@ -16,16 +16,7 @@ class EventoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Log de coordenadas
-    if (subcategoria.latitud != null && subcategoria.longitud != null) {
-      debugPrint(
-        'Coordenadas del evento ${subcategoria.nombre}: ${subcategoria.latitud}, ${subcategoria.longitud}',
-      );
-    } else {
-      debugPrint(
-        'El evento ${subcategoria.nombre} no tiene coordenadas definidas',
-      );
-    }
+ 
     
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
@@ -212,9 +203,9 @@ class EventoCard extends StatelessWidget {
 
                   const SizedBox(height: 16.0),
 
-                  // Event Details
+                  // Event Details - Only check fechaHora since ubicacion is required
                   if (subcategoria.fechaHora != null ||
-                      subcategoria.ubicacion != null)
+                      subcategoria.ubicacion.isNotEmpty)
                     Container(
                       padding: const EdgeInsets.all(12.0),
                       decoration: BoxDecoration(
@@ -226,21 +217,19 @@ class EventoCard extends StatelessWidget {
                       ),
                       child: Column(
                         children: [
-                          if (subcategoria.fechaHora != null)
+                          if (subcategoria.fechaHora != null &&
+                              subcategoria.fechaHora!.isNotEmpty)
                             _buildDetailRow(
                               Icons.calendar_today_rounded,
                               _formatDate(subcategoria.fechaHora!),
                               colorScheme,
                             ),
-                          if (subcategoria.fechaHora != null &&
-                              subcategoria.ubicacion != null)
-                            const Divider(height: 16, thickness: 0.5),
-                          if (subcategoria.ubicacion != null)
-                            _buildDetailRow(
-                              Icons.location_on_rounded,
-                              subcategoria.ubicacion!,
-                              colorScheme,
-                            ),
+                          const Divider(height: 16, thickness: 0.5),
+                          _buildDetailRow(
+                            Icons.location_on_rounded,
+                            subcategoria.ubicacion,
+                            colorScheme,
+                          ),
                         ],
                       ),
                     ),
@@ -251,63 +240,15 @@ class EventoCard extends StatelessWidget {
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton.icon(
-                      onPressed: () async {
-                        // Usar las coordenadas del objeto subcategoria si están disponibles
-                        final double? lat = subcategoria.latitud;
-                        final double? lng = subcategoria.longitud;
-
-                        if (lat == null || lng == null) {
-                          if (!context.mounted) return;
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text(
-                                'Ubicación no disponible para este evento',
-                              ),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => MusicaScreen(
+                              subcategoriaId: subcategoria.subcategoriaId,
                             ),
-                          );
-                          return;
-                        }
-
-                        // URL de Google Maps con las coordenadas
-                        final String googleMapsUrl =
-                            'https://www.google.com/maps/dir/?api=1&destination=$lat,$lng&travelmode=driving&dir_action=navigate';
-
-                        // URL alternativa para abrir en el navegador
-                        const String googleMapsFallbackUrl =
-                            'https://maps.app.goo.gl/uwxf79sPFYJzn3pR8';
-
-                        try {
-                          // Primero intentamos abrir la aplicación de Google Maps
-                          if (await canLaunchUrl(Uri.parse(googleMapsUrl))) {
-                            await launchUrl(
-                              Uri.parse(googleMapsUrl),
-                              mode: LaunchMode.externalApplication,
-                            );
-                          }
-                          // Si falla, intentamos con la URL del enlace directo
-                          else if (await canLaunchUrl(
-                            Uri.parse(googleMapsFallbackUrl),
-                          )) {
-                            await launchUrl(
-                              Uri.parse(googleMapsFallbackUrl),
-                              mode: LaunchMode.externalApplication,
-                            );
-                          } else {
-                            if (!context.mounted) return;
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text(
-                                  'No se pudo abrir Google Maps. Por favor, instálalo e inténtalo de nuevo.',
-                                ),
-                              ),
-                            );
-                          }
-                        } catch (e) {
-                          if (!context.mounted) return;
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('Error: ${e.toString()}')),
-                          );
-                        }
+                          ),
+                        );
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: colorScheme.primary,
@@ -321,8 +262,8 @@ class EventoCard extends StatelessWidget {
                         ),
                         elevation: 0,
                       ),
-                      icon: const Icon(Icons.directions, size: 20),
-                      label: const Text('CÓMO LLEGAR'),
+                      icon: const Icon(Icons.visibility, size: 20),
+                      label: const Text('VER DETALLES'),
                     ),
                   ),
                 ],

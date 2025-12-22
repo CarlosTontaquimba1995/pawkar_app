@@ -203,7 +203,6 @@ class _ProximosEncuentrosSectionState extends State<ProximosEncuentrosSection> {
         child: InkWell(
           borderRadius: BorderRadius.circular(16.0),
           onTap: () {
-            // Handle tap on encuentro
           },
           child: Padding(
             padding: const EdgeInsets.all(16.0),

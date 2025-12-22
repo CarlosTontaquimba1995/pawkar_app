@@ -104,12 +104,11 @@ class MusicaCard extends StatelessWidget {
                     const SizedBox(height: 8),
                   ],
                   // Location
-                  if (subcategoria.ubicacion != null)
-                    _buildInfoRow(
-                      Icons.location_on,
-                      subcategoria.ubicacion!,
-                      colorScheme,
-                    ),
+                  _buildInfoRow(
+                    Icons.location_on,
+                    subcategoria.ubicacion,
+                    colorScheme,
+                  ),
                   // Description
                   if (subcategoria.descripcion.isNotEmpty) ...[
                     const SizedBox(height: 12),

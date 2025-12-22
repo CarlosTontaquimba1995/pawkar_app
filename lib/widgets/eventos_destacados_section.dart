@@ -81,6 +81,8 @@ class EventosDestacadosSectionState extends State<EventosDestacadosSection> {
       return 'assets/images/futbol.jpg';
     } else if (lowerName.contains('basket') ||
         lowerName.contains('básket') ||
+        lowerName.contains('basquet') ||
+        lowerName.contains('básquet') ||
         lowerName.contains('baloncesto')) {
       return 'assets/images/basket.jpg';
     } else if (lowerName.contains('voley') || lowerName.contains('voleibol')) {

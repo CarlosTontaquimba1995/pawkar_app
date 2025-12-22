@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pawkar_app/models/subcategoria_model.dart';
 import 'package:pawkar_app/services/subcategoria_service.dart';
 import 'package:pawkar_app/widgets/empty_state_widget.dart';
+import 'package:pawkar_app/screens/musica_screen.dart';
 import 'package:intl/intl.dart';
 
 class ProximosEventosSection extends StatefulWidget {
@@ -209,7 +210,7 @@ class _ProximosEventosSectionState extends State<ProximosEventosSection> {
                               ),
                               const SizedBox(width: 16),
                             ],
-                            if (evento.ubicacion != null) ...[
+                            if (evento.ubicacion.isNotEmpty) ...[
                               const Icon(
                                 Icons.location_on,
                                 size: 14,
@@ -218,7 +219,7 @@ class _ProximosEventosSectionState extends State<ProximosEventosSection> {
                               const SizedBox(width: 4),
                               Expanded(
                                 child: Text(
-                                  evento.ubicacion!,
+                                  evento.ubicacion,
                                   style: const TextStyle(
                                     color: Colors.white70,
                                     fontSize: 12,
@@ -277,12 +278,24 @@ class _ProximosEventosSectionState extends State<ProximosEventosSection> {
                                 ),
                               ],
                             ),
-                            child: const Text(
-                              'Ver detalles',
-                              style: TextStyle(
-                                color: Color(0xFF6C63FF),
-                                fontWeight: FontWeight.bold,
-                                fontSize: 12,
+                            child: GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => MusicaScreen(
+                                      subcategoriaId: evento.subcategoriaId,
+                                    ),
+                                  ),
+                                );
+                              },
+                              child: const Text(
+                                'Ver detalles',
+                                style: TextStyle(
+                                  color: Color(0xFF6C63FF),
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 12,
+                                ),
                               ),
                             ),
                           ),

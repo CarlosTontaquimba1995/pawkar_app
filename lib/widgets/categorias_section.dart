@@ -209,11 +209,63 @@ class CategoriasSectionState extends State<CategoriasSection> {
         MaterialPageRoute(builder: (context) => const EventosScreen()),
       );
     } else if (nemonico == 'musica' || nemonico == 'música') {
-      if (!mounted) return;
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => const MusicaScreen()),
-      );
+      try {
+        final subcategoriaService = Provider.of<SubcategoriaService>(
+          context,
+          listen: false,
+        );
+        final subcategorias = await subcategoriaService
+            .getSubcategoriasByCategoria(categoria.categoriaId);
+
+        if (!mounted) return;
+
+        // Try to find a music subcategory
+        Subcategoria? musicaSubcategoria;
+
+        // First, check if there are any subcategories
+        if (subcategorias.isNotEmpty) {
+          try {
+            // Try to find a music subcategory
+            musicaSubcategoria = subcategorias.firstWhere(
+              (sub) =>
+                  sub.nombre.toLowerCase().contains('música') ||
+                  sub.nombre.toLowerCase().contains('musica'),
+            );
+          } catch (_) {
+            // If no music subcategory found, use the first one
+            musicaSubcategoria = subcategorias.first;
+          }
+        }
+
+        if (musicaSubcategoria == null) {
+          if (!mounted) return;
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('No se encontró la subcategoría de música'),
+              backgroundColor: Colors.orange,
+            ),
+          );
+          return;
+        }
+        
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => MusicaScreen(
+              subcategoriaId: musicaSubcategoria!.subcategoriaId,
+            ),
+          ),
+        );
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Error al cargar la categoría de música: $e'),
+              backgroundColor: Theme.of(context).colorScheme.error,
+            ),
+          );
+        }
+      }
     } else {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

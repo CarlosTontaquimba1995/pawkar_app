@@ -1,3 +1,5 @@
+import 'artista_model.dart';
+
 // Model for Subcategoria entity with manual JSON serialization
 class Subcategoria {
   final int subcategoriaId;
@@ -9,9 +11,10 @@ class Subcategoria {
   final String categoriaNombre;
   final bool estado;
   final String? deporte;
-  final String? ubicacion;
-  final double? latitud;
-  final double? longitud;
+  final String ubicacion;
+  final double latitud;
+  final double longitud;
+  final List<Artista> artistas;
 
   Subcategoria({
     required this.subcategoriaId,
@@ -23,9 +26,10 @@ class Subcategoria {
     required this.categoriaNombre,
     this.estado = true,
     this.deporte,
-    this.ubicacion,
-    this.latitud,
-    this.longitud,
+    required this.ubicacion,
+    required this.latitud,
+    required this.longitud,
+    this.artistas = const [],
   }) : assert(nombre.isNotEmpty, 'Nombre cannot be empty'),
        assert(subcategoriaId > 0, 'SubcategoriaId must be positive');
 
@@ -67,9 +71,14 @@ class Subcategoria {
         categoriaNombre: categoriaNombre,
         estado: json['estado'] as bool? ?? true,
         deporte: json['deporte'] as String?,
-        ubicacion: json['ubicacion'] as String?,
-        latitud: json['latitud']?.toDouble(),
-        longitud: json['longitud']?.toDouble(),
+        ubicacion: (json['ubicacion'] as String?) ?? '',
+        latitud: (json['latitud'] as num?)?.toDouble() ?? 0.0,
+        longitud: (json['longitud'] as num?)?.toDouble() ?? 0.0,
+        artistas:
+            (json['artistas'] as List<dynamic>?)
+                ?.map((e) => Artista.fromJson(e as Map<String, dynamic>))
+                .toList() ??
+            [],
       );
     } catch (e) {
       throw FormatException('Error parsing Subcategoria from JSON: $e');
@@ -86,10 +95,11 @@ class Subcategoria {
       'categoriaId': categoriaId,
       'categoriaNombre': categoriaNombre,
       'estado': estado,
-      'deporte': deporte,
+      if (deporte != null) 'deporte': deporte,
       'ubicacion': ubicacion,
       'latitud': latitud,
       'longitud': longitud,
+      'artistas': artistas.map((e) => e.toJson()).toList(),
     };
   }
 
@@ -178,21 +188,21 @@ class CreateSubcategoriaRequest {
   final String nombre;
   final String descripcion;
   final int categoriaId;
-  final String? fechaHora;
-  final bool? proximo;
-  final bool? estado;
-  final String? deporte;
-  final String? ubicacion;
+  final String fechaHora;
+  final double latitud;
+  final double longitud;
+  final String ubicacion;
+  final List<Artista> artistas;
 
   CreateSubcategoriaRequest({
     required this.nombre,
     required this.descripcion,
     required this.categoriaId,
-    this.fechaHora,
-    this.proximo,
-    this.estado,
-    this.deporte,
-    this.ubicacion,
+    required this.fechaHora,
+    required this.latitud,
+    required this.longitud,
+    required this.ubicacion,
+    this.artistas = const [],
   }) : assert(nombre.isNotEmpty, 'Nombre cannot be empty'),
        assert(descripcion.isNotEmpty, 'Descripción cannot be empty'),
        assert(categoriaId > 0, 'CategoriaId must be positive');
@@ -201,11 +211,11 @@ class CreateSubcategoriaRequest {
         'nombre': nombre,
         'descripcion': descripcion,
         'categoriaId': categoriaId,
-        if (fechaHora != null) 'fechaHora': fechaHora,
-        if (proximo != null) 'proximo': proximo,
-        if (estado != null) 'estado': estado,
-        if (deporte != null) 'deporte': deporte,
-        if (ubicacion != null) 'ubicacion': ubicacion,
+    'fechaHora': fechaHora,
+    'latitud': latitud,
+    'longitud': longitud,
+    'ubicacion': ubicacion,
+    'artistas': artistas.map((e) => e.toJson()).toList(),
       };
 }
 
@@ -224,32 +234,43 @@ class UpdateSubcategoriaRequest {
   final String? descripcion;
   final int? categoriaId;
   final String? fechaHora;
+  final double? latitud;
+  final double? longitud;
+  final String? ubicacion;
   final bool? proximo;
   final bool? estado;
   final String? deporte;
-  final String? ubicacion;
+  final List<Artista>? artistas;
 
   UpdateSubcategoriaRequest({
     this.nombre,
     this.descripcion,
     this.categoriaId,
     this.fechaHora,
+    this.latitud,
+    this.longitud,
+    this.ubicacion,
     this.proximo,
     this.estado,
     this.deporte,
-    this.ubicacion,
+    this.artistas,
   });
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
-    if (nombre != null) json['nombre'] = nombre;
-    if (descripcion != null) json['descripcion'] = descripcion;
-    if (categoriaId != null) json['categoriaId'] = categoriaId;
-    if (fechaHora != null) json['fechaHora'] = fechaHora;
-    if (proximo != null) json['proximo'] = proximo;
-    if (estado != null) json['estado'] = estado;
-    if (deporte != null) json['deporte'] = deporte;
-    if (ubicacion != null) json['ubicacion'] = ubicacion;
+    if (nombre != null) json['nombre'] = nombre!;
+    if (descripcion != null) json['descripcion'] = descripcion!;
+    if (categoriaId != null) json['categoriaId'] = categoriaId!;
+    if (fechaHora != null) json['fechaHora'] = fechaHora!;
+    if (latitud != null) json['latitud'] = latitud!;
+    if (longitud != null) json['longitud'] = longitud!;
+    if (ubicacion != null) json['ubicacion'] = ubicacion!;
+    if (proximo != null) json['proximo'] = proximo!;
+    if (estado != null) json['estado'] = estado!;
+    if (deporte != null) json['deporte'] = deporte!;
+    if (artistas != null) {
+      json['artistas'] = artistas!.map((e) => e.toJson()).toList();
+    }
     return json;
   }
 }

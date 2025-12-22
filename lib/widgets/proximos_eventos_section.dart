@@ -110,17 +110,6 @@ class _ProximosEventosSectionState extends State<ProximosEventosSection> {
         final imagePath = _getEventImage(evento.nombre);
 
         return GestureDetector(
-          onTap: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('Ver detalles de: ${evento.nombre}'),
-                behavior: SnackBarBehavior.floating,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-            );
-          },
           child: Container(
             height: 200,
             margin: const EdgeInsets.only(bottom: 16.0),
@@ -278,23 +267,33 @@ class _ProximosEventosSectionState extends State<ProximosEventosSection> {
                                 ),
                               ],
                             ),
-                            child: GestureDetector(
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => MusicaScreen(
-                                      subcategoriaId: evento.subcategoriaId,
+                            child: Material(
+                              color: Colors.transparent,
+                              child: InkWell(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => MusicaScreen(
+                                        subcategoriaId: evento.subcategoriaId,
+                                      ),
+                                    ),
+                                  );
+                                },
+                                borderRadius: BorderRadius.circular(20),
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 8,
+                                  ),
+                                  child: const Text(
+                                    'Ver detalles',
+                                    style: TextStyle(
+                                      color: Color(0xFF6C63FF),
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 12,
                                     ),
                                   ),
-                                );
-                              },
-                              child: const Text(
-                                'Ver detalles',
-                                style: TextStyle(
-                                  color: Color(0xFF6C63FF),
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 12,
                                 ),
                               ),
                             ),

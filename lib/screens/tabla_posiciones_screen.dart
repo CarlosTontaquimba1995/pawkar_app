@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:pawkar_app/models/tabla_posicion_model.dart';
 import 'package:pawkar_app/services/tabla_posicion_service.dart';
 import 'package:pawkar_app/services/equipo_service.dart';
+import 'package:pawkar_app/services/serie_service.dart';
 import 'package:pawkar_app/models/equipo_model.dart';
-import 'package:intl/intl.dart';
 import 'package:iconsax/iconsax.dart';
 
 class TablaPosicionesScreen extends StatefulWidget {
@@ -12,15 +12,15 @@ class TablaPosicionesScreen extends StatefulWidget {
   const TablaPosicionesScreen({super.key, required this.subcategoriaId});
 
   @override
-  _TablaPosicionesScreenState createState() => _TablaPosicionesScreenState();
+  TablaPosicionesScreenState createState() => TablaPosicionesScreenState();
 }
 
-class _TablaPosicionesScreenState extends State<TablaPosicionesScreen> {
+class TablaPosicionesScreenState extends State<TablaPosicionesScreen> {
   bool _isLoading = true;
   String _errorMessage = '';
   List<TablaPosicion> _tablaPosiciones = [];
   bool _showFilters = false;
-  // Store unique series from the API response
+  // Store series from the API
   final Map<int, String> _series = {};
   // Store teams by series ID
   final Map<int, List<Equipo>> _equiposBySerie = {};
@@ -31,13 +31,36 @@ class _TablaPosicionesScreenState extends State<TablaPosicionesScreen> {
   final _formKey = GlobalKey<FormState>();
   int? _selectedEquipoId;
   int? _selectedSerieId;
-  DateTime? _fechaInicio;
-  DateTime? _fechaFin;
 
   @override
   void initState() {
     super.initState();
-    _loadTablaPosiciones();
+    _loadSeries();
+  }
+
+  // Load series for the current subcategoria
+  Future<void> _loadSeries() async {
+    try {
+      final service = SerieService();
+      final series = await service.getSeriesBySubcategoria(
+        widget.subcategoriaId,
+      );
+
+      setState(() {
+        _series.clear();
+        for (var serie in series) {
+          _series[serie.serieId] = serie.nombreSerie;
+        }
+      });
+
+      // Load table positions after series are loaded
+      await _loadTablaPosiciones();
+    } catch (e) {
+      setState(() {
+        _errorMessage = 'Error al cargar las series: $e';
+        _isLoading = false;
+      });
+    }
   }
 
   // Load teams for the selected series
@@ -95,11 +118,8 @@ class _TablaPosicionesScreenState extends State<TablaPosicionesScreen> {
       final service = TablaPosicionService();
       _tablaPosiciones = await service.search(searchParams);
 
-      // Extract unique series from the response
-      _series.clear();
-      for (var posicion in _tablaPosiciones) {
-        _series[posicion.serieId] = posicion.serieNombre;
-      }
+      // Series are now loaded from SerieService
+      // Keep the series selection if it exists
 
       setState(() {
         _isLoading = false;
@@ -117,8 +137,6 @@ class _TablaPosicionesScreenState extends State<TablaPosicionesScreen> {
     setState(() {
       _selectedEquipoId = null;
       _selectedSerieId = null;
-      _fechaInicio = null;
-      _fechaFin = null;
       _showFilters = false;
     });
     _loadTablaPosiciones();
@@ -141,94 +159,6 @@ class _TablaPosicionesScreenState extends State<TablaPosicionesScreen> {
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 16),
-              Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text('Fecha inicio'),
-                        const SizedBox(height: 4),
-                        InkWell(
-                          onTap: () async {
-                            final date = await showDatePicker(
-                              context: context,
-                              initialDate: _fechaInicio ?? DateTime.now(),
-                              firstDate: DateTime(2000),
-                              lastDate: DateTime(2100),
-                            );
-                            if (date != null) {
-                              setState(() {
-                                _fechaInicio = date;
-                                if (_fechaFin != null &&
-                                    _fechaFin!.isBefore(date)) {
-                                  _fechaFin = null;
-                                }
-                              });
-                            }
-                          },
-                          child: InputDecorator(
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              contentPadding: EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 12,
-                              ),
-                            ),
-                            child: Text(
-                              _fechaInicio != null
-                                  ? DateFormat(
-                                      'dd/MM/yyyy',
-                                    ).format(_fechaInicio!)
-                                  : 'Seleccionar fecha',
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text('Fecha fin'),
-                        const SizedBox(height: 4),
-                        InkWell(
-                          onTap: () async {
-                            final date = await showDatePicker(
-                              context: context,
-                              initialDate:
-                                  _fechaFin ?? (_fechaInicio ?? DateTime.now()),
-                              firstDate: _fechaInicio ?? DateTime(2000),
-                              lastDate: DateTime(2100),
-                            );
-                            if (date != null) {
-                              setState(() {
-                                _fechaFin = date;
-                              });
-                            }
-                          },
-                          child: InputDecorator(
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              contentPadding: EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 12,
-                              ),
-                            ),
-                            child: Text(
-                              _fechaFin != null
-                                  ? DateFormat('dd/MM/yyyy').format(_fechaFin!)
-                                  : 'Seleccionar fecha',
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
               const SizedBox(height: 16),
               // Series dropdown
               DropdownButtonFormField<int>(
@@ -250,7 +180,6 @@ class _TablaPosicionesScreenState extends State<TablaPosicionesScreen> {
                         ),
                       )
                       .toList(),
-                  //   ),
                 ],
                 onChanged: (value) async {
                   setState(() {

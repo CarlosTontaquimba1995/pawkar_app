@@ -106,11 +106,6 @@ class TablaPosicionService {
       final response = await _client.get(uri, headers: await _getHeaders());
 
       final data = _handleResponse(response);
-      print('=== RESPUESTA DE LA API TABLA DE POSICIONES ===');
-      print('URL: $uri');
-      print('Respuesta: $data');
-      print('===============================================');
-      
       final responseObj = TablaPosicionResponse.fromJson(data);
       return responseObj.data;
     } catch (e) {

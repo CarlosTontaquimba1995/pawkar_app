@@ -337,7 +337,7 @@ class _MusicaScreenState extends State<MusicaScreen> {
                               Container(
                                 padding: const EdgeInsets.all(24),
                                 decoration: BoxDecoration(
-                                  color: theme.colorScheme.surfaceVariant
+                                  color: theme.colorScheme.surfaceContainerHighest
                                       .withOpacity(0.5),
                                   borderRadius: BorderRadius.circular(16),
                                   border: Border.all(

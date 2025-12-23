@@ -81,7 +81,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   const SizedBox(height: 12),
                   _buildSettingItem(
                     context: context,
-                    title: 'PAWKAR 2025',
+                    title: 'PAWKAR 2026',
                     subtitle: 'Festival Cultural y Deportivo',
                     icon: Icons.event,
                   ),

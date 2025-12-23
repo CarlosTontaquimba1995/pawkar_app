@@ -258,43 +258,187 @@ class TablaPosicionesScreenState extends State<TablaPosicionesScreen> {
   }
 
   Widget _buildTablaPosiciones() {
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: DataTable(
-        columns: const [
-          DataColumn(label: Text('Pos')),
-          DataColumn(label: Text('Equipo')),
-          DataColumn(label: Text('PJ'), numeric: true),
-          DataColumn(label: Text('PG'), numeric: true),
-          DataColumn(label: Text('PE'), numeric: true),
-          DataColumn(label: Text('PP'), numeric: true),
-          DataColumn(label: Text('GF'), numeric: true),
-          DataColumn(label: Text('GC'), numeric: true),
-          DataColumn(label: Text('DG'), numeric: true),
-          DataColumn(label: Text('PTS'), numeric: true),
-        ],
-        rows: _tablaPosiciones.map((equipo) {
-          return DataRow(
-            cells: [
-              DataCell(Text('${equipo.posicion}')),
-              DataCell(Text(equipo.equipoNombre)),
-              DataCell(Text('${equipo.partidosJugados}')),
-              DataCell(Text('${equipo.victorias}')),
-              DataCell(Text('${equipo.empates}')),
-              DataCell(Text('${equipo.derrotas}')),
-              DataCell(Text('${equipo.golesAFavor}')),
-              DataCell(Text('${equipo.golesEnContra}')),
-              DataCell(Text('${equipo.diferenciaGoles}')),
-              DataCell(
-                Text(
-                  '${equipo.puntos}',
-                  style: const TextStyle(fontWeight: FontWeight.bold),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        // Calcular el ancho disponible
+        final screenWidth = constraints.maxWidth;
+
+        // Ajustar el tamaño de fuente según el ancho de la pantalla
+        final fontSize = screenWidth < 600 ? 10.0 : 12.0;
+
+        // Calcular ancho disponible para las columnas
+        final equipoWidth = screenWidth * 0.3; // 30% para el nombre del equipo
+        final numberColumnWidth =
+            screenWidth * 0.07; // Ancho fijo para columnas numéricas
+
+        return DataTable(
+          columnSpacing: 8,
+          horizontalMargin: 12,
+          headingRowHeight: 36,
+          dataRowMinHeight: 36,
+          headingTextStyle: TextStyle(
+            fontSize: fontSize,
+            fontWeight: FontWeight.bold,
+          ),
+          dataTextStyle: TextStyle(fontSize: fontSize),
+          columns: [
+            DataColumn(
+              label: SizedBox(
+                width: numberColumnWidth,
+                child: const Text(
+                  'POS',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontWeight: FontWeight.bold),
                 ),
               ),
-            ],
-          );
-        }).toList(),
-      ),
+              numeric: true,
+            ),
+            DataColumn(
+              label: SizedBox(
+                width: equipoWidth,
+                child: const Text('Equipo', overflow: TextOverflow.ellipsis),
+              ),
+            ),
+            DataColumn(
+              label: SizedBox(
+                width: numberColumnWidth,
+                child: const Tooltip(
+                  message: 'Partidos Jugados',
+                  child: Text('PJ', textAlign: TextAlign.center),
+                ),
+              ),
+              numeric: true,
+            ),
+            DataColumn(
+              label: SizedBox(
+                width: numberColumnWidth,
+                child: const Tooltip(
+                  message: 'Partidos Ganados',
+                  child: Text('PG', textAlign: TextAlign.center),
+                ),
+              ),
+              numeric: true,
+            ),
+            if (screenWidth > 400)
+              DataColumn(
+                label: SizedBox(
+                  width: numberColumnWidth,
+                  child: const Tooltip(
+                    message: 'Partidos Empatados',
+                    child: Text('PE', textAlign: TextAlign.center),
+                  ),
+                ),
+                numeric: true,
+              ),
+            if (screenWidth > 400)
+              DataColumn(
+                label: SizedBox(
+                  width: numberColumnWidth,
+                  child: const Tooltip(
+                    message: 'Partidos Perdidos',
+                    child: Text('PP', textAlign: TextAlign.center),
+                  ),
+                ),
+                numeric: true,
+              ),
+            DataColumn(
+              label: SizedBox(
+                width: numberColumnWidth,
+                child: const Tooltip(
+                  message: 'Goles a Favor',
+                  child: Text('GF', textAlign: TextAlign.center),
+                ),
+              ),
+              numeric: true,
+            ),
+            if (screenWidth > 500)
+              DataColumn(
+                label: SizedBox(
+                  width: numberColumnWidth,
+                  child: const Tooltip(
+                    message: 'Goles en Contra',
+                    child: Text('GC', textAlign: TextAlign.center),
+                  ),
+                ),
+                numeric: true,
+              ),
+            if (screenWidth > 600)
+              DataColumn(
+                label: SizedBox(
+                  width: numberColumnWidth,
+                  child: const Tooltip(
+                    message: 'Diferencia de Goles',
+                    child: Text('DG', textAlign: TextAlign.center),
+                  ),
+                ),
+                numeric: true,
+              ),
+            DataColumn(
+              label: SizedBox(
+                width: numberColumnWidth,
+                child: const Text('PTS', textAlign: TextAlign.center),
+              ),
+              numeric: true,
+            ),
+          ],
+          rows: _tablaPosiciones.map((equipo) {
+            return DataRow(
+              cells: [
+                DataCell(
+                  Center(
+                    child: Text(
+                      '${equipo.posicion}',
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ),
+                DataCell(
+                  Container(
+                    width: equipoWidth,
+                    padding: const EdgeInsets.symmetric(horizontal: 4),
+                    child: Text(
+                      equipo.equipoNombre,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                    ),
+                  ),
+                ),
+                DataCell(Center(child: Text('${equipo.partidosJugados}'))),
+                DataCell(Center(child: Text('${equipo.victorias}'))),
+                if (screenWidth > 400)
+                  DataCell(Center(child: Text('${equipo.empates}'))),
+                if (screenWidth > 400)
+                  DataCell(Center(child: Text('${equipo.derrotas}'))),
+                DataCell(Center(child: Text('${equipo.golesAFavor}'))),
+                if (screenWidth > 500)
+                  DataCell(Center(child: Text('${equipo.golesEnContra}'))),
+                if (screenWidth > 600)
+                  DataCell(Center(child: Text('${equipo.diferenciaGoles}'))),
+                DataCell(
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).primaryColor.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: Text(
+                      '${equipo.puntos}',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).primaryColor,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            );
+          }).toList(),
+        );
+      },
     );
   }
 

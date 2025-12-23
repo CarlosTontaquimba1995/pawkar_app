@@ -127,7 +127,7 @@ class _CollapsibleAppBarState extends State<CollapsibleAppBar>
                           ),
                         ),
                         child: Text(
-                          'Bienvenido a',
+                          'Bienvenidos a',
                           style: theme.textTheme.titleLarge?.copyWith(
                             color: Colors.white.withAlpha(230),
                             fontWeight: FontWeight.w500,
@@ -147,7 +147,7 @@ class _CollapsibleAppBarState extends State<CollapsibleAppBar>
                           ),
                         ),
                         child: Text(
-                          'PAWKAR 2025',
+                          'PAWKAR 2026',
                           style: theme.textTheme.displaySmall?.copyWith(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,

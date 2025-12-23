@@ -153,12 +153,6 @@ class _PlantillasScreenState extends State<PlantillasScreen> {
               ),
             ),
             const SizedBox(height: 8),
-            Text(
-              'Presiona el botón + para agregar jugadores',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Theme.of(context).colorScheme.outline,
-              ),
-            ),
           ],
         ),
       );

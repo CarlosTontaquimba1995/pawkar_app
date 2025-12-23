@@ -76,22 +76,36 @@ class EventosDestacadosSectionState extends State<EventosDestacadosSection> {
   }
 
   String _getImageForEvent(String eventName) {
-    final lowerName = eventName.toLowerCase();
-    if (lowerName.contains('futbol') || lowerName.contains('fútbol')) {
-      return 'assets/images/futbol.jpg';
-    } else if (lowerName.contains('basket') ||
-        lowerName.contains('básket') ||
-        lowerName.contains('basquet') ||
-        lowerName.contains('básquet') ||
-        lowerName.contains('baloncesto')) {
-      return 'assets/images/basket.jpg';
-    } else if (lowerName.contains('voley') || lowerName.contains('voleibol')) {
-      return 'assets/images/voley.jpg';
-    } else if (lowerName.contains('gastronomía') ||
-        lowerName.contains('gastronomia')) {
-      return 'assets/images/gastronomia.jpg';
+    try {
+      final lowerName = eventName.toLowerCase();
+      
+      // Only use images that we know exist in the assets
+      if (lowerName.contains('futbol') || lowerName.contains('fútbol')) {
+        return 'assets/images/futbol.jpg';
+      } else if (lowerName.contains('basket') ||
+          lowerName.contains('básket') ||
+          lowerName.contains('basquet') ||
+          lowerName.contains('básquet') ||
+          lowerName.contains('baloncesto')) {
+        return 'assets/images/basket.jpg';
+      } else if (lowerName.contains('voley') ||
+          lowerName.contains('voleibol') ||
+          lowerName.contains('vóley') ||
+          lowerName.contains('vóleibol')) {
+        return 'assets/images/voley.jpg';
+      } else if (lowerName.contains('gastronomía') ||
+          lowerName.contains('gastronomia') ||
+          lowerName.contains('comida') ||
+          lowerName.contains('restaurante')) {
+        return 'assets/images/gastronomia.jpg';
+      }
+      
+      // Default fallback to splash logo if no match found
+      return 'assets/images/splash_logo.png';
+    } catch (e) {
+      debugPrint('Error getting image for event: $e');
+      return 'assets/images/splash_logo.png';
     }
-    return 'assets/images/splash_logo.png';
   }
 
   Widget _buildEventoItem(Subcategoria evento) {
@@ -120,10 +134,28 @@ class EventosDestacadosSectionState extends State<EventosDestacadosSection> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Expanded(
-                child: Image.asset(
-                  imagePath,
-                  fit: BoxFit.cover,
-                  width: double.infinity,
+                child: ClipRRect(
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(12.0),
+                  ),
+                  child: Image.asset(
+                    imagePath,
+                    fit: BoxFit.cover,
+                    width: double.infinity,
+                    errorBuilder: (context, error, stackTrace) {
+                      // Show a placeholder if image fails to load
+                      return Container(
+                        color: Colors.grey[200],
+                        child: const Center(
+                          child: Icon(
+                            Icons.image_not_supported_outlined,
+                            size: 40,
+                            color: Colors.grey,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
                 ),
               ),
               Padding(

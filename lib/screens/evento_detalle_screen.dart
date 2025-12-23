@@ -340,86 +340,89 @@ class _EventoDetalleScreenState extends State<EventoDetalleScreen> {
     String? deporte,
     String? nemonico,
   }) {
-    final lowerName = eventName.toLowerCase();
-    final lowerDeporte = deporte?.toLowerCase() ?? '';
-    final lowerNemonico = nemonico?.toLowerCase() ?? '';
+    try {
+      final lowerName = eventName.toLowerCase();
+      final lowerDeporte = deporte?.toLowerCase() ?? '';
+      final lowerNemonico = nemonico?.toLowerCase() ?? '';
 
-    // Mapeo de deportes a imágenes
-    final Map<List<String>, String> deporteImagenMap = {
-      // Fútbol
-      [
-        'futbol',
-        'fútbol',
-        'soccer',
-        'futbolito',
-        'futsal',
-        'futbol sala',
-        'microfutbol',
-        'fútbol de salón',
-      ]: 'assets/images/futbol.jpg',
+      // Mapeo de deportes a imágenes
+      final Map<List<String>, String> deporteImagenMap = {
+        // Fútbol
+        [
+          'futbol',
+          'fútbol',
+          'soccer',
+          'futbolito',
+          'futsal',
+          'futbol sala',
+          'microfutbol',
+          'fútbol de salón',
+        ]: 'assets/images/futbol.jpg',
 
-      // Baloncesto
-      [
-        'basket',
-        'baloncesto',
-        'básquet',
-        'basquet',
-        'basquetbol',
-        'basketball',
-        'básquetbol',
-        'basket ball',
-        'básket', // Added variation with 'k'
-      ]: 'assets/images/basket.jpg',
+        // Baloncesto
+        [
+          'basket',
+          'baloncesto',
+          'básquet',
+          'basquet',
+          'basquetbol',
+          'basketball',
+          'básquetbol',
+          'basket ball',
+          'básket',
+        ]: 'assets/images/basket.jpg',
 
-      // Gastronomía
-      [
-        'gastronomia',
-        'comida',
-        'chef',
-        'culinaria',
-        'cocina',
-        'restaurante',
-        'gourmet',
-        'gastronomia',
-        'gastronomía',
-      ]: 'assets/images/gastronomia.jpg',
+        // Gastronomía
+        [
+          'gastronomia',
+          'comida',
+          'chef',
+          'culinaria',
+          'cocina',
+          'restaurante',
+          'gourmet',
+          'gastronomía',
+        ]: 'assets/images/gastronomia.jpg',
 
-      // Voleibol
-      ['voley', 'voleibol', 'volley', 'volleyball', 'vóley', 'vóleibol']:
-          'assets/images/voley.jpg',
+        // Voleibol
+        ['voley', 'voleibol', 'volley', 'volleyball', 'vóley', 'vóleibol']:
+            'assets/images/voley.jpg',
 
-      // Tenis
-      ['tenis', 'tennis']: 'assets/images/tenis.jpg',
-    };
+        // Tenis - Usando futbol.jpg como respaldo
+        ['tenis', 'tennis']: 'assets/images/futbol.jpg',
+      };
 
-    // 1. Primero buscar por nemonico si está disponible
-    if (lowerNemonico.isNotEmpty) {
+      // 1. Primero buscar por nemonico si está disponible
+      if (lowerNemonico.isNotEmpty) {
+        for (final entry in deporteImagenMap.entries) {
+          if (entry.key.any((keyword) => lowerNemonico.contains(keyword))) {
+            return entry.value;
+          }
+        }
+      }
+
+      // 2. Luego buscar por deporte
+      if (lowerDeporte.isNotEmpty) {
+        for (final entry in deporteImagenMap.entries) {
+          if (entry.key.any((keyword) => lowerDeporte.contains(keyword))) {
+            return entry.value;
+          }
+        }
+      }
+
+      // 3. Finalmente buscar por nombre del evento
       for (final entry in deporteImagenMap.entries) {
-        if (entry.key.any((keyword) => lowerNemonico.contains(keyword))) {
+        if (entry.key.any((keyword) => lowerName.contains(keyword))) {
           return entry.value;
         }
       }
-    }
 
-    // 2. Luego buscar por deporte si está disponible
-    if (lowerDeporte.isNotEmpty) {
-
-      for (final entry in deporteImagenMap.entries) {
-        if (entry.key.any((keyword) => lowerDeporte.contains(keyword))) {
-          return entry.value;
-        }
-      }
+      // Si no se encuentra ninguna coincidencia, devolver imagen por defecto
+      return 'assets/images/futbol.jpg';
+    } catch (e) {
+      debugPrint('Error getting image for event: $e');
+      return 'assets/images/futbol.jpg'; // Usar futbol.jpg como respaldo en caso de error
     }
-
-    // 3. Finalmente, buscar por nombre del evento
-    for (final entry in deporteImagenMap.entries) {
-      if (entry.key.any((keyword) => lowerName.contains(keyword))) {
-        return entry.value;
-      }
-    }
-  
-    // 4. Si no hay coincidencia, usar imagen por defecto
-    return 'assets/images/futbol.jpg';
   }
 
 }

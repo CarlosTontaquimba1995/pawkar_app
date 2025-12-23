@@ -15,6 +15,7 @@ import 'package:pawkar_app/services/subcategoria_service.dart';
 import 'package:pawkar_app/models/serie_model.dart';
 import 'package:pawkar_app/features/home/widgets/match_card.dart';
 import 'package:pawkar_app/widgets/loading_widget.dart';
+import 'package:pawkar_app/widgets/empty_state_widget.dart';
 
 class MatchesScreen extends StatefulWidget {
   final List<Encuentro> initialMatches;
@@ -709,7 +710,12 @@ class _MatchesScreenState extends State<MatchesScreen> {
 
   Widget _buildContent() {
     if (_matches.isEmpty) {
-      return const Center(child: Text('No hay partidos disponibles'));
+      return EmptyStateWidget(
+        message: 'No se encontraron partidos',
+        icon: Icons.sports_soccer,
+        actionLabel: 'Recargar',
+        onAction: _loadEncuentros,
+      );
     }
 
     return ListView.builder(

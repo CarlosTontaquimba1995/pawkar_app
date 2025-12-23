@@ -25,15 +25,21 @@ class _ProximosEventosSectionState extends State<ProximosEventosSection> {
   }
 
   Future<void> _loadProximosEventos() async {
+    setState(() {
+      _isLoading = true;
+      _errorMessage = '';
+    });
     try {
       final eventos = await _subcategoriaService.getProximosEventos();
       setState(() {
         _eventos = eventos;
-        _isLoading = false;
       });
     } catch (e) {
       setState(() {
-        _errorMessage = 'Error al cargar los próximos eventos: $e';
+        _errorMessage = 'Error al cargar los próximos eventos';
+      });
+    } finally {
+      setState(() {
         _isLoading = false;
       });
     }
@@ -81,15 +87,11 @@ class _ProximosEventosSectionState extends State<ProximosEventosSection> {
     }
 
     if (_errorMessage.isNotEmpty) {
-      return Center(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Text(
-            _errorMessage,
-            style: const TextStyle(color: Colors.red),
-            textAlign: TextAlign.center,
-          ),
-        ),
+      return EmptyStateWidget(
+        message: _errorMessage,
+        icon: Icons.error_outline,
+        actionLabel: 'Reintentar',
+        onAction: _loadProximosEventos,
       );
     }
 
@@ -97,6 +99,8 @@ class _ProximosEventosSectionState extends State<ProximosEventosSection> {
       return EmptyStateWidget(
         message: 'No hay eventos próximos programados',
         icon: Icons.event_available_outlined,
+        actionLabel: 'Recargar',
+        onAction: _loadProximosEventos,
       );
     }
 

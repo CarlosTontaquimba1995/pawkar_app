@@ -7,6 +7,7 @@ import 'package:pawkar_app/widgets/eventos_destacados_section.dart';
 import 'package:pawkar_app/widgets/proximos_eventos_section.dart';
 import 'package:pawkar_app/widgets/proximos_encuentros_section.dart';
 import 'package:pawkar_app/widgets/collapsible_app_bar.dart';
+import 'package:pawkar_app/widgets/skeleton_loader.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -40,6 +41,137 @@ class _HomeScreenState extends State<HomeScreen>
     });
     
     _initializeApp();
+  }
+
+  Widget _buildSkeletonLoader(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Scaffold(
+      backgroundColor: theme.colorScheme.surfaceContainerHighest,
+      body: CustomScrollView(
+        physics: const NeverScrollableScrollPhysics(),
+        slivers: [
+          // AppBar skeleton
+          SliverAppBar(
+            expandedHeight: 250,
+            pinned: true,
+            flexibleSpace: FlexibleSpaceBar(
+              background: Container(
+                color: theme.colorScheme.primary,
+                padding: const EdgeInsets.only(
+                  top: 100,
+                  left: 16,
+                  right: 16,
+                  bottom: 16,
+                ),
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        SkeletonLoader(width: 200, height: 28, borderRadius: 4),
+                        const SizedBox(height: 8),
+                        SkeletonLoader(width: 180, height: 20, borderRadius: 4),
+                        const Spacer(),
+                        // Search bar skeleton
+                        SkeletonLoader(
+                          width: double.infinity,
+                          height: 50,
+                          borderRadius: 16,
+                        ),
+                      ],
+                    );
+                  },
+                ),
+              ),
+            ),
+          ),
+
+          // Content skeleton
+          SliverPadding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            sliver: SliverList(
+              delegate: SliverChildListDelegate([
+                // Categories section
+                _buildSectionSkeleton(context, 'Categorías', 120, 4),
+                const SizedBox(height: 16),
+
+                // Eventos destacados section
+                _buildSectionSkeleton(context, 'Eventos Destacados', 180, 1),
+                const SizedBox(height: 16),
+
+                // Próximos eventos section
+                _buildSectionSkeleton(context, 'Próximos Eventos', 200, 1),
+                const SizedBox(height: 16),
+
+                // Próximos encuentros section
+                _buildSectionSkeleton(context, 'Próximos Encuentros', 150, 1),
+                const SizedBox(height: 8), // Added bottom padding
+              ]),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSectionSkeleton(
+    BuildContext context,
+    String title,
+    double height,
+    int itemCount,
+  ) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(bottom: 12.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                SkeletonLoader(width: 180, height: 24, borderRadius: 4),
+                SkeletonLoader(width: 60, height: 16, borderRadius: 4),
+              ],
+            ),
+          ),
+          SizedBox(
+            height: height,
+            child: ListView.builder(
+              padding: EdgeInsets.zero,
+              scrollDirection: Axis.horizontal,
+              itemCount: itemCount,
+              itemBuilder: (context, index) {
+                return Container(
+                  width: 180,
+                  margin: const EdgeInsets.only(right: 12),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SkeletonLoader(
+                        width: double.infinity,
+                        height:
+                            height -
+                            44, // Reduced to account for text and spacing
+                        borderRadius: 12,
+                      ),
+                      const SizedBox(height: 6),
+                      SkeletonLoader(width: 120, height: 14, borderRadius: 4),
+                      const SizedBox(height: 2),
+                      SkeletonLoader(width: 80, height: 12, borderRadius: 4),
+                    ],
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -99,15 +231,7 @@ class _HomeScreenState extends State<HomeScreen>
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
-      return Scaffold(
-        body: Center(
-          child: CircularProgressIndicator(
-            valueColor: AlwaysStoppedAnimation<Color>(
-              Theme.of(context).colorScheme.primary,
-            ),
-          ),
-        ),
-      );
+      return _buildSkeletonLoader(context);
     }
 
     final theme = Theme.of(context);

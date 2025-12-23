@@ -15,14 +15,15 @@ class EventosDestacadosSection extends StatefulWidget {
 }
 
 class EventosDestacadosSectionState extends State<EventosDestacadosSection> {
-  late final Future<List<Subcategoria>> _eventosDestacadosFuture;
+  late Future<List<Subcategoria>> _eventosDestacadosFuture =
+      _loadEventosDestacados();
   final CategoriaService _categoriaService = CategoriaService();
   final SubcategoriaService _subcategoriaService = SubcategoriaService();
 
   @override
   void initState() {
     super.initState();
-    _eventosDestacadosFuture = _loadEventosDestacados();
+    // No need to initialize here as it's already initialized in the declaration
   }
 
   // In your EventosDestacadosSectionState class

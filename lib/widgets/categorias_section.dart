@@ -7,6 +7,7 @@ import '../screens/eventos_screen.dart';
 import '../screens/artistas_screen.dart';
 import '../services/categoria_service.dart';
 import '../services/subcategoria_service.dart';
+import 'empty_state_widget.dart';
 
 class CategoriasSection extends StatefulWidget {
   const CategoriasSection({super.key});
@@ -241,11 +242,9 @@ class CategoriasSectionState extends State<CategoriasSection> {
         if (!mounted) return;
 
         if (subcategorias.isEmpty) {
+   
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('No se encontraron eventos disponibles'),
-              backgroundColor: Colors.orange,
-            ),
+            SnackBar(content: Text('No se encontraron eventos disponibles')),
           );
           return;
         }
@@ -313,9 +312,9 @@ class CategoriasSectionState extends State<CategoriasSection> {
           ),
           const SizedBox(height: 16),
           if (subcategorias.isEmpty)
-            const Padding(
-              padding: EdgeInsets.symmetric(vertical: 24.0),
-              child: Center(child: Text('No hay subcategorías disponibles')),
+            EmptyStateWidget(
+              message: 'No hay subcategorías disponibles',
+              icon: Icons.category_outlined,
             )
           else
             ListView.builder(

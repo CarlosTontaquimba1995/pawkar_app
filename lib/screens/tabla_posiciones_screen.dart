@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:pawkar_app/models/tabla_posicion_model.dart';
 import 'package:pawkar_app/services/tabla_posicion_service.dart';
 import 'package:pawkar_app/services/equipo_service.dart';
@@ -508,7 +509,15 @@ class TablaPosicionesScreenState extends State<TablaPosicionesScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Tabla de Posiciones'),
+        title: Text(
+          'Tabla de posiciones',
+          style: GoogleFonts.poppins(
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
+            color: Theme.of(context).colorScheme.onSurface,
+            letterSpacing: 0.15,
+          ),
+        ),
         actions: [
           IconButton(
             icon: Icon(

@@ -22,7 +22,6 @@ class _HomeScreenState extends State<HomeScreen>
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey = GlobalKey();
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
-  int _currentIndex = 0;
 
   @override
   void initState() {
@@ -292,74 +291,7 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   Widget _buildBottomNavigationBar(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-
-    return Container(
-      decoration: BoxDecoration(
-        color: colorScheme.surface,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 10,
-            offset: const Offset(0, -2),
-          ),
-        ],
-      ),
-      child: SafeArea(
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 8),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _buildNavItem(Iconsax.home, 'Inicio', 0),
-              _buildNavItem(Iconsax.calendar, 'Eventos', 1),
-              _buildNavItem(Iconsax.heart, 'Favoritos', 2),
-              _buildNavItem(Iconsax.category, 'Categorías', 3),
-            ],
-          ),
-        ),
-      ),
-    );
+    return const SizedBox.shrink();
   }
 
-  Widget _buildNavItem(IconData icon, String label, int index) {
-    final isSelected = _currentIndex == index;
-    final colorScheme = Theme.of(context).colorScheme;
-
-    return GestureDetector(
-      onTap: () => setState(() => _currentIndex = index),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        decoration: BoxDecoration(
-          color: isSelected
-              ? colorScheme.primary.withOpacity(0.1)
-              : Colors.transparent,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              icon,
-              color: isSelected
-                  ? colorScheme.primary
-                  : colorScheme.onSurface.withOpacity(0.6),
-              size: 24,
-            ),
-            const SizedBox(height: 4),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 10,
-                color: isSelected
-                    ? colorScheme.primary
-                    : colorScheme.onSurface.withOpacity(0.6),
-                fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 }

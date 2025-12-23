@@ -4,7 +4,7 @@ import '../models/categoria_model.dart';
 import '../models/subcategoria_model.dart';
 import '../screens/evento_detalle_screen.dart';
 import '../screens/eventos_screen.dart';
-import '../screens/musica_screen.dart';
+import '../screens/artistas_screen.dart';
 import '../services/categoria_service.dart';
 import '../services/subcategoria_service.dart';
 
@@ -210,49 +210,51 @@ class CategoriasSectionState extends State<CategoriasSection> {
       );
     } else if (nemonico == 'musica' || nemonico == 'música') {
       try {
+        final categoriaService = Provider.of<CategoriaService>(
+          context,
+          listen: false,
+        );
         final subcategoriaService = Provider.of<SubcategoriaService>(
           context,
           listen: false,
         );
-        final subcategorias = await subcategoriaService
-            .getSubcategoriasByCategoria(categoria.categoriaId);
 
-        if (!mounted) return;
-
-        // Try to find a music subcategory
-        Subcategoria? musicaSubcategoria;
-
-        // First, check if there are any subcategories
-        if (subcategorias.isNotEmpty) {
-          try {
-            // Try to find a music subcategory
-            musicaSubcategoria = subcategorias.firstWhere(
-              (sub) =>
-                  sub.nombre.toLowerCase().contains('música') ||
-                  sub.nombre.toLowerCase().contains('musica'),
-            );
-          } catch (_) {
-            // If no music subcategory found, use the first one
-            musicaSubcategoria = subcategorias.first;
-          }
-        }
-
-        if (musicaSubcategoria == null) {
+        // Get eventos category
+        final categoriaEventos = await categoriaService.getCategoriaByNemonico(
+          'eventos',
+        );
+        if (categoriaEventos == null) {
           if (!mounted) return;
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('No se encontró la subcategoría de música'),
+              content: Text('No se encontró la categoría de eventos'),
               backgroundColor: Colors.orange,
             ),
           );
           return;
         }
-        
+
+        // Get subcategories for eventos
+        final subcategorias = await subcategoriaService
+            .getSubcategoriasByCategoria(categoriaEventos.categoriaId);
+
+        if (!mounted) return;
+
+        if (subcategorias.isEmpty) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('No se encontraron eventos disponibles'),
+              backgroundColor: Colors.orange,
+            ),
+          );
+          return;
+        }
+
+        // Navigate to ArtistasScreen with the first subcategory
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => MusicaScreen(
-              subcategoriaId: musicaSubcategoria!.subcategoriaId,
+            builder: (context) => ArtistasScreen(subcategorias: subcategorias,
             ),
           ),
         );
@@ -260,7 +262,7 @@ class CategoriasSectionState extends State<CategoriasSection> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Error al cargar la categoría de música: $e'),
+              content: Text('Error al cargar los artistas: $e'),
               backgroundColor: Theme.of(context).colorScheme.error,
             ),
           );

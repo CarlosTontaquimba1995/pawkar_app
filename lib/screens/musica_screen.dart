@@ -4,6 +4,10 @@ import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../models/subcategoria_model.dart';
 import '../services/subcategoria_service.dart';
+import '../theme/app_colors.dart';
+
+// Initialize colors when the file loads
+final appColors = AppColors();
 
 class MusicaScreen extends StatefulWidget {
   final int subcategoriaId;
@@ -327,7 +331,7 @@ class _MusicaScreenState extends State<MusicaScreen> {
                                   style: GoogleFonts.poppins(
                                     fontSize: 20,
                                     fontWeight: FontWeight.w700,
-                                    color: theme.colorScheme.onSurface,
+                                    color: AppColors.onSurface,
                                   ),
                                 ),
                               ],
@@ -337,11 +341,10 @@ class _MusicaScreenState extends State<MusicaScreen> {
                               Container(
                                 padding: const EdgeInsets.all(24),
                                 decoration: BoxDecoration(
-                                  color: theme.colorScheme.surfaceContainerHighest
-                                      .withOpacity(0.5),
+                                  color: AppColors.surface.withOpacity(0.3),
                                   borderRadius: BorderRadius.circular(16),
                                   border: Border.all(
-                                    color: theme.dividerColor.withOpacity(0.5),
+                                    color: AppColors.onSurface.withOpacity(0.1),
                                     width: 1,
                                   ),
                                 ),
@@ -350,7 +353,7 @@ class _MusicaScreenState extends State<MusicaScreen> {
                                     Icon(
                                       Icons.music_off_rounded,
                                       size: 48,
-                                      color: theme.colorScheme.onSurfaceVariant
+                                      color: AppColors.onSurface
                                           .withOpacity(0.5),
                                     ),
                                     const SizedBox(height: 12),
@@ -358,8 +361,9 @@ class _MusicaScreenState extends State<MusicaScreen> {
                                       'No hay artistas programados',
                                       style: GoogleFonts.poppins(
                                         fontSize: 16,
-                                        color: theme.textTheme.bodyMedium?.color
-                                            ?.withOpacity(0.8),
+                                        color: AppColors.onSurface.withOpacity(
+                                          0.8,
+                                        ),
                                         fontWeight: FontWeight.w500,
                                       ),
                                       textAlign: TextAlign.center,
@@ -387,12 +391,11 @@ class _MusicaScreenState extends State<MusicaScreen> {
 
                                   return Container(
                                     decoration: BoxDecoration(
-                                      color: colorScheme.primaryContainer
-                                          .withOpacity(0.2),
+                                      color: AppColors.primary.withOpacity(0.1),
                                       borderRadius: BorderRadius.circular(16),
                                       border: Border.all(
-                                        color: colorScheme.primary.withOpacity(
-                                          0.2,
+                                        color: AppColors.primary.withOpacity(
+                                          0.3,
                                         ),
                                         width: 1,
                                       ),

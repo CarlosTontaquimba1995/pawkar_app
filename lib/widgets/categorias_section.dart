@@ -145,7 +145,7 @@ class CategoriasSectionState extends State<CategoriasSection> {
                 child: Icon(
                   _getCategoryIcon(categoria.nemonico),
                   size: 30,
-                  color: Theme.of(context).primaryColor,
+                  color: Theme.of(context).colorScheme.primary,
                 ),
               ),
               Padding(
@@ -380,26 +380,17 @@ class CategoriasSectionState extends State<CategoriasSection> {
     Subcategoria subcategoria,
     ColorScheme colorScheme,
   ) {
+    final theme = Theme.of(context);
+    final iconColor = colorScheme.primary;
+    
     return Card(
-      margin: const EdgeInsets.only(bottom: 8),
-      child: ListTile(
-        leading: Container(
-          width: 40,
-          height: 40,
-          decoration: BoxDecoration(
-            color: colorScheme.primaryContainer,
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Icon(
-            _getSubcategoryIcon(subcategoria.nombre),
-            color: colorScheme.onPrimaryContainer,
-          ),
-        ),
-        title: Text(
-          subcategoria.nombre,
-          style: const TextStyle(fontWeight: FontWeight.w500),
-        ),
-        subtitle: Text(subcategoria.descripcion),
+      margin: const EdgeInsets.only(bottom: 16),
+      elevation: 1,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(color: theme.dividerColor.withOpacity(0.1), width: 1),
+      ),
+      child: InkWell(
         onTap: () {
           Navigator.pop(context);
           Navigator.push(
@@ -409,6 +400,46 @@ class CategoriasSectionState extends State<CategoriasSection> {
             ),
           );
         },
+        borderRadius: BorderRadius.circular(12),
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: ListTile(
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 8,
+              vertical: 4,
+            ),
+            leading: Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: iconColor.withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                _getSubcategoryIcon(subcategoria.nombre),
+                color: iconColor,
+                size: 24,
+              ),
+            ),
+            title: Text(
+              subcategoria.nombre,
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+                color: theme.textTheme.titleMedium?.color,
+              ),
+            ),
+            subtitle: Text(
+              subcategoria.descripcion,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.textTheme.bodySmall?.color,
+              ),
+            ),
+            trailing: Icon(
+              Icons.arrow_forward_ios,
+              size: 16,
+              color: theme.textTheme.bodySmall?.color?.withOpacity(0.6),
+            ),
+          ),
+        ),
       ),
     );
   }

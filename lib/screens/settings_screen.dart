@@ -18,7 +18,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Settings',
+          'Configuración',
           style: theme.textTheme.titleLarge?.copyWith(
             fontWeight: FontWeight.bold,
             color: Colors.white,
@@ -41,7 +41,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Appearance',
+                    'Apariencia',
                     style: theme.textTheme.headlineSmall?.copyWith(
                       fontWeight: FontWeight.bold,
                       color: colorScheme.onSurface,
@@ -65,7 +65,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'About',
+                    'Acerca de',
                     style: theme.textTheme.headlineSmall?.copyWith(
                       fontWeight: FontWeight.bold,
                       color: colorScheme.onSurface,
@@ -74,7 +74,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   const SizedBox(height: 16),
                   _buildSettingItem(
                     context: context,
-                    title: 'App Version',
+                    title: 'Versión de la aplicación',
                     subtitle: '1.0.0',
                     icon: Icons.info_outline,
                   ),
@@ -117,9 +117,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
             children: [
               _buildThemeOption(
                 context: context,
-                title: 'Light',
+                title: 'Claro',
                 icon: Icons.light_mode,
-                description: 'Bright and clean interface',
+                description: 'Interfaz clara y limpia',
                 isSelected: currentMode == ThemeMode.light,
                 onTap: () {
                   themeProvider.setThemeMode(ThemeMode.light);
@@ -128,9 +128,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
               const SizedBox(height: 8),
               _buildThemeOption(
                 context: context,
-                title: 'Dark',
+                title: 'Oscuro',
                 icon: Icons.dark_mode,
-                description: 'Easy on the eyes',
+                description: 'Cómodo para la vista',
                 isSelected: currentMode == ThemeMode.dark,
                 onTap: () {
                   themeProvider.setThemeMode(ThemeMode.dark);
@@ -139,9 +139,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
               const SizedBox(height: 8),
               _buildThemeOption(
                 context: context,
-                title: 'System',
+                title: 'Sistema',
                 icon: Icons.brightness_auto,
-                description: 'Match device settings',
+                description: 'Igual que la configuración del sistema',
                 isSelected: currentMode == ThemeMode.system,
                 onTap: () {
                   themeProvider.setThemeMode(ThemeMode.system);

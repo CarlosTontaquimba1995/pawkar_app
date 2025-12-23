@@ -178,10 +178,8 @@ class _HomeScreenState extends State<HomeScreen>
                     _buildSection(
                           context,
                           title: 'Explorar Categorías',
-                          showAction: true,
-                          onAction: () {
-                            // Navigate to categories screen
-                          },
+                          showAction: false,
+                          onAction: null,
                           child: const CategoriasSection(),
                         )
                         .animate()
@@ -208,10 +206,8 @@ class _HomeScreenState extends State<HomeScreen>
                     _buildSection(
                           context,
                           title: 'Eventos Destacados',
-                          showAction: true,
-                          onAction: () {
-                            // Navigate to featured events
-                          },
+                          showAction: false,
+                          onAction: null,
                           child: const EventosDestacadosSection(),
                         )
                         .animate()
@@ -220,10 +216,8 @@ class _HomeScreenState extends State<HomeScreen>
                     _buildSection(
                           context,
                           title: 'Próximos Eventos',
-                          showAction: true,
-                          onAction: () {
-                            // Navigate to events screen
-                          },
+                          showAction: false,
+                          onAction: null,
                           child: const ProximosEventosSection(),
                         )
                         .animate()

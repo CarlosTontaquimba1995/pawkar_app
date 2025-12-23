@@ -4,7 +4,6 @@ import 'package:pawkar_app/screens/evento_detalle_screen.dart';
 import 'package:pawkar_app/services/categoria_service.dart';
 import 'package:pawkar_app/services/subcategoria_service.dart';
 import 'package:pawkar_app/widgets/empty_state_widget.dart';
-import 'package:pawkar_app/widgets/skeleton_loader.dart';
 
 class EventosDestacadosSection extends StatefulWidget {
   const EventosDestacadosSection({super.key});
@@ -72,7 +71,7 @@ Future<List<Subcategoria>> _loadEventosDestacados() async {
       future: _eventosDestacadosFuture,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return _buildSkeletonLoader();
+          return const Center(child: CircularProgressIndicator());
         } else if (snapshot.hasError) {
           // Show error state with retry button
           return EmptyStateWidget(
@@ -86,15 +85,12 @@ Future<List<Subcategoria>> _loadEventosDestacados() async {
             },
           );
         } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          
           return EmptyStateWidget(
             message: 'No hay eventos destacados disponibles',
             icon: Icons.event_busy,
             actionLabel: 'Recargar',
-            onAction: () {
-              setState(() {
-                _eventosDestacadosFuture = _loadEventosDestacados();
-              });
-            },
+            onAction: _loadEventosDestacados,
           );
         }
 
@@ -113,31 +109,6 @@ Future<List<Subcategoria>> _loadEventosDestacados() async {
     );
   }
 
-  Widget _buildSkeletonLoader() {
-    return SizedBox(
-      height: 200,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        itemCount: 3,
-        itemBuilder: (context, index) {
-          return Container(
-            width: 200,
-            margin: const EdgeInsets.only(right: 16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SkeletonLoader(width: 200, height: 120, borderRadius: 12),
-                const SizedBox(height: 8),
-                const SkeletonLoader(width: 160, height: 16, borderRadius: 4),
-                const SizedBox(height: 4),
-                const SkeletonLoader(width: 120, height: 14, borderRadius: 4),
-              ],
-            ),
-          );
-        },
-      ),
-    );
-  }
 
   String _getImageForEvent(String eventName) {
     try {

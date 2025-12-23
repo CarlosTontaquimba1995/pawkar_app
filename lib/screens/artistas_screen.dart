@@ -83,7 +83,7 @@ class ArtistasScreen extends StatelessWidget {
           Icon(
             Icons.event_busy_rounded,
             size: 64,
-            color: theme.hintColor.withOpacity(0.5),
+            color: theme.hintColor.withValues(alpha: 0.5),
           ),
           const SizedBox(height: 16),
           Text(
@@ -116,7 +116,7 @@ class ArtistasScreen extends StatelessWidget {
         elevation: 2,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
-          side: BorderSide(color: colorScheme.outline.withOpacity(0.1)),
+          side: BorderSide(color: colorScheme.outline.withValues(alpha: 0.1)),
         ),
         clipBehavior: Clip.antiAlias,
         child: InkWell(
@@ -136,8 +136,8 @@ class ArtistasScreen extends StatelessWidget {
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                     colors: [
-                      colorScheme.primary.withOpacity(0.9),
-                      colorScheme.primary.withOpacity(0.7),
+                      colorScheme.primary.withValues(alpha: 0.9),
+                      colorScheme.primary.withValues(alpha: 0.7),
                     ],
                   ),
                 ),
@@ -186,7 +186,7 @@ class ArtistasScreen extends StatelessWidget {
                       Text(
                         evento.descripcion,
                         style: theme.textTheme.bodyMedium?.copyWith(
-                          color: Colors.white.withOpacity(0.9),
+                          color: Colors.white.withValues(alpha: 0.9),
                         ),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
@@ -239,13 +239,13 @@ class ArtistasScreen extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(icon, size: 18, color: Colors.white.withOpacity(0.9)),
+        Icon(icon, size: 18, color: Colors.white.withValues(alpha: 0.9)),
         const SizedBox(width: 12),
         Expanded(
           child: Text(
             text,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: Colors.white.withOpacity(0.9),
+              color: Colors.white.withValues(alpha: 0.9),
             ),
           ),
         ),
@@ -263,7 +263,7 @@ class ArtistasScreen extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Theme.of(context).shadowColor.withOpacity(0.1),
+            color: Theme.of(context).shadowColor.withValues(alpha: 0.1),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),

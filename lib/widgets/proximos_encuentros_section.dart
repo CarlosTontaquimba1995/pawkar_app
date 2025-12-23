@@ -239,7 +239,7 @@ class _ProximosEncuentrosSectionState extends State<ProximosEncuentrosSection> {
                         color: _getStatusColor(
                           encuentro.estado,
                           colorScheme,
-                        ).withOpacity(0.1),
+                        ).withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(12.0),
                       ),
                       child: Text(

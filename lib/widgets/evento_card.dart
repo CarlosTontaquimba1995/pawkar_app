@@ -209,10 +209,10 @@ class EventoCard extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.all(12.0),
                       decoration: BoxDecoration(
-                        color: colorScheme.primary.withOpacity(0.05),
+                        color: colorScheme.primary.withValues(alpha: 0.05),
                         borderRadius: BorderRadius.circular(8.0),
                         border: Border.all(
-                          color: colorScheme.primary.withOpacity(0.1),
+                          color: colorScheme.primary.withValues(alpha: 0.1),
                         ),
                       ),
                       child: Column(

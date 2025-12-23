@@ -51,7 +51,9 @@ class _EventosScreenState extends State<EventosScreen>
             Tab(text: 'Eventos Pasados'),
           ],
           labelColor: colorScheme.secondary,
-          unselectedLabelColor: colorScheme.onSurface.withOpacity(0.7),
+          unselectedLabelColor: theme.colorScheme.primary.withValues(
+            alpha: 0.7,
+          ),
           indicatorColor: colorScheme.secondary,
           indicatorWeight: 3.0,
           labelStyle: const TextStyle(

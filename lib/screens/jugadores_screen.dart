@@ -101,7 +101,7 @@ class _JugadoresScreenState extends State<JugadoresScreen> {
         backgroundColor: theme.colorScheme.surface,
         foregroundColor: theme.colorScheme.onSurface,
         surfaceTintColor: const Color.fromARGB(0, 214, 5, 5),
-        shadowColor: theme.colorScheme.shadow.withOpacity(0.3),
+        shadowColor: theme.colorScheme.shadow.withValues(alpha: 0.3),
         scrolledUnderElevation: 1,
       ),
       body: Column(
@@ -272,7 +272,7 @@ class _JugadorDetalleScreenState extends State<JugadorDetalleScreen> {
                           end: Alignment.bottomCenter,
                           colors: [
                             theme.primaryColor,
-                            theme.primaryColor.withOpacity(0.7),
+                            theme.primaryColor.withValues(alpha: 0.7),
                           ],
                         ),
                       ),
@@ -333,7 +333,8 @@ class _JugadorDetalleScreenState extends State<JugadorDetalleScreen> {
                                     width: 70,
                                     height: 70,
                                     decoration: BoxDecoration(
-                                      color: theme.primaryColor.withOpacity(
+                                      color: theme.primaryColor.withValues(
+                                        alpha:
                                         0.1,
                                       ),
                                       shape: BoxShape.circle,

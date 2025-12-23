@@ -36,7 +36,7 @@ class EmptyStateWidget extends StatelessWidget {
               Icon(
                 icon,
                 size: iconSize,
-                color: colorScheme.onSurface.withOpacity(0.5),
+                color: theme.colorScheme.primary.withValues(alpha: 0.5),
               ),
               SizedBox(height: spacing),
             ],
@@ -44,7 +44,7 @@ class EmptyStateWidget extends StatelessWidget {
               message,
               style: GoogleFonts.poppins(
                 fontSize: 16,
-                color: colorScheme.onSurface.withOpacity(0.7),
+                color: theme.colorScheme.primary.withValues(alpha: 0.7),
                 fontWeight: FontWeight.w500,
               ),
               textAlign: TextAlign.center,

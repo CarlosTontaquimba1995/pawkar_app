@@ -129,7 +129,7 @@ class _CollapsibleAppBarState extends State<CollapsibleAppBar>
                         child: Text(
                           widget.subtitle,
                           style: theme.textTheme.titleMedium?.copyWith(
-                            color: Colors.white.withOpacity(0.9),
+                            color: Colors.white.withValues(alpha: 0.9),
                             fontWeight: FontWeight.w500,
                           ),
                         ),
@@ -170,7 +170,7 @@ class _CollapsibleAppBarState extends State<CollapsibleAppBar>
                               'Festival Cultural y Deportivo',
                               style: GoogleFonts.montserrat(
                                 fontWeight: FontWeight.bold,
-                                color: Colors.white.withOpacity(0.95),
+                                color: Colors.white.withValues(alpha: 0.95),
                                 fontSize: 18,
                                 letterSpacing: 0.2,
                                 height: 1.2,

@@ -86,7 +86,7 @@ class _PlantillasScreenState extends State<PlantillasScreen> {
         backgroundColor: theme.colorScheme.surface,
         foregroundColor: theme.colorScheme.onSurface,
         surfaceTintColor: const Color.fromARGB(0, 214, 5, 5),
-        shadowColor: theme.colorScheme.shadow.withOpacity(0.3),
+        shadowColor: theme.colorScheme.shadow.withValues(alpha: 0.3),
         scrolledUnderElevation: 1,
         actions: [
           IconButton(
@@ -143,7 +143,9 @@ class _PlantillasScreenState extends State<PlantillasScreen> {
             Icon(
               Icons.people_outline,
               size: 72,
-              color: Theme.of(context).colorScheme.outline.withOpacity(0.5),
+              color: Theme.of(
+                context,
+              ).colorScheme.outline.withValues(alpha: 0.5),
             ),
             const SizedBox(height: 16),
             Text(
@@ -263,7 +265,7 @@ class _PlantillasScreenState extends State<PlantillasScreen> {
               // Chevron icon to indicate tappable
               Icon(
                 Icons.chevron_right,
-                color: colorScheme.onSurface.withOpacity(0.5),
+                color: theme.colorScheme.primary.withValues(alpha: 0.5),
               ),
             ],
           ),
@@ -281,7 +283,9 @@ class _PlantillasScreenState extends State<PlantillasScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
         color: isError
-            ? Theme.of(context).colorScheme.errorContainer.withOpacity(0.2)
+            ? Theme.of(
+                context,
+              ).colorScheme.errorContainer.withValues(alpha: 0.2)
             : Theme.of(context).colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(16),
       ),
@@ -463,7 +467,7 @@ class _PlantillasScreenState extends State<PlantillasScreen> {
                           vertical: 12,
                         ),
                         decoration: BoxDecoration(
-                          color: borderColor.withOpacity(0.3),
+                          color: borderColor.withValues(alpha: 0.3),
                           borderRadius: const BorderRadius.only(
                             topLeft: Radius.circular(11),
                             topRight: Radius.circular(11),
@@ -494,7 +498,7 @@ class _PlantillasScreenState extends State<PlantillasScreen> {
                                 'dd MMM yyyy',
                               ).format(DateTime.parse(sancion.fechaRegistro)),
                               style: textTheme.bodySmall?.copyWith(
-                                color: iconColor.withOpacity(0.8),
+                                color: iconColor.withValues(alpha: 0.8),
                                 fontWeight: FontWeight.w500,
                               ),
                             ),

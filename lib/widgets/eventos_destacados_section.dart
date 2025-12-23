@@ -262,14 +262,14 @@ Future<List<Subcategoria>> _loadEventosDestacados() async {
                       children: [
                         Icon(
                           Icons.location_on_outlined,
-                          color: Colors.white.withOpacity(0.9),
+                          color: Colors.white.withValues(alpha: 0.9),
                           size: 14,
                         ),
                         const SizedBox(width: 4),
                         Text(
                           'Ver detalles',
                           style: TextStyle(
-                            color: Colors.white.withOpacity(0.9),
+                            color: Colors.white.withValues(alpha: 0.9),
                             fontSize: 12,
                             fontWeight: FontWeight.w500,
                           ),

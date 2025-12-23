@@ -341,10 +341,14 @@ class _MusicaScreenState extends State<MusicaScreen> {
                               Container(
                                 padding: const EdgeInsets.all(24),
                                 decoration: BoxDecoration(
-                                  color: AppColors.surface.withOpacity(0.3),
+                                  color: AppColors.surface.withValues(
+                                    alpha: 0.3,
+                                  ),
                                   borderRadius: BorderRadius.circular(16),
                                   border: Border.all(
-                                    color: AppColors.onSurface.withOpacity(0.1),
+                                    color: AppColors.onSurface.withValues(
+                                      alpha: 0.1,
+                                    ),
                                     width: 1,
                                   ),
                                 ),
@@ -354,14 +358,17 @@ class _MusicaScreenState extends State<MusicaScreen> {
                                       Icons.music_off_rounded,
                                       size: 48,
                                       color: AppColors.onSurface
-                                          .withOpacity(0.5),
+                                          .withValues(
+                                        alpha: 0.5,
+                                      ),
                                     ),
                                     const SizedBox(height: 12),
                                     Text(
                                       'No hay artistas programados',
                                       style: GoogleFonts.poppins(
                                         fontSize: 16,
-                                        color: AppColors.onSurface.withOpacity(
+                                        color: AppColors.onSurface.withValues(
+                                          alpha:
                                           0.8,
                                         ),
                                         fontWeight: FontWeight.w500,
@@ -391,10 +398,13 @@ class _MusicaScreenState extends State<MusicaScreen> {
 
                                   return Container(
                                     decoration: BoxDecoration(
-                                      color: AppColors.primary.withOpacity(0.1),
+                                      color: AppColors.primary.withValues(
+                                        alpha: 0.1,
+                                      ),
                                       borderRadius: BorderRadius.circular(16),
                                       border: Border.all(
-                                        color: AppColors.primary.withOpacity(
+                                        color: AppColors.primary.withValues(
+                                          alpha:
                                           0.3,
                                         ),
                                         width: 1,
@@ -419,11 +429,11 @@ class _MusicaScreenState extends State<MusicaScreen> {
                                           height: 60,
                                           decoration: BoxDecoration(
                                             color: colorScheme.primaryContainer
-                                                .withOpacity(0.2),
+                                                .withValues(alpha: 0.2),
                                             shape: BoxShape.circle,
                                             border: Border.all(
                                               color: colorScheme.primary
-                                                  .withOpacity(0.3),
+                                                  .withValues(alpha: 0.3),
                                               width: 2,
                                             ),
                                           ),
@@ -461,7 +471,7 @@ class _MusicaScreenState extends State<MusicaScreen> {
                                             ),
                                             decoration: BoxDecoration(
                                               color: colorScheme.primary
-                                                  .withOpacity(0.1),
+                                                  .withValues(alpha: 0.1),
                                               borderRadius:
                                                   BorderRadius.circular(12),
                                             ),

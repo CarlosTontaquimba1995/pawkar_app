@@ -83,7 +83,7 @@ class _EventoDetalleScreenState extends State<EventoDetalleScreen> {
                           vertical: 4,
                         ),
                         decoration: BoxDecoration(
-                          color: colorScheme.surface.withOpacity(0.9),
+                          color: colorScheme.surface.withValues(alpha: 0.9),
                           borderRadius: BorderRadius.circular(20),
                           boxShadow: [
                             BoxShadow(
@@ -117,7 +117,7 @@ class _EventoDetalleScreenState extends State<EventoDetalleScreen> {
               leading: Container(
                 margin: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: colorScheme.surface.withOpacity(0.9),
+                  color: colorScheme.surface.withValues(alpha: 0.9),
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
@@ -228,7 +228,10 @@ class _EventoDetalleScreenState extends State<EventoDetalleScreen> {
       elevation: 1,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: theme.dividerColor.withOpacity(0.1), width: 1),
+        side: BorderSide(
+          color: theme.dividerColor.withValues(alpha: 0.1),
+          width: 1,
+        ),
       ),
       child: InkWell(
         onTap: onTap,
@@ -243,7 +246,7 @@ class _EventoDetalleScreenState extends State<EventoDetalleScreen> {
             leading: Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: color.withOpacity(0.1),
+                color: color.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
               child: Icon(icon, color: color, size: 24),
@@ -473,9 +476,9 @@ class _EventHeader extends StatelessWidget {
                 begin: Alignment.bottomCenter,
                 end: Alignment.topCenter,
                 colors: [
-                  colorScheme.surface.withOpacity(0.95),
-                  colorScheme.surface.withOpacity(0.7),
-                  colorScheme.surface.withOpacity(0.4),
+                  colorScheme.surface.withValues(alpha: 0.95),
+                  colorScheme.surface.withValues(alpha: 0.7),
+                  colorScheme.surface.withValues(alpha: 0.4),
                   Colors.transparent,
                 ],
                 stops: const [0.0, 0.3, 0.7, 1.0],
@@ -504,7 +507,7 @@ class _EventHeader extends StatelessWidget {
                   vertical: 8,
                 ),
                 decoration: BoxDecoration(
-                  color: colorScheme.primary.withOpacity(0.9),
+                  color: colorScheme.primary.withValues(alpha: 0.9),
                   borderRadius: BorderRadius.circular(20),
                   boxShadow: [
                     BoxShadow(
@@ -532,7 +535,7 @@ class _EventHeader extends StatelessWidget {
                     vertical: 8,
                   ),
                   decoration: BoxDecoration(
-                    color: colorScheme.surface.withOpacity(0.8),
+                    color: colorScheme.surface.withValues(alpha: 0.8),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(

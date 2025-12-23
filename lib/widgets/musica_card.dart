@@ -33,7 +33,7 @@ class MusicaCard extends StatelessWidget {
                 children: [
                   Container(
                     height: 150,
-                    color: colorScheme.primary.withOpacity(0.1),
+                    color: colorScheme.primary.withValues(alpha: 0.1),
                     child: const Center(
                       child: Icon(
                         Icons.music_note,

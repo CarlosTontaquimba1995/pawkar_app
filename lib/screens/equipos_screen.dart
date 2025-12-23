@@ -115,7 +115,7 @@ class _EquiposScreenState extends State<EquiposScreen> {
         backgroundColor: theme.colorScheme.surface,
         foregroundColor: theme.colorScheme.onSurface,
         surfaceTintColor: const Color.fromARGB(0, 214, 5, 5),
-        shadowColor: theme.colorScheme.shadow.withOpacity(0.3),
+        shadowColor: theme.colorScheme.shadow.withValues(alpha: 0.3),
         scrolledUnderElevation: 1,
       ),
       body: _buildBody(),
@@ -312,7 +312,7 @@ class _EquiposScreenState extends State<EquiposScreen> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: colorScheme.shadow.withOpacity(0.08),
+            color: colorScheme.shadow.withValues(alpha: 0.08),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -387,7 +387,9 @@ class _EquiposScreenState extends State<EquiposScreen> {
                               borderRadius: BorderRadius.circular(12),
                               boxShadow: [
                                 BoxShadow(
-                                  color: colorScheme.primary.withOpacity(0.2),
+                                  color: colorScheme.primary.withValues(
+                                    alpha: 0.2,
+                                  ),
                                   blurRadius: 6,
                                   offset: const Offset(0, 2),
                                 ),

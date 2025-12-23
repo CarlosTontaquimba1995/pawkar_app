@@ -19,10 +19,10 @@ class JugadoresScreen extends StatefulWidget {
   });
 
   @override
-  _JugadoresScreenState createState() => _JugadoresScreenState();
+  JugadoresScreenState createState() => JugadoresScreenState();
 }
 
-class _JugadoresScreenState extends State<JugadoresScreen> {
+class JugadoresScreenState extends State<JugadoresScreen> {
   bool _isLoading = true;
   String _errorMessage = '';
   final TextEditingController _searchController = TextEditingController();

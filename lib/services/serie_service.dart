@@ -169,7 +169,6 @@ class SerieService {
       final data = _handleResponse(response);
       return data['exists'] ?? false;
     } catch (e) {
-      print('Error al verificar existencia de series: $e');
       return false;
     }
   }

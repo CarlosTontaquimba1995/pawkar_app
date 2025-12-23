@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:intl/intl.dart';
+
 import 'package:pawkar_app/models/encuentro_model.dart';
 import 'package:pawkar_app/models/equipo_model.dart';
 import 'package:pawkar_app/models/estadio_model.dart';
@@ -61,11 +62,8 @@ class _MatchesScreenState extends State<MatchesScreen> {
   DateTime? _startDate;
   DateTime? _endDate;
   int? _selectedTeamId;
-  String? _selectedTeamName;
   int? _selectedCategoryId;
-  String? _selectedCategoryName;
   int? _selectedStadiumId;
-  String? _selectedStadiumName;
   String? _selectedStatus;
   final List<Encuentro> _matches = [];
 
@@ -162,14 +160,11 @@ class _MatchesScreenState extends State<MatchesScreen> {
               )
             : null,
         subcategoriaId:
-            _selectedCategoryId, // Will be null by default, showing all categories
+            _selectedCategoryId, 
         serieId: _selectedSerieId,
         estado: _selectedStatus,
       );
       
-      // Debug: Print the search parameters
-      print('Searching with params: ${params.toJson()}');
-
       final result = await _encuentroService.searchEncuentrosByQuery(
         params,
         page: _currentPage,
@@ -294,19 +289,6 @@ class _MatchesScreenState extends State<MatchesScreen> {
 
   Future<void> _applyFilters() async {
     if (_formKey.currentState?.validate() ?? false) {
-      // Log de los parámetros del filtro
-      print('=== Parámetros de Filtro Aplicados ===');
-      print('Fecha de inicio: $_startDate');
-      print('Fecha de fin: $_endDate');
-      print('ID de Equipo: $_selectedTeamId');
-      print('Nombre de Equipo: $_selectedTeamName');
-      print('ID de Categoría: $_selectedCategoryId');
-      print('Nombre de Categoría: $_selectedCategoryName');
-      print('ID de Estadio: $_selectedStadiumId');
-      print('Nombre de Estadio: $_selectedStadiumName');
-      print('Estado: $_selectedStatus');
-      print('====================================');
-
       setState(() {
         _currentPage = 0;
         _matches.clear();
@@ -352,13 +334,10 @@ class _MatchesScreenState extends State<MatchesScreen> {
     _formKey.currentState?.reset();
     setState(() {
       _selectedTeamId = null;
-      _selectedTeamName = null;
       _selectedCategoryId = null;
-      _selectedCategoryName = null;
       _selectedSerieId = null;
       _series = [];
       _selectedStadiumId = null;
-      _selectedStadiumName = null;
       _selectedStatus = null;
       _startDate = null;
       _endDate = null;
@@ -543,11 +522,6 @@ class _MatchesScreenState extends State<MatchesScreen> {
                 onChanged: (value) {
                   setState(() {
                     _selectedCategoryId = value;
-                    _selectedCategoryName = value != null
-                        ? _categories
-                              .firstWhere((c) => c.subcategoriaId == value)
-                              .nombre
-                        : null;
                     _selectedSerieId = null;
                     _loadSeriesByCategory(value);
                   });
@@ -624,11 +598,6 @@ class _MatchesScreenState extends State<MatchesScreen> {
                       onChanged: (value) {
                         setState(() {
                           _selectedTeamId = value;
-                          _selectedTeamName = value != null
-                              ? _teams
-                                    .firstWhere((t) => t.equipoId == value)
-                                    .nombre
-                              : null;
                         });
                       },
                     ),
@@ -654,9 +623,6 @@ class _MatchesScreenState extends State<MatchesScreen> {
                 onChanged: (value) {
                   setState(() {
                     _selectedStadiumId = value;
-                    _selectedStadiumName = value != null
-                        ? _stadiums.firstWhere((s) => s.id == value).nombre
-                        : null;
                   });
                 },
               ),

@@ -197,12 +197,7 @@ class EncuentroService {
       final uri = Uri.parse('$_baseUrl/search').replace(
         queryParameters: queryParams,
       );
-
-      // Log the complete URL with query parameters
-      print('=== URL de la API ===');
-      print('URL completa: $uri');
-      print('=====================');
-
+      
       final response = await _client.get(
         uri,
         headers: _getPublicHeaders(),

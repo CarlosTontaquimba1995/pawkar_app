@@ -19,10 +19,10 @@ class EquiposScreen extends StatefulWidget {
   });
 
   @override
-  _EquiposScreenState createState() => _EquiposScreenState();
+  EquiposScreenState createState() => EquiposScreenState();
 }
 
-class _EquiposScreenState extends State<EquiposScreen> {
+class EquiposScreenState extends State<EquiposScreen> {
   bool _isLoading = true;
   bool _isLoadingSeries = true;
   String _errorMessage = '';

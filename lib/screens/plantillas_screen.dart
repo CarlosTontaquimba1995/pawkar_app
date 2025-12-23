@@ -18,10 +18,10 @@ class PlantillasScreen extends StatefulWidget {
   });
 
   @override
-  _PlantillasScreenState createState() => _PlantillasScreenState();
+  PlantillasScreenState createState() => PlantillasScreenState();
 }
 
-class _PlantillasScreenState extends State<PlantillasScreen> {
+class PlantillasScreenState extends State<PlantillasScreen> {
   bool _isLoading = true;
   bool _isRefreshing = false;
   String _errorMessage = '';

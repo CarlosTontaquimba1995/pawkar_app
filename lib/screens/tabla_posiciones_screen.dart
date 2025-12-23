@@ -162,39 +162,45 @@ class TablaPosicionesScreenState extends State<TablaPosicionesScreen> {
               const SizedBox(height: 16),
               const SizedBox(height: 16),
               // Series dropdown
-              DropdownButtonFormField<int>(
-                value: _selectedSerieId,
+              DropdownButtonFormField<int?>(
+                // Cambiado a int? para permitir el valor null de "Todas las series"
+                initialValue:
+                    _selectedSerieId, // REEMPLAZO DE 'value' POR 'initialValue'
                 decoration: const InputDecoration(
                   labelText: 'Serie',
                   border: OutlineInputBorder(),
                 ),
                 items: [
-                  const DropdownMenuItem(
+                  const DropdownMenuItem<int?>(
+                    // Especificamos int? para consistencia
                     value: null,
                     child: Text('Todas las series'),
                   ),
                   ..._series.entries
                       .map(
-                        (entry) => DropdownMenuItem<int>(
+                    (entry) => DropdownMenuItem<int?>(
                           value: entry.key,
                           child: Text(entry.value),
                         ),
-                      )
-                      .toList(),
+                  ),
                 ],
                 onChanged: (value) async {
                   setState(() {
                     _selectedSerieId = value;
                     _selectedEquipoId = null;
                   });
-                  // Load teams for the selected series
                   await _loadEquiposBySerie(value);
                 },
               ),
               const SizedBox(height: 16),
               // Teams dropdown - only enabled when a series is selected
-              DropdownButtonFormField<int>(
-                value: _selectedEquipoId,
+              DropdownButtonFormField<int?>(
+                // Cambiado a int? para soportar el valor null
+                key: ValueKey(
+                  'equipo_dropdown_$_selectedSerieId',
+                ), // CLAVE CRUCIAL: Ver explicación abajo
+                initialValue:
+                    _selectedEquipoId, // REEMPLAZO: Cambiado de value a initialValue
                 decoration: InputDecoration(
                   labelText: 'Equipo',
                   border: const OutlineInputBorder(),
@@ -205,23 +211,23 @@ class TablaPosicionesScreenState extends State<TablaPosicionesScreen> {
                       : 'Seleccione un equipo',
                 ),
                 items: _selectedSerieId == null || _isLoadingEquipos
-                    ? null // Don't show teams until a series is selected or while loading
+                    ? null
                     : [
-                        const DropdownMenuItem(
+                        const DropdownMenuItem<int?>(
+                          // Especificamos int?
                           value: null,
                           child: Text('Todos los equipos'),
                         ),
                         ...(_equiposBySerie[_selectedSerieId] ?? [])
                             .map(
-                              (equipo) => DropdownMenuItem<int>(
+                          (equipo) => DropdownMenuItem<int?>(
                                 value: equipo.equipoId,
                                 child: Text(equipo.nombre),
                               ),
-                            )
-                            .toList(),
+                        ),
                       ],
                 onChanged: _selectedSerieId == null || _isLoadingEquipos
-                    ? null // Disable dropdown if no series is selected or while loading
+                    ? null
                     : (value) {
                         setState(() {
                           _selectedEquipoId = value;

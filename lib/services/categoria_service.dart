@@ -172,7 +172,6 @@ class CategoriaService {
       final data = _handleResponse(response);
       return data['exists'] ?? false;
     } catch (e) {
-      print('Error al verificar existencia de categorías: $e');
       return false;
     }
   }

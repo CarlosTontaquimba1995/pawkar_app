@@ -7,7 +7,7 @@ import 'package:pawkar_app/widgets/eventos_destacados_section.dart';
 import 'package:pawkar_app/widgets/proximos_eventos_section.dart';
 import 'package:pawkar_app/widgets/proximos_encuentros_section.dart';
 import 'package:pawkar_app/widgets/collapsible_app_bar.dart';
-import 'package:flutter_animate/flutter_animate.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -142,28 +142,45 @@ class _HomeScreenState extends State<HomeScreen>
                 ),
               ],
               bottom: Container(
-                margin: const EdgeInsets.only(bottom: 16, left: 20, right: 20),
+                margin: const EdgeInsets.only(bottom: 16, left: 12, right: 12),
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(16),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
-                      blurRadius: 10,
-                      offset: const Offset(0, 4),
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 15,
+                      offset: const Offset(0, 6),
                     ),
                   ],
                 ),
                 child: TextField(
                   decoration: InputDecoration(
                     hintText: 'Buscar eventos, categorías...',
-                    hintStyle: TextStyle(color: Colors.grey[500]),
-                    prefixIcon: const Icon(
-                      Iconsax.search_normal,
-                      color: Colors.grey,
+                    hintStyle: GoogleFonts.poppins(
+                      color: Colors.grey[500],
+                      fontSize: 14,
                     ),
-                    border: InputBorder.none,
-                    contentPadding: const EdgeInsets.symmetric(vertical: 15),
+                    prefixIcon: Container(
+                      padding: const EdgeInsets.all(10),
+                      child: Icon(
+                        Iconsax.search_normal,
+                        color: colorScheme.primary,
+                        size: 20,
+                      ),
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide.none,
+                    ),
+                    filled: true,
+                    fillColor: Colors.white,
+                    contentPadding: const EdgeInsets.symmetric(vertical: 0),
+                    isDense: true,
+                  ),
+                  style: GoogleFonts.poppins(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
               ),
@@ -179,16 +196,16 @@ class _HomeScreenState extends State<HomeScreen>
                           context,
                           title: 'Explorar Categorías',
                           showAction: false,
-                          onAction: null,
+                      icon: Iconsax.category,
+                      iconColor: const Color(0xFF8E44AD), // Purple
                           child: const CategoriasSection(),
-                        )
-                        .animate()
-                        .fadeIn(duration: 300.ms)
-                        .slideY(begin: 0.1, end: 0),
+                    ),
                     _buildSection(
                           context,
                           title: 'Próximos Encuentros',
                           showAction: true,
+                      icon: Iconsax.calendar_1,
+                      iconColor: const Color(0xFFE74C3C), // Red
                           onAction: () {
                             Navigator.push(
                               context,
@@ -199,31 +216,24 @@ class _HomeScreenState extends State<HomeScreen>
                             );
                           },
                           child: const ProximosEncuentrosSection(),
-                        )
-                        .animate()
-                        .fadeIn(duration: 300.ms)
-                        .slideY(begin: 0.1, end: 0),
+                    ),
                     _buildSection(
                           context,
                           title: 'Eventos Destacados',
                           showAction: false,
-                          onAction: null,
+                      icon: Iconsax.star,
+                      iconColor: const Color(0xFFF39C12), // Orange
                           child: const EventosDestacadosSection(),
-                        )
-                        .animate()
-                        .fadeIn(duration: 300.ms)
-                        .slideY(begin: 0.1, end: 0),
+                    ),
                     _buildSection(
                           context,
                           title: 'Próximos Eventos',
                           showAction: false,
-                          onAction: null,
+                      icon: Iconsax.calendar_tick,
+                      iconColor: const Color(0xFF3498DB), // Blue
                           child: const ProximosEventosSection(),
-                        )
-                        .animate()
-                        .fadeIn(duration: 300.ms)
-                        .slideY(begin: 0.1, end: 0),
-                    const SizedBox(height: 80), // Space for bottom navigation
+                    ),
+                    const SizedBox(height: 20), // Reduced bottom space
                   ],
                 ),
               ),
@@ -231,7 +241,6 @@ class _HomeScreenState extends State<HomeScreen>
           ],
         ),
       ),
-      bottomNavigationBar: _buildBottomNavigationBar(context),
     );
   }
 
@@ -241,39 +250,75 @@ class _HomeScreenState extends State<HomeScreen>
     required Widget child,
     bool showAction = false,
     VoidCallback? onAction,
+    IconData? icon,
+    Color? iconColor,
   }) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 16),
+      margin: const EdgeInsets.only(bottom: 12, left: 12, right: 12),
+      decoration: BoxDecoration(
+        color: colorScheme.surface,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 6,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 20.0,
-              vertical: 8.0,
-            ),
+            padding: const EdgeInsets.fromLTRB(12, 12, 12, 4),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  title,
-                  style: theme.textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.w700,
-                    color: colorScheme.onSurface,
-                  ),
+                Row(
+                  children: [
+                    if (icon != null) ...[
+                      Icon(
+                        icon,
+                        color: iconColor ?? colorScheme.primary,
+                        size: 18,
+                      ),
+                      const SizedBox(width: 6),
+                    ],
+                    Text(
+                      title,
+                      style: GoogleFonts.poppins(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                        color: colorScheme.onSurface,
+                      ),
+                    ),
+                  ],
                 ),
                 if (showAction)
                   TextButton(
                     onPressed: onAction,
                     style: TextButton.styleFrom(
                       foregroundColor: colorScheme.primary,
-                      padding: EdgeInsets.zero,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 2,
+                      ),
+                      minimumSize: Size.zero,
                       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                     ),
-                    child: const Text('Ver todo'),
+                    child: Text(
+                      'Ver todo',
+                      style: GoogleFonts.poppins(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
                   ),
               ],
             ),
@@ -282,10 +327,6 @@ class _HomeScreenState extends State<HomeScreen>
         ],
       ),
     );
-  }
-
-  Widget _buildBottomNavigationBar(BuildContext context) {
-    return const SizedBox.shrink();
   }
 
 }

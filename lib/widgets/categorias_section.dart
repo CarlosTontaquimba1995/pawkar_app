@@ -435,7 +435,7 @@ class CategoriasSectionState extends State<CategoriasSection> {
             trailing: Icon(
               Icons.arrow_forward_ios,
               size: 16,
-              color: theme.textTheme.bodySmall?.color?.withOpacity(0.6),
+              color: theme.colorScheme.primary.withValues(alpha: 0.6),
             ),
           ),
         ),

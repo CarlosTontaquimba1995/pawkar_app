@@ -38,7 +38,7 @@ class ScrollItemCard extends StatelessWidget {
               shadow ??
               [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
+                  color: Colors.black.withValues(alpha: 0.1),
                   blurRadius: 6,
                   offset: const Offset(0, 2),
                 ),
@@ -73,7 +73,7 @@ class ScrollItemCard extends StatelessWidget {
                     Text(
                       subtitle,
                       style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.textTheme.bodySmall?.color?.withOpacity(
+                        color: theme.colorScheme.primary.withValues(alpha:
                           0.7,
                         ),
                       ),

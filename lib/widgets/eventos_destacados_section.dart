@@ -163,7 +163,7 @@ Future<List<Subcategoria>> _loadEventosDestacados() async {
           borderRadius: BorderRadius.circular(16.0),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.1),
+              color: Colors.black.withValues(alpha: 0.1),
               blurRadius: 8,
               offset: const Offset(0, 4),
             ),
@@ -199,10 +199,10 @@ Future<List<Subcategoria>> _loadEventosDestacados() async {
                     begin: Alignment.bottomCenter,
                     end: Alignment.topCenter,
                     colors: [
-                      Colors.black.withOpacity(0.8),
+                      Colors.black.withValues(alpha: 0.8),
                       Colors.transparent,
                       Colors.transparent,
-                      Colors.black.withOpacity(0.1),
+                      Colors.black.withValues(alpha:0.1),
                     ],
                     stops: const [0.0, 0.4, 0.7, 1.0],
                   ),
@@ -249,7 +249,7 @@ Future<List<Subcategoria>> _loadEventosDestacados() async {
                           Shadow(
                             offset: const Offset(1, 1),
                             blurRadius: 3.0,
-                            color: Colors.black.withOpacity(0.5),
+                            color: Colors.black.withValues(alpha:0.5),
                           ),
                         ],
                       ),

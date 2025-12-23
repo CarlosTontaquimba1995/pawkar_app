@@ -140,7 +140,7 @@ class _MusicaScreenState extends State<MusicaScreen> {
                                   fontSize: 18,
                                   shadows: [
                                     Shadow(
-                                      color: Colors.black.withOpacity(0.5),
+                                      color: Colors.black.withValues(alpha:0.5),
                                       offset: const Offset(1, 1),
                                       blurRadius: 4,
                                     ),
@@ -174,8 +174,8 @@ class _MusicaScreenState extends State<MusicaScreen> {
                                       begin: Alignment.topCenter,
                                       end: Alignment.bottomCenter,
                                       colors: [
-                                        Colors.black.withOpacity(0.2),
-                                        Colors.black.withOpacity(0.7),
+                                        Colors.black.withValues(alpha: 0.2),
+                                        Colors.black.withValues(alpha: 0.7),
                                       ],
                                       stops: const [0.5, 1.0],
                                     ),
@@ -197,7 +197,7 @@ class _MusicaScreenState extends State<MusicaScreen> {
                                         fontSize: 16,
                                         shadows: [
                                           Shadow(
-                                            color: Colors.black.withOpacity(
+                                            color: Colors.black.withValues(alpha:
                                               0.5,
                                             ),
                                             offset: const Offset(1, 1),
@@ -219,7 +219,7 @@ class _MusicaScreenState extends State<MusicaScreen> {
                           shape: BoxShape.circle,
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.2),
+                              color: Colors.black.withValues(alpha: 0.2),
                               blurRadius: 4,
                               offset: const Offset(0, 2),
                             ),
@@ -401,7 +401,9 @@ class _MusicaScreenState extends State<MusicaScreen> {
                                       ),
                                       boxShadow: [
                                         BoxShadow(
-                                          color: Colors.black.withOpacity(0.05),
+                                          color: Colors.black.withValues(
+                                            alpha: 0.05,
+                                          ),
                                           blurRadius: 10,
                                           offset: const Offset(0, 4),
                                         ),

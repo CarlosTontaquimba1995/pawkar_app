@@ -121,7 +121,7 @@ class _ProximosEventosSectionState extends State<ProximosEventosSection> {
               borderRadius: BorderRadius.circular(16.0),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.2),
+                  color: Colors.black.withValues(alpha: 0.2),
                   spreadRadius: 1,
                   blurRadius: 8,
                   offset: const Offset(0, 4),
@@ -142,8 +142,8 @@ class _ProximosEventosSectionState extends State<ProximosEventosSection> {
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
                         colors: [
-                          Colors.black.withOpacity(0.3),
-                          Colors.black.withOpacity(0.8),
+                          Colors.black.withValues(alpha: 0.3),
+                          Colors.black.withValues(alpha: 0.8),
                         ],
                       ),
                     ),
@@ -265,7 +265,7 @@ class _ProximosEventosSectionState extends State<ProximosEventosSection> {
                               borderRadius: BorderRadius.circular(20),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black.withOpacity(0.2),
+                                  color: Colors.black.withValues(alpha: 0.2),
                                   blurRadius: 4,
                                   offset: const Offset(0, 2),
                                 ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class CollapsibleAppBar extends StatefulWidget {
   final String title;
@@ -81,10 +82,9 @@ class _CollapsibleAppBarState extends State<CollapsibleAppBar>
       systemOverlayStyle: SystemUiOverlayStyle.light,
       title: Text(
         'PAWKAR APP',
-        style: theme.textTheme.titleLarge?.copyWith(
-          color: Colors.white,
+        style: GoogleFonts.montserrat(
           fontWeight: FontWeight.bold,
-          letterSpacing: 1.2,
+          color: Colors.white
         ),
       ),
       centerTitle: true,
@@ -109,7 +109,7 @@ class _CollapsibleAppBarState extends State<CollapsibleAppBar>
                 child: Padding(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 24.0,
-                    vertical: 4.0,
+                    vertical: 24.0,
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -127,14 +127,14 @@ class _CollapsibleAppBarState extends State<CollapsibleAppBar>
                           ),
                         ),
                         child: Text(
-                          'Bienvenidos a',
-                          style: theme.textTheme.titleLarge?.copyWith(
-                            color: Colors.white.withAlpha(230),
+                          widget.subtitle,
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            color: Colors.white.withOpacity(0.9),
                             fontWeight: FontWeight.w500,
                           ),
                         ),
                       ),
-                      const SizedBox(height: 2),
+                      const SizedBox(height: 8),
                       FadeTransition(
                         opacity: Tween<double>(begin: 1.0, end: 0.0).animate(
                           CurvedAnimation(
@@ -146,37 +146,39 @@ class _CollapsibleAppBarState extends State<CollapsibleAppBar>
                             ),
                           ),
                         ),
-                        child: Text(
-                          'PAWKAR 2026',
-                          style: theme.textTheme.displaySmall?.copyWith(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: 1.2,
-                            height: 1.1,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 0),
-                      FadeTransition(
-                        opacity: Tween<double>(begin: 1.0, end: 0.0).animate(
-                          CurvedAnimation(
-                            parent: _appBarController,
-                            curve: const Interval(
-                              0.0,
-                              0.5,
-                              curve: Curves.easeInOut,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              widget.title,
+                              style: GoogleFonts.montserrat(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 32,
+                                color: Colors.white,
+                                height: 1.1,
+                                shadows: [
+                                  Shadow(
+                                    color: Colors.black.withValues(alpha: 0.2),
+                                    blurRadius: 6,
+                                    offset: const Offset(0, 2),
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
-                        ),
-                        child: Text(
-                          'Festival Cultural y Deportivo',
-                          style: theme.textTheme.titleMedium?.copyWith(
-                            color: Colors.white.withAlpha(230),
-                            fontWeight: FontWeight.w400,
-                          ),
+                            const SizedBox(height: 16),
+                            Text(
+                              'Festival Cultural y Deportivo',
+                              style: GoogleFonts.montserrat(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white.withOpacity(0.95),
+                                fontSize: 18,
+                                letterSpacing: 0.2,
+                                height: 1.2,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                      const SizedBox(height: 0),
                     ],
                   ),
                 ),

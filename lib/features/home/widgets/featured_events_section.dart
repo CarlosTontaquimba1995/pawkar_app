@@ -144,7 +144,7 @@ class _FeaturedEventsSectionState extends State<FeaturedEventsSection> {
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.1),
+              color: Colors.black.withValues(alpha: 0.1),
               blurRadius: 4,
               offset: const Offset(0, 2),
             ),
@@ -158,7 +158,7 @@ class _FeaturedEventsSectionState extends State<FeaturedEventsSection> {
               height: 100,
               padding: const EdgeInsets.all(8.0),
               decoration: BoxDecoration(
-                color: theme.colorScheme.primary.withOpacity(0.1),
+                color: theme.colorScheme.primary.withValues(alpha: 0.1),
                 borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(12),
                   topRight: Radius.circular(12),

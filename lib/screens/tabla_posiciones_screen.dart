@@ -262,26 +262,37 @@ class TablaPosicionesScreenState extends State<TablaPosicionesScreen> {
       builder: (context, constraints) {
         // Calcular el ancho disponible
         final screenWidth = constraints.maxWidth;
+        final isSmallScreen = screenWidth < 400;
+        final isMediumScreen = screenWidth >= 400 && screenWidth < 600;
 
         // Ajustar el tamaño de fuente según el ancho de la pantalla
-        final fontSize = screenWidth < 600 ? 10.0 : 12.0;
+        final fontSize = isSmallScreen ? 11.0 : (isMediumScreen ? 12.0 : 13.0);
+        
+        // Ajustar anchos de columna según el tamaño de la pantalla
+        final equipoWidth = isSmallScreen
+            ? screenWidth * 0.35
+            : screenWidth * 0.3;
+        final numberColumnWidth = isSmallScreen
+            ? screenWidth * 0.09
+            : (isMediumScreen ? screenWidth * 0.08 : screenWidth * 0.07);
 
-        // Calcular ancho disponible para las columnas
-        final equipoWidth = screenWidth * 0.3; // 30% para el nombre del equipo
-        final numberColumnWidth =
-            screenWidth * 0.07; // Ancho fijo para columnas numéricas
-
-        return DataTable(
-          columnSpacing: 8,
-          horizontalMargin: 12,
-          headingRowHeight: 36,
-          dataRowMinHeight: 36,
+        // Crear la tabla con desplazamiento horizontal
+        return SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Container(
+            constraints: BoxConstraints(minWidth: screenWidth),
+            child: DataTable(
+              columnSpacing: isSmallScreen ? 6 : 8,
+              horizontalMargin: isSmallScreen ? 8 : 12,
+              headingRowHeight: isSmallScreen ? 40 : 44,
+              dataRowMinHeight: isSmallScreen ? 36 : 40,
           headingTextStyle: TextStyle(
             fontSize: fontSize,
             fontWeight: FontWeight.bold,
           ),
           dataTextStyle: TextStyle(fontSize: fontSize),
           columns: [
+                // Columna POS
             DataColumn(
               label: SizedBox(
                 width: numberColumnWidth,
@@ -293,12 +304,26 @@ class TablaPosicionesScreenState extends State<TablaPosicionesScreen> {
               ),
               numeric: true,
             ),
+                // Columna Equipo
             DataColumn(
               label: SizedBox(
                 width: equipoWidth,
                 child: const Text('Equipo', overflow: TextOverflow.ellipsis),
               ),
             ),
+                // Columna PTS
+                DataColumn(
+                  label: SizedBox(
+                    width: numberColumnWidth,
+                    child: const Text(
+                      'PTS',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  numeric: true,
+                ),
+                // Columna PJ
             DataColumn(
               label: SizedBox(
                 width: numberColumnWidth,
@@ -309,6 +334,7 @@ class TablaPosicionesScreenState extends State<TablaPosicionesScreen> {
               ),
               numeric: true,
             ),
+                // Columna PG
             DataColumn(
               label: SizedBox(
                 width: numberColumnWidth,
@@ -319,7 +345,8 @@ class TablaPosicionesScreenState extends State<TablaPosicionesScreen> {
               ),
               numeric: true,
             ),
-            if (screenWidth > 400)
+                // Columna PE (solo en pantallas grandes)
+                if (!isSmallScreen) 
               DataColumn(
                 label: SizedBox(
                   width: numberColumnWidth,
@@ -330,7 +357,8 @@ class TablaPosicionesScreenState extends State<TablaPosicionesScreen> {
                 ),
                 numeric: true,
               ),
-            if (screenWidth > 400)
+                // Columna PP (solo en pantallas grandes)
+                if (!isSmallScreen) 
               DataColumn(
                 label: SizedBox(
                   width: numberColumnWidth,
@@ -341,16 +369,7 @@ class TablaPosicionesScreenState extends State<TablaPosicionesScreen> {
                 ),
                 numeric: true,
               ),
-            DataColumn(
-              label: SizedBox(
-                width: numberColumnWidth,
-                child: const Tooltip(
-                  message: 'Goles a Favor',
-                  child: Text('GF', textAlign: TextAlign.center),
-                ),
-              ),
-              numeric: true,
-            ),
+                // Columna GC (solo en pantallas medianas/grandes)
             if (screenWidth > 500)
               DataColumn(
                 label: SizedBox(
@@ -362,6 +381,7 @@ class TablaPosicionesScreenState extends State<TablaPosicionesScreen> {
                 ),
                 numeric: true,
               ),
+                // Columna DG (solo en pantallas grandes)
             if (screenWidth > 600)
               DataColumn(
                 label: SizedBox(
@@ -373,10 +393,14 @@ class TablaPosicionesScreenState extends State<TablaPosicionesScreen> {
                 ),
                 numeric: true,
               ),
+                // Columna GF (al final)
             DataColumn(
               label: SizedBox(
                 width: numberColumnWidth,
-                child: const Text('PTS', textAlign: TextAlign.center),
+                    child: const Tooltip(
+                      message: 'Goles a Favor',
+                      child: Text('GF', textAlign: TextAlign.center),
+                    ),
               ),
               numeric: true,
             ),
@@ -384,6 +408,7 @@ class TablaPosicionesScreenState extends State<TablaPosicionesScreen> {
           rows: _tablaPosiciones.map((equipo) {
             return DataRow(
               cells: [
+                    // Celda POS
                 DataCell(
                   Center(
                     child: Text(
@@ -393,28 +418,22 @@ class TablaPosicionesScreenState extends State<TablaPosicionesScreen> {
                     ),
                   ),
                 ),
+                    // Celda Equipo
                 DataCell(
                   Container(
                     width: equipoWidth,
                     padding: const EdgeInsets.symmetric(horizontal: 4),
+                        alignment: Alignment.centerLeft,
                     child: Text(
                       equipo.equipoNombre,
                       overflow: TextOverflow.ellipsis,
                       maxLines: 1,
+                          style: const TextStyle(fontWeight: FontWeight.w500,
+                      ),
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-                DataCell(Center(child: Text('${equipo.partidosJugados}'))),
-                DataCell(Center(child: Text('${equipo.victorias}'))),
-                if (screenWidth > 400)
-                  DataCell(Center(child: Text('${equipo.empates}'))),
-                if (screenWidth > 400)
-                  DataCell(Center(child: Text('${equipo.derrotas}'))),
-                DataCell(Center(child: Text('${equipo.golesAFavor}'))),
-                if (screenWidth > 500)
-                  DataCell(Center(child: Text('${equipo.golesEnContra}'))),
-                if (screenWidth > 600)
-                  DataCell(Center(child: Text('${equipo.diferenciaGoles}'))),
+                    // Celda PTS
                 DataCell(
                   Container(
                     padding: const EdgeInsets.symmetric(
@@ -434,9 +453,52 @@ class TablaPosicionesScreenState extends State<TablaPosicionesScreen> {
                     ),
                   ),
                 ),
+                    // Celda PJ
+                    DataCell(Center(child: Text('${equipo.partidosJugados}'))),
+                    // Celda PG
+                    DataCell(Center(child: Text('${equipo.victorias}'))),
+                    // Celda PE (solo en pantallas grandes)
+                    if (!isSmallScreen)
+                      DataCell(
+                        Center(
+                          child: Text(
+                            '${equipo.empates}',
+                            style: const TextStyle(fontWeight: FontWeight.w500),
+                          ),
+                        ),
+                      ),
+                    // Celda PP (solo en pantallas grandes)
+                    if (!isSmallScreen)
+                      DataCell(
+                        Center(
+                          child: Text(
+                            '${equipo.derrotas}',
+                            style: const TextStyle(fontWeight: FontWeight.w500),
+                          ),
+                        ),
+                      ),
+                    // Celda GC (solo en pantallas medianas/grandes)
+                    if (screenWidth > 500)
+                      DataCell(Center(child: Text('${equipo.golesEnContra}'))),
+                    // Celda DG (solo en pantallas grandes)
+                    if (screenWidth > 600)
+                      DataCell(
+                        Center(child: Text('${equipo.diferenciaGoles}')),
+                      ),
+                    // Celda GF (al final)
+                    DataCell(
+                      Center(
+                        child: Text(
+                          '${equipo.golesAFavor}',
+                          style: const TextStyle(fontWeight: FontWeight.w500),
+                        ),
+                      ),
+                    ),
               ],
             );
           }).toList(),
+            ),
+          ),
         );
       },
     );

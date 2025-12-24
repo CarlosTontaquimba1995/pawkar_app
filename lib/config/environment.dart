@@ -1,18 +1,6 @@
 import 'dart:io' show Platform;
 
 class Environment {
-  static const String _androidBaseUrl = 'http://127.0.0.1:8080';
-  static const String _iosBaseUrl = 'http://localhost:8080';
-  // For physical devices, use your computer's IP:
-  // static const String _deviceBaseUrl = 'http://YOUR_COMPUTER_IP:8080';
-
-  static String get baseUrl {
-    if (Platform.isAndroid) {
-      return _androidBaseUrl;
-    } else if (Platform.isIOS) {
-      return _iosBaseUrl;
-    }
-    // Default to Android emulator address
-    return _androidBaseUrl;
-  }
+  // Always use production URL
+  static const String baseUrl = 'https://pawkar-backend.onrender.com';
 }

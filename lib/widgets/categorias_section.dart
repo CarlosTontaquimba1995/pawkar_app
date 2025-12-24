@@ -46,7 +46,11 @@ class CategoriasSectionState extends State<CategoriasSection> {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());
               } else if (snapshot.hasError) {
-                return Center(child: Text('Error: ${snapshot.error}'));
+                return EmptyStateWidget(
+                  message: 'No se pudo cargar las categorías',
+                  actionLabel: 'Reintentar',
+                  onAction: _loadCategorias,
+                );
               } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
                 return const Center(
                   child: Text('No hay categorías disponibles'),

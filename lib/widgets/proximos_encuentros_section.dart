@@ -131,38 +131,11 @@ class _ProximosEncuentrosSectionState extends State<ProximosEncuentrosSection> {
   }
 
   Widget _buildErrorState(ThemeData theme, ColorScheme colorScheme) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
-      padding: const EdgeInsets.all(16.0),
-      decoration: BoxDecoration(
-        color: Colors.red[50],
-        borderRadius: BorderRadius.circular(12.0),
-      ),
-      child: Row(
-        children: [
-          Icon(Icons.error_outline, color: Colors.red[700]),
-          const SizedBox(width: 12.0),
-          Expanded(
-            child: Text(
-              _errorMessage,
-              style: TextStyle(color: Colors.red[700]),
-            ),
-          ),
-          TextButton(
-            onPressed: _loadProximosEncuentros,
-            style: TextButton.styleFrom(
-              foregroundColor: Colors.red[700],
-              padding: const EdgeInsets.symmetric(
-                horizontal: 12.0,
-                vertical: 6.0,
-              ),
-              minimumSize: Size.zero,
-              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-            ),
-            child: const Text('Reintentar'),
-          ),
-        ],
-      ),
+    return EmptyStateWidget(
+      message: _errorMessage,
+      actionLabel: 'Reintentar',
+      onAction: _loadProximosEncuentros,
+      icon: Icons.error_outline,
     );
   }
 

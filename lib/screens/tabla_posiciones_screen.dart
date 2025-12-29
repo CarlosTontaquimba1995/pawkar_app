@@ -448,41 +448,33 @@ class TablaPosicionesScreenState extends State<TablaPosicionesScreen> {
                 ),
                 numeric: true,
               ),
-                // Columna GC (solo en pantallas medianas/grandes)
-            if (screenWidth > 500)
-              DataColumn(
-                label: SizedBox(
-                  width: numberColumnWidth,
-                  child: const Tooltip(
-                    message: 'Goles en Contra',
-                    child: Text('GC', textAlign: TextAlign.center),
-                  ),
-                ),
-                numeric: true,
-              ),
-                // Columna DG (solo en pantallas grandes)
-            if (screenWidth > 600)
-              DataColumn(
-                label: SizedBox(
-                  width: numberColumnWidth,
-                  child: const Tooltip(
-                    message: 'Diferencia de Goles',
-                    child: Text('DG', textAlign: TextAlign.center),
-                  ),
-                ),
-                numeric: true,
-              ),
-                // Columna GF (al final)
-            DataColumn(
-              label: SizedBox(
-                width: numberColumnWidth,
-                    child: const Tooltip(
-                      message: 'Goles a Favor',
-                      child: Text('GF', textAlign: TextAlign.center),
+                // Columna GC (Goles en Contra) - solo en pantallas medianas/grandes
+                if (screenWidth > 500)
+                  DataColumn(
+                    label: SizedBox(
+                      width: numberColumnWidth,
+                      child: const Tooltip(
+                        message: 'Goles en Contra',
+                        child: Text('GC', textAlign: TextAlign.center),
+                      ),
                     ),
-              ),
-              numeric: true,
-            ),
+                    numeric: true,
+                  ),
+                // Columna GD (Gol Diferencia)
+                DataColumn(
+                  label: SizedBox(
+                    width: numberColumnWidth,
+                    child: const Tooltip(
+                      message: 'Diferencia de Goles',
+                      child: Text(
+                        'GD',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ),
+                  numeric: true,
+                ),
           ],
           rows: _tablaPosiciones.map((equipo) {
             return DataRow(
@@ -561,17 +553,12 @@ class TablaPosicionesScreenState extends State<TablaPosicionesScreen> {
                     // Celda GC (solo en pantallas medianas/grandes)
                     if (screenWidth > 500)
                       DataCell(Center(child: Text('${equipo.golesEnContra}'))),
-                    // Celda DG (solo en pantallas grandes)
-                    if (screenWidth > 600)
-                      DataCell(
-                        Center(child: Text('${equipo.diferenciaGoles}')),
-                      ),
-                    // Celda GF (al final)
+                    // Celda GD (Diferencia de Goles)
                     DataCell(
                       Center(
                         child: Text(
-                          '${equipo.golesAFavor}',
-                          style: const TextStyle(fontWeight: FontWeight.w500),
+                          '${equipo.diferenciaGoles}',
+                          style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
                       ),
                     ),

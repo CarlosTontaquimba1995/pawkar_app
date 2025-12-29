@@ -8,6 +8,7 @@ import '../screens/artistas_screen.dart';
 import '../services/categoria_service.dart';
 import '../services/subcategoria_service.dart';
 import 'empty_state_widget.dart';
+import 'skeleton_loader.dart';
 
 class CategoriasSection extends StatefulWidget {
   const CategoriasSection({super.key});
@@ -38,9 +39,34 @@ class CategoriasSectionState extends State<CategoriasSection> {
       future: _categoriasFuture,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const SizedBox(
+          return SizedBox(
             height: 150,
-            child: Center(child: CircularProgressIndicator()),
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16.0,
+                vertical: 8.0,
+              ),
+              itemCount: 4,
+              itemBuilder: (context, index) {
+                return Container(
+                  width: 100,
+                  margin: const EdgeInsets.only(right: 16.0),
+                  child: Column(
+                    children: [
+                      const SkeletonLoader(
+                        width: 70,
+                        height: 70,
+                        shape: BoxShape.circle,
+                        borderRadius: 0,
+                      ),
+                      const SizedBox(height: 8),
+                      SkeletonLoader(width: 80, height: 12, borderRadius: 4),
+                    ],
+                  ),
+                );
+              },
+            ),
           );
         } else if (snapshot.hasError) {
           return Padding(

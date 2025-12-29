@@ -4,6 +4,7 @@ import 'package:pawkar_app/screens/evento_detalle_screen.dart';
 import 'package:pawkar_app/services/categoria_service.dart';
 import 'package:pawkar_app/services/subcategoria_service.dart';
 import 'package:pawkar_app/widgets/empty_state_widget.dart';
+import 'package:pawkar_app/widgets/skeleton_loader.dart';
 
 class EventosDestacadosSection extends StatefulWidget {
   const EventosDestacadosSection({super.key});
@@ -71,7 +72,37 @@ Future<List<Subcategoria>> _loadEventosDestacados() async {
       future: _eventosDestacadosFuture,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
+          return SizedBox(
+            height: 200,
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16.0,
+                vertical: 8.0,
+              ),
+              itemCount: 3,
+              itemBuilder: (context, index) {
+                return Container(
+                  width: 220,
+                  margin: const EdgeInsets.only(right: 16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SkeletonLoader(
+                        width: 220,
+                        height: 120,
+                        borderRadius: 12,
+                      ),
+                      const SizedBox(height: 8),
+                      SkeletonLoader(width: 160, height: 16, borderRadius: 4),
+                      const SizedBox(height: 4),
+                      SkeletonLoader(width: 100, height: 14, borderRadius: 4),
+                    ],
+                  ),
+                );
+              },
+            ),
+          );
         } else if (snapshot.hasError) {
           // Show error state with retry button
           return EmptyStateWidget(

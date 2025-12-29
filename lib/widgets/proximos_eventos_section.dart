@@ -4,6 +4,7 @@ import 'package:pawkar_app/services/subcategoria_service.dart';
 import 'package:pawkar_app/widgets/empty_state_widget.dart';
 import 'package:pawkar_app/screens/musica_screen.dart';
 import 'package:intl/intl.dart';
+import 'skeleton_loader.dart';
 
 class ProximosEventosSection extends StatefulWidget {
   const ProximosEventosSection({super.key});
@@ -79,10 +80,73 @@ class _ProximosEventosSectionState extends State<ProximosEventosSection> {
 
   Widget _buildContent() {
     if (_isLoading) {
-      return const Center(
-        child: CircularProgressIndicator(
-          valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF6C63FF)),
-        ),
+      return ListView.builder(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        itemCount: 3, // Show 3 skeleton items
+        itemBuilder: (context, index) {
+          return Container(
+            margin: const EdgeInsets.only(
+              bottom: 16.0,
+              left: 16.0,
+              right: 16.0,
+            ),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12.0),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.1),
+                  spreadRadius: 1,
+                  blurRadius: 5,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Image placeholder
+                  const SkeletonLoader(width: 80, height: 80, borderRadius: 8),
+                  const SizedBox(width: 12),
+                  // Content
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Title
+                        const SkeletonLoader(
+                          width: 200,
+                          height: 16,
+                          borderRadius: 4,
+                        ),
+                        const SizedBox(height: 8),
+                        // Date
+                        const SkeletonLoader(
+                          width: 150,
+                          height: 14,
+                          borderRadius: 4,
+                        ),
+                        const SizedBox(height: 12),
+                        // Button
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: SkeletonLoader(
+                            width: 120,
+                            height: 36,
+                            borderRadius: 20,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
       );
     }
 

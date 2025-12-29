@@ -4,7 +4,7 @@ import 'package:pawkar_app/services/encuentro_service.dart';
 import 'package:pawkar_app/widgets/empty_state_widget.dart';
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:shimmer/shimmer.dart';
+import 'package:pawkar_app/widgets/skeleton_loader.dart';
 
 class ProximosEncuentrosSection extends StatefulWidget {
   const ProximosEncuentrosSection({super.key});
@@ -103,29 +103,79 @@ class _ProximosEncuentrosSectionState extends State<ProximosEncuentrosSection> {
 
   Widget _buildShimmerCard() {
     return Container(
-      margin: const EdgeInsets.only(bottom: 16.0),
+      margin: const EdgeInsets.only(bottom: 16.0, left: 8.0, right: 8.0),
+      padding: const EdgeInsets.all(16.0),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16.0),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
+            color: Colors.black.withOpacity(0.05),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
         ],
       ),
-      child: Shimmer.fromColors(
-        baseColor: Colors.grey[200]!,
-        highlightColor: Colors.grey[100]!,
-        child: Container(
-          height: 120,
-          width: double.infinity,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          // Date and time row
+          const SkeletonLoader(width: 200, height: 16, borderRadius: 4),
+          const SizedBox(height: 12),
+
+          // Teams row
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              // Home team
+              const Column(
+                children: [
+                  SkeletonLoader(
+                    width: 32,
+                    height: 32,
+                    shape: BoxShape.circle,
+                    borderRadius: 0,
+                  ),
+                  SizedBox(height: 8),
+                  SkeletonLoader(width: 80, height: 14, borderRadius: 4),
+                ],
+              ),
+
+              // VS text
+              const Text(
+                'VS',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.grey,
+                ),
+              ),
+
+              // Away team
+              const Column(
+                children: [
+                  SkeletonLoader(
+                    width: 32,
+                    height: 32,
+                    shape: BoxShape.circle,
+                    borderRadius: 0,
+                  ),
+                  SizedBox(height: 8),
+                  SkeletonLoader(width: 80, height: 14, borderRadius: 4),
+                ],
+              ),
+            ],
           ),
-        ),
+
+          const SizedBox(height: 12),
+
+          // Status bar
+          const SkeletonLoader(
+            width: double.infinity,
+            height: 8,
+            borderRadius: 4,
+          ),
+        ],
       ),
     );
   }

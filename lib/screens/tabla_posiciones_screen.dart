@@ -6,6 +6,7 @@ import 'package:pawkar_app/services/equipo_service.dart';
 import 'package:pawkar_app/services/serie_service.dart';
 import 'package:pawkar_app/models/equipo_model.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:pawkar_app/widgets/skeleton_loader.dart';
 
 class TablaPosicionesScreen extends StatefulWidget {
   final int subcategoriaId;
@@ -51,10 +52,19 @@ class TablaPosicionesScreenState extends State<TablaPosicionesScreen> {
         _series.clear();
         for (var serie in series) {
           _series[serie.serieId] = serie.nombreSerie;
+          // Automatically select Serie A if it exists
+          if (serie.nombreSerie.toLowerCase().contains('serie a')) {
+            _selectedSerieId = serie.serieId;
+          }
         }
       });
 
-      // Load table positions after series are loaded
+      // Load teams for the selected serie
+      if (_selectedSerieId != null) {
+        await _loadEquiposBySerie(_selectedSerieId);
+      }
+
+      // Load table positions after series are loaded and serie is selected
       await _loadTablaPosiciones();
     } catch (e) {
       setState(() {
@@ -261,6 +271,68 @@ class TablaPosicionesScreenState extends State<TablaPosicionesScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildSkeletonLoader() {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final screenWidth = constraints.maxWidth;
+        final isSmallScreen = screenWidth < 400;
+        // Generate skeleton rows (5 rows for loading state)
+        return ListView.builder(
+          itemCount: 5,
+          itemBuilder: (context, index) {
+            return Padding(
+              padding: const EdgeInsets.symmetric(
+                vertical: 8.0,
+                horizontal: 16.0,
+              ),
+              child: Row(
+                children: [
+                  // Position
+                  SkeletonLoader(width: 30, height: 20, borderRadius: 4),
+                  const SizedBox(width: 16),
+                  // Team name (wider skeleton)
+                  Expanded(
+                    child: SkeletonLoader(
+                      width: 150,
+                      height: 20,
+                      borderRadius: 4,
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  // Points
+                  SkeletonLoader(width: 40, height: 30, borderRadius: 4),
+                  const SizedBox(width: 8),
+                  // Other stats
+                  if (!isSmallScreen) ...[
+                    SkeletonLoader(width: 25, height: 20, borderRadius: 4),
+                    const SizedBox(width: 8),
+                  ],
+                  SkeletonLoader(width: 25, height: 20, borderRadius: 4),
+                  if (!isSmallScreen) ...[
+                    const SizedBox(width: 8),
+                    SkeletonLoader(width: 25, height: 20, borderRadius: 4),
+                    const SizedBox(width: 8),
+                    SkeletonLoader(width: 25, height: 20, borderRadius: 4),
+                  ],
+                  if (screenWidth > 500) ...[
+                    const SizedBox(width: 8),
+                    SkeletonLoader(width: 25, height: 20, borderRadius: 4),
+                  ],
+                  if (screenWidth > 600) ...[
+                    const SizedBox(width: 8),
+                    SkeletonLoader(width: 25, height: 20, borderRadius: 4),
+                  ],
+                  const SizedBox(width: 8),
+                  SkeletonLoader(width: 25, height: 20, borderRadius: 4),
+                ],
+              ),
+            );
+          },
+        );
+      },
     );
   }
 
@@ -557,7 +629,7 @@ class TablaPosicionesScreenState extends State<TablaPosicionesScreen> {
           else
             Expanded(
               child: _isLoading
-                  ? const Center(child: CircularProgressIndicator())
+                  ? _buildSkeletonLoader()
                   : _buildTablaPosiciones(),
             ),
         ],

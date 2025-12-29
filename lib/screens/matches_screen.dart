@@ -15,8 +15,8 @@ import 'package:pawkar_app/services/serie_service.dart';
 import 'package:pawkar_app/services/subcategoria_service.dart';
 import 'package:pawkar_app/models/serie_model.dart';
 import 'package:pawkar_app/features/home/widgets/match_card.dart';
-import 'package:pawkar_app/widgets/loading_widget.dart';
 import 'package:pawkar_app/widgets/empty_state_widget.dart';
+import 'package:pawkar_app/widgets/skeleton_loader.dart';
 
 class MatchesScreen extends StatefulWidget {
   final List<Encuentro> initialMatches;
@@ -368,7 +368,16 @@ class _MatchesScreenState extends State<MatchesScreen> {
   @override
   Widget build(BuildContext context) {
     if (_isLoading && _matches.isEmpty) {
-      return const Scaffold(body: Center(child: LoadingWidget()));
+      return Scaffold(
+        body: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              children: List.generate(5, (index) => _buildSkeletonItem()),
+            ),
+          ),
+        ),
+      );
     }
 
     final theme = Theme.of(context);
@@ -675,6 +684,129 @@ class _MatchesScreenState extends State<MatchesScreen> {
   }
 
   Widget _buildContent() {
+    if (_isLoading && _matches.isEmpty) {
+      // Show skeleton loaders while loading
+      return ListView.builder(
+        padding: const EdgeInsets.all(16),
+        itemCount: 5, // Show 5 skeleton items
+        itemBuilder: (context, index) {
+          return Container(
+            margin: const EdgeInsets.only(bottom: 16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.1),
+                  spreadRadius: 1,
+                  blurRadius: 4,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Column(
+              children: [
+                // Date header
+                Container(
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[100],
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(12),
+                      topRight: Radius.circular(12),
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SkeletonLoader(width: 100, height: 16, borderRadius: 4),
+                      const SizedBox(width: 8),
+                      SkeletonLoader(width: 80, height: 16, borderRadius: 4),
+                    ],
+                  ),
+                ),
+                // Match content
+                Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: Column(
+                    children: [
+                      // Teams
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: Row(
+                              children: [
+                                SkeletonLoader(
+                                  width: 24,
+                                  height: 24,
+                                  borderRadius: 12,
+                                ),
+                                const SizedBox(width: 8),
+                                const Expanded(
+                                  child: SkeletonLoader(
+                                    width: double.infinity,
+                                    height: 20,
+                                    borderRadius: 4,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SkeletonLoader(
+                            width: 40,
+                            height: 30,
+                            borderRadius: 4,
+                          ),
+                          Expanded(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                const Expanded(
+                                  child: SkeletonLoader(
+                                    width: double.infinity,
+                                    height: 20,
+                                    borderRadius: 4,
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                SkeletonLoader(
+                                  width: 24,
+                                  height: 24,
+                                  borderRadius: 12,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+                      // Time and venue
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          SkeletonLoader(
+                            width: 100,
+                            height: 16,
+                            borderRadius: 4,
+                          ),
+                          SkeletonLoader(
+                            width: 120,
+                            height: 16,
+                            borderRadius: 4,
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      );
+    }
+
     if (_matches.isEmpty) {
       return EmptyStateWidget(
         message: 'No se encontraron partidos',
@@ -687,23 +819,118 @@ class _MatchesScreenState extends State<MatchesScreen> {
     return ListView.builder(
       controller: _scrollController,
       padding: const EdgeInsets.only(bottom: 80),
-      itemCount: _matches.length + (_isLoadingMore ? 1 : 0),
+      itemCount: _matches.length + (_isLoadingMore ? 3 : 0),
       itemBuilder: (context, index) {
         if (index >= _matches.length) {
-          return const Padding(
-            padding: EdgeInsets.all(16.0),
-            child: Center(
-              child: SizedBox(
-                width: 24,
-                height: 24,
-                child: CircularProgressIndicator(strokeWidth: 2),
-              ),
-            ),
-          );
+          return _buildSkeletonItem();
         }
         final match = _matches[index];
         return MatchCard(match: match);
       },
+    );
+  }
+
+  Widget _buildSkeletonItem() {
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: Column(
+        children: [
+          // Date header
+          Container(
+            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+            decoration: BoxDecoration(
+              color: Colors.grey[100],
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(12),
+                topRight: Radius.circular(12),
+              ),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SkeletonLoader(width: 100, height: 16, borderRadius: 4),
+                const SizedBox(width: 8),
+                SkeletonLoader(width: 80, height: 16, borderRadius: 4),
+              ],
+            ),
+          ),
+          // Match content
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              children: [
+                // Teams
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    // Home team
+                    Expanded(
+                      child: Row(
+                        children: [
+                          const SkeletonLoader(
+                            width: 32,
+                            height: 32,
+                            shape: BoxShape.circle,
+                            borderRadius: 0, // No border radius for circles
+                          ),
+                          const SizedBox(width: 12),
+                          const Expanded(
+                            child: SkeletonLoader(
+                              width: 100,
+                              height: 16,
+                              borderRadius: 4,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    // Score
+                    const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 12),
+                      child: SkeletonLoader(
+                        width: 40,
+                        height: 24,
+                        borderRadius: 4,
+                      ),
+                    ),
+                    // Away team
+                    Expanded(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          const Expanded(
+                            child: SkeletonLoader(
+                              width: 100,
+                              height: 16,
+                              borderRadius: 4,
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          const SkeletonLoader(
+                            width: 32,
+                            height: 32,
+                            shape: BoxShape.circle,
+                            borderRadius: 0, // No border radius for circles
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                // Time and venue
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    SkeletonLoader(width: 120, height: 14, borderRadius: 4),
+                    SkeletonLoader(width: 150, height: 14, borderRadius: 4),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

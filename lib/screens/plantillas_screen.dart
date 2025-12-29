@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:pawkar_app/extensions/string_extensions.dart';
 import 'package:pawkar_app/models/plantilla_model.dart';
 import 'package:pawkar_app/services/plantilla_service.dart';
+import 'package:pawkar_app/widgets/skeleton_loader.dart';
 
 class PlantillasScreen extends StatefulWidget {
   final int subcategoriaId;
@@ -63,6 +64,50 @@ class PlantillasScreenState extends State<PlantillasScreen> {
     }
   }
 
+  // Build skeleton loading item
+  Widget _buildSkeletonItem() {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          const SkeletonLoader(width: 50, height: 50, shape: BoxShape.circle),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SkeletonLoader(width: 120, height: 16, borderRadius: 4),
+                const SizedBox(height: 6),
+                SkeletonLoader(width: 80, height: 14, borderRadius: 4),
+                const SizedBox(height: 4),
+                Row(
+                  children: [
+                    SkeletonLoader(width: 100, height: 12, borderRadius: 4),
+                    const Spacer(),
+                    SkeletonLoader(width: 60, height: 20, borderRadius: 10),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -91,7 +136,7 @@ class PlantillasScreenState extends State<PlantillasScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
-            onPressed: _isLoading
+            onPressed: _isLoading && !_isRefreshing
                 ? null
                 : () {
                     setState(() => _isRefreshing = true);
@@ -100,13 +145,25 @@ class PlantillasScreenState extends State<PlantillasScreen> {
           ),
         ],
       ),
-      body: _buildContent(),
+      body: _isRefreshing
+          ? _buildContent() // Show loading state with skeleton
+          : RefreshIndicator(
+              onRefresh: () async {
+                setState(() => _isRefreshing = true);
+                await _loadPlantillas();
+              },
+              child: _buildContent(),
+            ),
     );
   }
 
   Widget _buildContent() {
-    if (_isLoading) {
-      return const Center(child: CircularProgressIndicator());
+    if (_isLoading && !_isRefreshing) {
+      return ListView.builder(
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        itemCount: 5, // Show 5 skeleton items while loading
+        itemBuilder: (context, index) => _buildSkeletonItem(),
+      );
     }
 
     if (_errorMessage.isNotEmpty) {

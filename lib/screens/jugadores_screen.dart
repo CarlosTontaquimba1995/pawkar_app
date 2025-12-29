@@ -7,6 +7,7 @@ import 'package:pawkar_app/models/jugador_model.dart';
 import 'package:pawkar_app/services/jugador_service.dart';
 import 'package:pawkar_app/services/subcategoria_service.dart';
 import 'package:pawkar_app/widgets/empty_state_widget.dart';
+import 'package:pawkar_app/widgets/skeleton_loader.dart';
 
 class JugadoresScreen extends StatefulWidget {
   final int subcategoriaId;
@@ -78,6 +79,23 @@ class JugadoresScreenState extends State<JugadoresScreen> {
     });
   }
 
+  // Build skeleton loading item
+  Widget _buildSkeletonItem() {
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      child: ListTile(
+        leading: const SkeletonLoader(
+          width: 40,
+          height: 40,
+          shape: BoxShape.circle,
+        ),
+        title: const SkeletonLoader(width: 120, height: 16, borderRadius: 4),
+        subtitle: const SkeletonLoader(width: 80, height: 14, borderRadius: 4),
+        trailing: const SkeletonLoader(width: 24, height: 24, borderRadius: 12),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -122,7 +140,11 @@ class JugadoresScreenState extends State<JugadoresScreen> {
           ),
           Expanded(
             child: _isLoading
-                ? const Center(child: CircularProgressIndicator())
+                ? ListView.builder(
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    itemCount: 6, // Show 6 skeleton items
+                    itemBuilder: (context, index) => _buildSkeletonItem(),
+                  )
                 : _errorMessage.isNotEmpty
                     ? Center(child: Text(_errorMessage))
                     : _buildJugadoresList(),

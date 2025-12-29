@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../widgets/skeleton_loader.dart';
 import '../models/subcategoria_model.dart';
 import '../services/subcategoria_service.dart';
 import '../theme/app_colors.dart';
@@ -47,6 +48,87 @@ class _MusicaScreenState extends State<MusicaScreen> {
     }
   }
 
+  Widget _buildSkeletonLoader() {
+    final size = MediaQuery.of(context).size;
+
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Image placeholder
+          Container(
+            width: double.infinity,
+            height: size.height * 0.3,
+            color: Colors.grey[200],
+          ),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Title placeholder
+                const SkeletonLoader(width: 200, height: 28, borderRadius: 4),
+                const SizedBox(height: 16),
+                // Date and location placeholders
+                ...List.generate(
+                  4,
+                  (index) => Padding(
+                    padding: const EdgeInsets.only(bottom: 12.0),
+                    child: Row(
+                      children: [
+                        const SkeletonLoader(
+                          width: 24,
+                          height: 24,
+                          shape: BoxShape.circle,
+                          borderRadius: 0,
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              SkeletonLoader(
+                                width: 120,
+                                height: 16,
+                                borderRadius: 4,
+                              ),
+                              const SizedBox(height: 4),
+                              SkeletonLoader(
+                                width: 200,
+                                height: 14,
+                                borderRadius: 4,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 24),
+                // Description title
+                SkeletonLoader(width: 150, height: 20, borderRadius: 4),
+                const SizedBox(height: 8),
+                // Description lines
+                ...List.generate(
+                  3,
+                  (index) => Padding(
+                    padding: const EdgeInsets.only(bottom: 8.0),
+                    child: SkeletonLoader(
+                      width: double.infinity,
+                      height: 16,
+                      borderRadius: 4,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   String _getAssetPath(String eventName) {
     if (eventName.toLowerCase().contains('basket')) {
       return 'assets/images/basket.jpg';
@@ -72,7 +154,7 @@ class _MusicaScreenState extends State<MusicaScreen> {
       extendBodyBehindAppBar: true,
       backgroundColor: colorScheme.surface,
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? _buildSkeletonLoader()
           : _errorMessage.isNotEmpty
           ? Center(
               child: Padding(
@@ -90,7 +172,7 @@ class _MusicaScreenState extends State<MusicaScreen> {
               future: _eventoFuture,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
+                  return _buildSkeletonLoader();
                 } else if (snapshot.hasError) {
                   return Center(
                     child: Text(

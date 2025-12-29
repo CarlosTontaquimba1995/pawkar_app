@@ -204,32 +204,7 @@ class _MusicaScreenState extends State<MusicaScreen> {
                         builder: (context, constraints) {
                           final expanded = constraints.maxHeight > 120;
                           return FlexibleSpaceBar(
-                            titlePadding: const EdgeInsets.only(
-                              left: 60,
-                              right: 16,
-                              bottom: 16,
-                            ),
-                            title: AnimatedOpacity(
-                              opacity: expanded ? 1.0 : 0.0,
-                              duration: const Duration(milliseconds: 200),
-                              child: Text(
-                                evento.nombre,
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                                style: GoogleFonts.poppins(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 18,
-                                  shadows: [
-                                    Shadow(
-                                      color: Colors.black.withValues(alpha:0.5),
-                                      offset: const Offset(1, 1),
-                                      blurRadius: 4,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
+                            title: const SizedBox.shrink(),
                             background: Stack(
                               fit: StackFit.expand,
                               children: [
@@ -249,21 +224,55 @@ class _MusicaScreenState extends State<MusicaScreen> {
                                             ),
                                   ),
                                 ),
-                                // Gradient overlay
+                                // Gradient overlay for better text contrast
                                 Container(
                                   decoration: BoxDecoration(
                                     gradient: LinearGradient(
                                       begin: Alignment.topCenter,
                                       end: Alignment.bottomCenter,
                                       colors: [
-                                        Colors.black.withValues(alpha: 0.2),
-                                        Colors.black.withValues(alpha: 0.7),
+                                        Colors.black.withOpacity(0.5),
+                                        Colors.black.withOpacity(0.9),
                                       ],
-                                      stops: const [0.5, 1.0],
+                                      stops: const [0.2, 0.8],
                                     ),
                                   ),
                                 ),
-                                // Event name (visible when collapsed)
+                                // Centered event name
+                                Container(
+                                  width: double.infinity,
+                                  height: double.infinity,
+                                  alignment: Alignment.center,
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 24,
+                                  ),
+                                  child: Text(
+                                    evento.nombre.toUpperCase(),
+                                    textAlign: TextAlign.center,
+                                    maxLines: 3,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: GoogleFonts.poppins(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w900,
+                                      fontSize: 36,
+                                      letterSpacing: 0.5,
+                                      height: 1.1,
+                                      shadows: [
+                                        Shadow(
+                                          color: Colors.black.withOpacity(0.9),
+                                          offset: const Offset(2, 2),
+                                          blurRadius: 10,
+                                        ),
+                                        Shadow(
+                                          color: Colors.black,
+                                          offset: const Offset(0, 0),
+                                          blurRadius: 15,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                // Collapsed app bar title
                                 if (!expanded)
                                   Positioned(
                                     left: 60,
@@ -273,17 +282,19 @@ class _MusicaScreenState extends State<MusicaScreen> {
                                       evento.nombre,
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
+                                      textAlign: TextAlign.center,
                                       style: GoogleFonts.poppins(
                                         color: Colors.white,
                                         fontWeight: FontWeight.w600,
                                         fontSize: 16,
+                                        letterSpacing: 0.3,
                                         shadows: [
                                           Shadow(
-                                            color: Colors.black.withValues(alpha:
-                                              0.5,
+                                            color: Colors.black.withOpacity(
+                                              0.8,
                                             ),
                                             offset: const Offset(1, 1),
-                                            blurRadius: 4,
+                                            blurRadius: 6,
                                           ),
                                         ],
                                       ),

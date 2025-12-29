@@ -132,14 +132,7 @@ class ArtistasScreen extends StatelessWidget {
                 width: double.infinity,
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [
-                      colorScheme.primary.withValues(alpha: 0.9),
-                      colorScheme.primary.withValues(alpha: 0.7),
-                    ],
-                  ),
+                  color: theme.colorScheme.primary,
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,

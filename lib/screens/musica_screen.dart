@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'dart:io';
 import 'package:url_launcher/url_launcher.dart';
 import '../widgets/skeleton_loader.dart';
 import '../models/subcategoria_model.dart';
@@ -47,6 +48,7 @@ class _MusicaScreenState extends State<MusicaScreen> {
       });
     }
   }
+
 
   Widget _buildSkeletonLoader() {
     final size = MediaQuery.of(context).size;
@@ -130,18 +132,67 @@ class _MusicaScreenState extends State<MusicaScreen> {
   }
 
   String _getAssetPath(String eventName) {
-    if (eventName.toLowerCase().contains('basket')) {
+    // Clean and normalize the event name for matching
+    final cleanName = eventName.trim().toLowerCase();
+    print('🔍 Event name: "$eventName"');
+
+    // Check for specific event images (most specific first)
+    if (cleanName == 'urban pawkar') {
+      return 'assets/images/eventos/urban_pawkar.jpeg';
+    } else if (cleanName.contains('noche internacional')) {
+      return 'assets/images/eventos/noche_internacional.jpeg';
+    } else if (cleanName.contains('ciclon')) {
+      return 'assets/images/eventos/ciclon.jpeg';
+    } else if (cleanName.contains('runakay')) {
+      return 'assets/images/eventos/runakay.jpeg';
+    } else if (cleanName.contains('pawkar')) {
+      return cleanName.contains('oscuro')
+          ? 'assets/images/eventos/pawkar_oscuro.jpeg'
+          : 'assets/images/eventos/pawkar_claro.jpeg';
+    }
+
+    // Fallback to sport-specific images
+    if (cleanName.contains('basket')) {
       return 'assets/images/basket.jpg';
-    } else if (eventName.toLowerCase().contains('futbol')) {
+    } else if (cleanName.contains('futbol')) {
       return 'assets/images/futbol.jpg';
-    } else if (eventName.toLowerCase().contains('gastronomía') ||
-        eventName.toLowerCase().contains('comida')) {
+    } else if (cleanName.contains('gastronomía') ||
+        cleanName.contains('comida')) {
       return 'assets/images/gastronomia.jpg';
-    } else if (eventName.toLowerCase().contains('voley') ||
-        eventName.toLowerCase().contains('voleibol')) {
+    } else if (cleanName.contains('voley') || cleanName.contains('voleibol')) {
       return 'assets/images/voley.jpg';
     }
-    return 'assets/images/futbol.jpg'; // Default image
+    
+    // Default image
+    final defaultImage = 'assets/images/eventos/urban_pawkar.jpeg';
+    print('ℹ️  Using default image: $defaultImage');
+    return defaultImage;
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    // Debug: Print the exact paths being used
+    print('\n🔍 Testing image paths:');
+    print('1. assets/images/eventos/noche_internacional.JPEG');
+    print('2. assets/images/eventos/runakay.JPEG');
+    print('3. assets/images/eventos/urban_pawkar.JPEG');
+
+    // Debug: Check if files exist in the file system
+    try {
+      final dir = Directory('assets/images/eventos');
+      if (dir.existsSync()) {
+        print('\n📂 Contents of assets/images/eventos:');
+        dir.listSync().forEach((element) {
+          print('- ${element.path}');
+        });
+      } else {
+        print('\n❌ Directory not found: ${dir.path}');
+      }
+    } catch (e) {
+      print('\n❌ Error checking directory: $e');
+    }
   }
 
   @override
@@ -216,12 +267,31 @@ class _MusicaScreenState extends State<MusicaScreen> {
                                     fit: BoxFit.cover,
                                     width: double.infinity,
                                     height: double.infinity,
-                                    errorBuilder:
-                                        (context, error, stackTrace) =>
-                                            Container(
-                                              color: Colors.grey[300],
-                                              child: const Icon(Icons.error),
+                                    errorBuilder: (context, error, stackTrace) {
+                                      print('❌ Error loading image: $error');
+                                      return Container(
+                                        color: Colors.grey[300],
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            const Icon(
+                                              Icons.error,
+                                              size: 48,
+                                              color: Colors.red,
                                             ),
+                                            const SizedBox(height: 8),
+                                            Text(
+                                              'No se pudo cargar la imagen\n${evento.nombre}',
+                                              textAlign: TextAlign.center,
+                                              style: const TextStyle(
+                                                color: Colors.red,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      );
+                                    },
                                   ),
                                 ),
                                 // Gradient overlay for better text contrast

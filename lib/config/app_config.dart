@@ -7,10 +7,10 @@ import 'package:pawkar_app/theme/app_theme.dart';
 
 class AppConfig {
   // Default colors for offline mode
-  static const String defaultPrimary = '#574496'; // Indigo/Púrpura
-  static const String defaultSecondary = '#1FBEF2'; // Celeste Cyan
-  static const String defaultAccent1 = '#E84095'; // Rosa Intenso
-  static const String defaultAccent2 = '#FECD1C'; // Amarillo Sol
+  static const String defaultPrimary = '#331D58'; // Primary color
+  static const String defaultSecondary = '#482E76'; // Secondary color
+  static const String defaultAccent1 = '#E00099'; // Accent 1
+  static const String defaultAccent2 = '#F5C000'; // Accent 2
 
   static Color get defaultPrimaryColor => _parseColor(defaultPrimary);
   static Color get defaultSecondaryColor => _parseColor(defaultSecondary);

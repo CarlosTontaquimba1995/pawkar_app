@@ -34,45 +34,47 @@ class CategoriasSectionState extends State<CategoriasSection> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        SizedBox(
-          height: 150,
-          child: FutureBuilder<List<Categoria>>(
-            future: _categoriasFuture,
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
-              } else if (snapshot.hasError) {
-                return EmptyStateWidget(
-                  message: 'No se pudo cargar las categorías',
-                  actionLabel: 'Reintentar',
-                  onAction: _loadCategorias,
-                );
-              } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                return const Center(
-                  child: Text('No hay categorías disponibles'),
-                );
-              }
+    return FutureBuilder<List<Categoria>>(
+      future: _categoriasFuture,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const SizedBox(
+            height: 150,
+            child: Center(child: CircularProgressIndicator()),
+          );
+        } else if (snapshot.hasError) {
+          return Padding(
+            padding: const EdgeInsets.symmetric(
+              vertical: 24.0,
+              horizontal: 16.0,
+            ),
+            child: EmptyStateWidget(
+              message: 'No se pudo cargar las categorías',
+              actionLabel: 'Reintentar',
+              onAction: _loadCategorias,
+            ),
+          );
+        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          return const SizedBox(
+            height: 150,
+            child: Center(child: Text('No hay categorías disponibles'),
+            ),
+          );
+        }
 
-              final categorias = snapshot.data!;
-              return ListView.builder(
-                scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 4.0,
-                  vertical: 2.0,
-                ),
-                itemCount: categorias.length,
-                itemBuilder: (context, index) {
-                  return _buildCategoriaItem(categorias[index]);
-                },
-              );
+        final categorias = snapshot.data!;
+        return SizedBox(
+          height: 150,
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 2.0),
+            itemCount: categorias.length,
+            itemBuilder: (context, index) {
+              return _buildCategoriaItem(categorias[index]);
             },
           ),
-        ),
-      ],
+        );
+      },
     );
   }
 

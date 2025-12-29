@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/configuracion_model.dart';
@@ -62,7 +63,7 @@ class ConfiguracionService {
       final response = await _client
           .get(Uri.parse(url), headers: _getPublicHeaders())
           .timeout(const Duration(seconds: 10));
-
+      debugPrint('Response: ${response.body}');
       if (response.statusCode == 200) {
         final jsonResponse = _handleResponse(response);
         return ConfiguracionResponse.fromJson(jsonResponse);

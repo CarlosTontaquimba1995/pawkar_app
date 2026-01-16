@@ -301,8 +301,8 @@ class _MusicaScreenState extends State<MusicaScreen> {
                                       begin: Alignment.topCenter,
                                       end: Alignment.bottomCenter,
                                       colors: [
-                                        Colors.black.withOpacity(0.5),
-                                        Colors.black.withOpacity(0.9),
+                                        Colors.black.withValues(alpha: 0.5),
+                                        Colors.black.withValues(alpha: 0.9),
                                       ],
                                       stops: const [0.2, 0.8],
                                     ),
@@ -329,7 +329,7 @@ class _MusicaScreenState extends State<MusicaScreen> {
                                       height: 1.1,
                                       shadows: [
                                         Shadow(
-                                          color: Colors.black.withOpacity(0.9),
+                                          color: Colors.black.withValues(alpha: 0.9),
                                           offset: const Offset(2, 2),
                                           blurRadius: 10,
                                         ),
@@ -360,7 +360,7 @@ class _MusicaScreenState extends State<MusicaScreen> {
                                         letterSpacing: 0.3,
                                         shadows: [
                                           Shadow(
-                                            color: Colors.black.withOpacity(
+                                            color: Colors.black.withValues(alpha: 
                                               0.8,
                                             ),
                                             offset: const Offset(1, 1),

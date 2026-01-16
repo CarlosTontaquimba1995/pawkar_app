@@ -75,8 +75,19 @@ class SubcategoriaService {
         headers: _getPublicHeaders(),
       );
 
+      print('🔵 [DEBUG] Respuesta de la API para subcategoría $id:');
+      print('Status Code: ${response.statusCode}');
+      print('Headers: ${response.headers}');
+      print('Body: ${response.body}');
+
       final data = _handleResponse(response);
       final responseObj = SubcategoriaResponse.fromJson(data);
+      
+      print('🔵 [DEBUG] Objeto Subcategoria parseado:');
+      print('ID: ${responseObj.data?.subcategoriaId}');
+      print('Nombre: ${responseObj.data?.nombre}');
+      print('Descripción: ${responseObj.data?.descripcion}');
+      
       if (responseObj.data == null) throw Exception('Subcategoría no encontrada');
       return responseObj.data!;
     } catch (e) {

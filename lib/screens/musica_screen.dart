@@ -7,6 +7,7 @@ import '../widgets/skeleton_loader.dart';
 import '../models/subcategoria_model.dart';
 import '../services/subcategoria_service.dart';
 import '../theme/app_colors.dart';
+import '../config/environment.dart';
 
 // Initialize colors when the file loads
 final appColors = AppColors();
@@ -484,6 +485,58 @@ class _MusicaScreenState extends State<MusicaScreen> {
                               ),
                               const SizedBox(height: 24),
                             ],
+                            // Buy ticket button
+                            Container(
+                              width: double.infinity,
+                              margin: const EdgeInsets.only(bottom: 24),
+                              child: ElevatedButton(
+                                onPressed: () async {
+                                  final Uri url = Uri.parse(
+                                    Environment.ticketPurchaseUrl,
+                                  );
+
+                                  if (await canLaunchUrl(url)) {
+                                    await launchUrl(
+                                      url,
+                                      mode: LaunchMode.externalApplication,
+                                    );
+                                  } else {
+                                    if (mounted) {
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
+                                        SnackBar(
+                                          content: Text(
+                                            'No se pudo abrir el enlace: $url',
+                                          ),
+                                          backgroundColor: Theme.of(
+                                            context,
+                                          ).colorScheme.error,
+                                        ),
+                                      );
+                                    }
+                                  }
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: theme.colorScheme.primary,
+                                  foregroundColor: theme.colorScheme.onPrimary,
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 16,
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  elevation: 2,
+                                ),
+                                child: const Text(
+                                  'Comprar entrada',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+                            ),
                             // Artists section
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
